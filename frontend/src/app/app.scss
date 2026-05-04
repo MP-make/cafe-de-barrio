@@ -1,0 +1,27 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.navbar {
+  background-color: #6f4e37 !important; /* Coffee brown */
+}
+
+.footer {
+  background-color: #6f4e37;
+  color: white;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-primary {
+  background-color: #6f4e37;
+  border-color: #6f4e37;
+}
+
+.btn-primary:hover {
+  background-color: #5a3e2b;
+  border-color: #5a3e2b;
+}

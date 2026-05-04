@@ -1,0 +1,29 @@
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Administrar Pedidos</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Celular</th>
+          <th>Dirección</th>
+          <th>Total</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pedido of pedidos">
+          <td>{{pedido.id}}</td>
+          <td>{{pedido.clienteNombre}}</td>
+          <td>{{pedido.celular}}</td>
+          <td>{{pedido.direccion}}</td>
+          <td>${{pedido.total}}</td>
+          <td>
+            <select class="form-select" [value]="pedido.estado" (change)="updateEstado(pedido, $any($event.target).value)">
+              <option *ngFor="let estado of estados" [value]="estado">{{estado}}</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
