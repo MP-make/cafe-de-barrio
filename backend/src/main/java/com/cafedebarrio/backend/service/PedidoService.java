@@ -1,8 +1,12 @@
 package com.cafedebarrio.backend.service;
 
-import com.cafedebarrio.backend.entity.*;
+import com.cafedebarrio.backend.entity.DetallePedido;
+import com.cafedebarrio.backend.entity.EstadoPedido;
+import com.cafedebarrio.backend.entity.Pedido;
+import com.cafedebarrio.backend.entity.Producto;
 import com.cafedebarrio.backend.repository.PedidoRepository;
 import com.cafedebarrio.backend.repository.ProductoRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,14 +15,27 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
     private final ProductoRepository productoRepository;
 
-    public PedidoService(PedidoRepository pedidoRepository, ProductoRepository productoRepository) {
-        this.pedidoRepository = pedidoRepository;
-        this.productoRepository = productoRepository;
+    @Transactional
+    public Pedido crearPedido(Pedido pedido) {
+        // Validar y calcular total
+        BigDecimal total = BigDecimal.ZERO;
+        for (DetallePedido detalle : pedido.getDetalles()) {
+            Producto producto = productoRepository.findById(detalle.getProducto().getId())
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + detalle.getProducto().getId()));
+            detalle.setProducto(producto);
+            detalle.setPrecioUnitario(producto.getPrecio());
+            detalle.setSubtotal(producto.getPrecio().multiply(BigDecimal.valueOf(detalle.getCantidad())));
+            producto.setStock(producto.getStock() - detalle.getCantidad()); // Actualizar stock
+            total = total.add(detalle.getSubtotal());
+        }
+        pedido.setTotal(total);
+        return pedidoRepository.save(pedido);
     }
 
     public List<Pedido> obtenerTodos() {
@@ -30,41 +47,9 @@ public class PedidoService {
     }
 
     @Transactional
-    public Pedido crearPedido(Pedido pedido) {
-        // Validar stock para cada detalle
-        for (DetallePedido detalle : pedido.getDetalles()) {
-            Producto producto = productoRepository.findById(detalle.getProducto().getId())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-            if (producto.getStock() < detalle.getCantidad()) {
-                throw new RuntimeException("Stock insuficiente para " + producto.getNombre());
-            }
-            // Calcular subtotal
-            detalle.setPrecioUnitario(producto.getPrecio());
-            detalle.setSubtotal(producto.getPrecio().multiply(BigDecimal.valueOf(detalle.getCantidad())));
-            detalle.setPedido(pedido);
-        }
-
-        // Calcular total
-        BigDecimal total = pedido.getDetalles().stream()
-                .map(DetallePedido::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        pedido.setTotal(total);
-
-        // Guardar pedido
-        Pedido savedPedido = pedidoRepository.save(pedido);
-
-        // Descontar stock
-        for (DetallePedido detalle : savedPedido.getDetalles()) {
-            Producto producto = detalle.getProducto();
-            producto.setStock(producto.getStock() - detalle.getCantidad());
-            productoRepository.save(producto);
-        }
-
-        return savedPedido;
-    }
-
     public Pedido actualizarEstado(Integer id, EstadoPedido estado) {
-        Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+        Pedido pedido = obtenerPorId(id)
+            .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
         pedido.setEstado(estado);
         return pedidoRepository.save(pedido);
     }

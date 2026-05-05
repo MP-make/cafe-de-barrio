@@ -1,18 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Producto } from '../../models/producto.model';
 import { FormsModule } from '@angular/forms';
-import { ProductoService } from '../../services/producto.service';
+import { ProductoService, Producto } from '../../services/producto.service';
 import { CartService } from '../../services/cart.service';
-import { CategoriaService, Categoria } from '../../services/categoria'; // <-- Importar CategoriaService
+import { CategoriaService, Categoria } from '../../services/categoria';
 
 @Component({
   selector: 'app-catalogo',
   standalone: true,
   imports: [CommonModule, FormsModule],  
-  templateUrl: './catalogo.component.html'
+  templateUrl: './catalogo.component.html',
+  styleUrl: './catalogo.scss'
 })
 export class CatalogoComponent implements OnInit {
+  
   productos: Producto[] = [];
   categorias: Categoria[] = [];
   selectedCategoria: number | null = null;
@@ -20,7 +21,7 @@ export class CatalogoComponent implements OnInit {
   constructor(
     private productoService: ProductoService,
     private cartService: CartService,
-    private categoriaService: CategoriaService // <-- Inyectar CategoriaService
+    private categoriaService: CategoriaService
   ) {}
 
   ngOnInit(): void {
@@ -30,41 +31,39 @@ export class CatalogoComponent implements OnInit {
 
   loadCategorias(): void {
     this.categoriaService.getCategorias().subscribe({
-      next: (data) => this.categorias = data,
-      error: (err) => console.error('Error cargando categor�as:', err)
+      next: (data: Categoria[]) => {
+        console.log('Categorías cargadas:', data);
+        this.categorias = data;
+      },
+      error: (err: any) => console.error('Error cargando categorías:', err)
     });
   }
 
   loadProductos(): void {
-    if (this.selectedCategoria) {
-      this.productoService.getProductosByCategoria(this.selectedCategoria).subscribe({
-        next: (data) => this.productos = data,
-        error: (err) => console.error('Error cargando productos:', err)
-      });
-    } else {
-      this.productoService.getProductos().subscribe({
-        next: (data) => this.productos = data,
-        error: (err) => console.error('Error cargando productos:', err)
-      });
-    }
+    this.productoService.getProductos().subscribe({
+      next: (data: Producto[]) => {
+        // 👇 ESTA LÍNEA ES VITAL PARA SABER QUÉ PASA 👇
+        console.log('Productos recibidos del backend:', data); 
+        this.productos = data;
+      },
+      error: (err: any) => console.error('Error cargando productos:', err)
+    });
   }
 
   onCategoriaChange(): void {
-    this.loadProductos();
+    // El filtrado lo hace el getter
   }
 
-  eliminar(id: number) {
-    if(confirm('�Est�s seguro de eliminar este caf�?')) {
-      this.productoService.deleteProducto(id).subscribe({
-        next: () => this.productos = this.productos.filter(p => p.id !== id),
-        error: (err) => console.error('No se pudo eliminar', err)
-      });
+  get filteredProductos(): Producto[] {
+    if (this.selectedCategoria) {
+      // Usamos == en lugar de === por si el HTML envía el ID como string ('1' == 1)
+      return this.productos.filter(p => p.categoriaId == this.selectedCategoria);
     }
+    return this.productos;
   }
 
-  // --- M�TODO NUEVO ---
   agregarAlCarrito(producto: Producto) {
     this.cartService.agregar(producto);
-    alert('Producto a�adido al carrito!');
+    alert('¡Producto añadido al carrito! ☕');
   }
 }

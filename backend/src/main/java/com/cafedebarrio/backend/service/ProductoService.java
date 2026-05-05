@@ -1,47 +1,84 @@
 package com.cafedebarrio.backend.service;
 
+import com.cafedebarrio.backend.dto.ProductoRequestDTO;
+import com.cafedebarrio.backend.dto.ProductoResponseDTO;
+import com.cafedebarrio.backend.entity.Categoria;
 import com.cafedebarrio.backend.entity.Producto;
+import com.cafedebarrio.backend.repository.CategoriaRepository;
 import com.cafedebarrio.backend.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    public ProductoService(ProductoRepository productoRepository) {
+    // Inyección de dependencias mediante constructor manual (Forma recomendada en Spring sin Lombok)
+    public ProductoService(ProductoRepository productoRepository, CategoriaRepository categoriaRepository) {
         this.productoRepository = productoRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
-    public List<Producto> obtenerTodosActivos() {
-        return productoRepository.findByActivoTrue();
+    private static final String UPLOAD_DIR = "uploads/";
+
+    public List<ProductoResponseDTO> obtenerProductos(Integer categoriaId) {
+        List<Producto> productos = (categoriaId != null) 
+            ? productoRepository.findByCategoriaId(categoriaId) 
+            : productoRepository.findAll();
+            
+        return productos.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
-    public List<Producto> obtenerPorCategoria(Integer categoriaId) { // Cambiado a Integer
-        return productoRepository.findByCategoriaId(categoriaId);
+    public ProductoResponseDTO crearProducto(ProductoRequestDTO dto) {
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
+        Producto producto = new Producto();
+        producto.setNombre(dto.getNombre());
+        producto.setDescripcion(dto.getDescripcion());
+        producto.setPrecio(dto.getPrecio());
+        producto.setStock(dto.getStock());
+        producto.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
+        producto.setCategoria(categoria);
+
+        if (dto.getImagenFile() != null && !dto.getImagenFile().isEmpty()) {
+            try {
+                String fileName = UUID.randomUUID().toString() + "_" + dto.getImagenFile().getOriginalFilename();
+                Path filePath = Paths.get(UPLOAD_DIR + fileName);
+                
+                Files.createDirectories(filePath.getParent());
+                Files.write(filePath, dto.getImagenFile().getBytes());
+                
+                producto.setImagenUrl("/" + fileName); 
+                
+            } catch (IOException e) {
+                throw new RuntimeException("Error al guardar la imagen", e);
+            }
+        }
+
+        Producto guardado = productoRepository.save(producto);
+        return mapToDTO(guardado);
     }
 
-    public Optional<Producto> obtenerPorId(Integer id) { // Cambiado a Integer
-        return productoRepository.findById(id);
-    }
-    // Añade esto debajo de tus otros métodos
-    public Producto guardarProducto(Producto producto) {
-        return productoRepository.save(producto);
-    }
-    public void eliminarProducto(Integer id) {
-        productoRepository.deleteById(id);
-    }
-    
-    public Producto actualizarProducto(Integer id, Producto productoDetalles) {
-        Producto producto = productoRepository.findById(id).orElseThrow();
-        producto.setNombre(productoDetalles.getNombre());
-        producto.setPrecio(productoDetalles.getPrecio());
-        producto.setStock(productoDetalles.getStock());
-        producto.setDescripcion(productoDetalles.getDescripcion());
-        producto.setImagenUrl(productoDetalles.getImagenUrl());
-        return productoRepository.save(producto);
+    private ProductoResponseDTO mapToDTO(Producto producto) {
+        return new ProductoResponseDTO(
+            producto.getId(),
+            producto.getNombre(),
+            producto.getDescripcion(),
+            producto.getPrecio(),
+            producto.getStock(),
+            producto.getImagenUrl(),
+            producto.getActivo(),
+            producto.getCategoria() != null ? producto.getCategoria().getId() : null
+        );
     }
 }

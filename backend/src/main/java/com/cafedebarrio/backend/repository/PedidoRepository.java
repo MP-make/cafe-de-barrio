@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
+    // Aquí podrías agregar búsquedas por celular o nombre en el futuro
 }

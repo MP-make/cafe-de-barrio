@@ -1,7 +1,11 @@
 package com.cafedebarrio.backend.controller;
 
-import com.cafedebarrio.backend.entity.Producto;
+import com.cafedebarrio.backend.dto.ProductoRequestDTO;
+import com.cafedebarrio.backend.dto.ProductoResponseDTO;
 import com.cafedebarrio.backend.service.ProductoService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,48 +13,24 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/productos")
+// Ya no usamos @RequiredArgsConstructor aquí
 public class ProductoController {
 
     private final ProductoService productoService;
 
+    // ¡SOLUCIÓN DEFINITIVA! Constructor explícito y manual.
+    // Esto evita que Maven y Java se quejen de que la variable no está inicializada.
     public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Producto>> listarProductos(
-            @RequestParam(required = false) Integer categoria) { // Cambiado a Integer
-        
-        List<Producto> productos;
-        if (categoria != null) {
-            productos = productoService.obtenerPorCategoria(categoria);
-        } else {
-            productos = productoService.obtenerTodosActivos();
-        }
-        
-        return ResponseEntity.ok(productos);
+    public ResponseEntity<List<ProductoResponseDTO>> getProductos(@RequestParam(required = false) Integer categoriaId) {
+        return ResponseEntity.ok(productoService.obtenerProductos(categoriaId));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Producto> obtenerProductoPorId(@PathVariable Integer id) { // Cambiado a Integer
-        return productoService.obtenerPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-    // Añade esto debajo de tus métodos @GetMapping
-    @PostMapping
-    public ResponseEntity<Producto> crearProducto(@RequestBody Producto producto) {
-        Producto nuevoProducto = productoService.guardarProducto(producto);
-        return ResponseEntity.ok(nuevoProducto);
-    }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        productoService.eliminarProducto(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizar(@PathVariable Integer id, @RequestBody Producto producto) {
-        return ResponseEntity.ok(productoService.actualizarProducto(id, producto));
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductoResponseDTO> createProducto(@Valid @ModelAttribute ProductoRequestDTO dto) {
+        return new ResponseEntity<>(productoService.crearProducto(dto), HttpStatus.CREATED);
     }
 }

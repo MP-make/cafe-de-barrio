@@ -1,29 +1,66 @@
-<div class="container mt-4">
-    <h2 class="text-center mb-4">☕ Catálogo de Café de Barrio</h2>
-    <div class="mb-3">  <!-- Add this block -->
-      <label for="categoriaSelect" class="form-label">Filtrar por categoría:</label>
-      <select id="categoriaSelect" class="form-select" [(ngModel)]="selectedCategoria" (ngModelChange)="onCategoriaChange()">
-        <option [ngValue]="null">Todas las categorías</option>
-        <option *ngFor="let cat of categorias" [ngValue]="cat.id">{{cat.nombre}}</option>
-      </select>
-    <div class="row">
-      <div class="col-md-4 mb-4" *ngFor="let p of productos">
-        <div class="card shadow-sm h-100">
-          <img [src]="p.imagenUrl || 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=300&h=200&auto=format&fit=crop'" 
-               class="card-img-top" alt="Café">
-          <div class="card-body">
-            <h5 class="card-title">{{p.nombre}}</h5>
-            <p class="card-text text-muted">{{p.descripcion}}</p><small class="text-muted">Stock: {{p.stock}}</small>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="badge bg-success fs-5">${{p.precio}}</span>
-              <button class="btn btn-primary btn-sm">Añadir al carrito</button>
-              <button class="btn btn-outline-danger btn-sm ms-2" (click)="eliminar(p.id)">
-                <i class="bi bi-trash"></i>
-                <button class="btn btn-primary btn-sm" (click)="agregarAlCarrito(p)">Añadir al carrito</button>
-              </button>
-            </div>
+<!-- catalogo.component.html -->
+<div class="container py-5">
+  
+  <!-- Cabecera y Filtro de Categorías -->
+  <div class="row align-items-center mb-5">
+    <div class="col-md-8 text-center text-md-start mb-3 mb-md-0">
+      <h2 class="display-6 fw-bold text-white mb-1">Nuestro Catálogo</h2>
+      <p class="text-white-50 mb-0">Descubre la selección de Café de Barrio.</p>
+    </div>
+    <div class="col-md-4">
+      <div class="d-flex align-items-center bg-white rounded-pill shadow-sm px-3 py-2">
+        <i class="bi bi-funnel text-muted me-2"></i>
+        <!-- Select conectado a tu variable selectedCategoria -->
+        <select class="form-select border-0 shadow-none bg-transparent" [(ngModel)]="selectedCategoria">
+          <option [ngValue]="null">Todas las categorías</option>
+          <option *ngFor="let cat of categorias" [ngValue]="cat.id">{{cat.nombre}}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid de Productos (Aquí usamos filteredProductos) -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="col" *ngFor="let p of filteredProductos">
+      <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden cafe-card">
+        
+        <div class="position-relative bg-light overflow-hidden">
+          <img [src]="p.imagenUrl ? 'http://localhost:8080' + p.imagenUrl : 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=300&h=200&auto=format&fit=crop'" 
+               class="card-img-top object-fit-cover cafe-img" 
+               alt="{{ p.nombre }}" 
+               style="height: 220px; background-color: #e9ecef;"
+               loading="lazy">
+               
+          <div class="position-absolute bottom-0 end-0 m-3">
+            <span class="badge bg-dark text-white rounded-pill px-3 py-2 fs-6 shadow price-badge">
+              ${{ p.precio }}
+            </span>
           </div>
+        </div>
+
+        <div class="card-body d-flex flex-column p-4">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="card-title fw-bold text-dark mb-0">{{p.nombre}}</h5>
+            <span class="badge bg-light text-secondary border px-2 py-1">
+              Stock: {{p.stock}}
+            </span>
+          </div>
+          
+          <p class="card-text text-muted flex-grow-1 small lh-base mb-4">
+            {{p.descripcion}}
+          </p>
+          
+          <button class="btn btn-outline-dark w-100 rounded-pill fw-semibold btn-add-cart" (click)="agregarAlCarrito(p)">
+            <i class="bi bi-cart-plus me-2"></i>Añadir al carrito
+          </button>
         </div>
       </div>
     </div>
   </div>
+  
+  <!-- Estado Vacío (Por si filtras una categoría que no tiene cafés) -->
+  <div *ngIf="filteredProductos.length === 0" class="text-center py-5">
+    <i class="bi bi-cup-hot fs-1 text-white-50 mb-3 d-block"></i>
+    <h5 class="text-white-50 fw-light">No encontramos productos en esta categoría.</h5>
+  </div>
+</div>

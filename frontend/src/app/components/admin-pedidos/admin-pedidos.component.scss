@@ -1,0 +1,33 @@
+/* admin-pedidos.component.scss */
+
+// Eliminar el borde vertical por defecto de las tablas de bootstrap
+.custom-table {
+    th, td {
+      vertical-align: middle;
+    }
+    
+    // Efecto hover suave para las filas
+    tbody tr {
+      transition: background-color 0.2s ease, transform 0.2s ease;
+      
+      &:hover {
+        background-color: rgba(212, 163, 115, 0.05) !important; // Un toque color café muy sutil
+        transform: translateX(4px);
+      }
+    }
+  }
+  
+  // Selects (Dropdowns) de estado
+  select {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:focus {
+      box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25) !important;
+    }
+  }
+  
+  // Utilidades extras
+  .tracking-wide {
+    letter-spacing: 1px;
+  }

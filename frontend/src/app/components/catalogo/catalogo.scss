@@ -1,0 +1,63 @@
+/* catalogo.scss */
+
+// Espaciado y diseño de la tarjeta
+.cafe-card {
+    border-radius: 1rem !important;
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    background-color: #ffffff;
+    
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+      
+      // Pequeño zoom a la imagen al pasar el mouse
+      .card-img-top {
+        transform: scale(1.05);
+      }
+    }
+  }
+  
+  // Contenedor de la imagen
+  .position-relative.bg-light {
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    overflow: hidden; // Evita que la imagen se salga de las curvas
+  }
+  
+  // Imagen del producto
+  .card-img-top {
+    transition: transform 0.5s ease;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  // Etiqueta del precio
+  .badge.bg-dark {
+    background: linear-gradient(135deg, #2c211b 0%, #1a1410 100%) !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  
+  // Botón de añadir al carrito
+  .btn-outline-dark {
+    border-color: #e0e0e0;
+    color: #2c211b;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: #2c211b;
+      border-color: #2c211b;
+      color: #ffffff;
+    }
+  }
+  
+  // Ajustes del texto descriptivo
+  .card-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limita a 3 líneas la descripción */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.6;
+  }

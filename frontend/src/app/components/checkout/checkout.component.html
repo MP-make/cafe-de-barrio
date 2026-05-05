@@ -1,39 +1,72 @@
-<div class="container mt-4">
-  <h2 class="text-center mb-4">Checkout</h2>
-  <div class="row">
-    <div class="col-md-8">
-      <h4>Detalles del Pedido</h4>
-      <ul class="list-group mb-3">
-        <li class="list-group-item d-flex justify-content-between lh-sm" *ngFor="let item of cartItems">
-          <div>
-            <h6 class="my-0">{{item.producto.nombre}}</h6>
-            <small class="text-muted">Cantidad: {{item.cantidad}}</small>
-          </div>
-          <span class="text-muted">${{item.producto.precio * item.cantidad}}</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between">
-          <span>Total</span>
-          <strong>${{total}}</strong>
-        </li>
-      </ul>
+<div class="container py-5 min-vh-100">
+  <div class="row mb-5">
+    <div class="col-12 text-center text-md-start">
+      <h2 class="display-6 fw-bold text-dark">Finalizar Compra</h2>
+      <p class="text-muted">Completa tus datos para recibir tu pedido.</p>
     </div>
-    <div class="col-md-4">
-      <h4>Información de Entrega</h4>
-      <form (ngSubmit)="onSubmit()">
-        <div class="mb-3">
-          <label for="clienteNombre" class="form-label">Nombre</label>
-          <input type="text" class="form-control" id="clienteNombre" [(ngModel)]="pedido.clienteNombre" name="clienteNombre" required>
+  </div>
+
+  <div class="row g-5">
+    <!-- Columna Izquierda: Formulario -->
+    <div class="col-lg-7">
+      <div class="card shadow-sm border-0 rounded-4 p-4 p-md-5 bg-white">
+        <h4 class="fw-bold mb-4 border-bottom pb-3"><i class="bi bi-person-lines-fill me-2 text-secondary"></i>Datos de Entrega</h4>
+        
+        <form [formGroup]="checkoutForm" (ngSubmit)="confirmarPedido()">
+          
+          <div class="mb-4">
+            <label class="form-label fw-bold text-secondary small text-uppercase">Nombre Completo</label>
+            <input type="text" class="form-control form-control-lg bg-light border-0 shadow-sm" formControlName="clienteNombre" placeholder="Ej. Juan Pérez">
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold text-secondary small text-uppercase">Número de Celular</label>
+            <input type="text" class="form-control form-control-lg bg-light border-0 shadow-sm" formControlName="celular" placeholder="Ej. 987654321">
+          </div>
+
+          <div class="mb-5">
+            <label class="form-label fw-bold text-secondary small text-uppercase">Dirección de Entrega</label>
+            <textarea class="form-control bg-light border-0 shadow-sm" formControlName="direccion" rows="3" placeholder="Ej. Av. Principal 123, Referencia..."></textarea>
+          </div>
+
+          <!-- Botón de Confirmación -->
+          <button type="submit" class="btn btn-dark btn-lg w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" 
+                  [disabled]="checkoutForm.invalid || cartItems.length === 0 || isSubmitting">
+            <ng-container *ngIf="!isSubmitting">
+              <i class="bi bi-check2-circle fs-5"></i> Confirmar y Pagar
+            </ng-container>
+            <ng-container *ngIf="isSubmitting">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Procesando orden...
+            </ng-container>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Resumen del Pedido -->
+    <div class="col-lg-5">
+      <div class="card shadow-sm border-0 rounded-4 p-4 bg-light">
+        <h4 class="fw-bold mb-4 border-bottom pb-3"><i class="bi bi-bag-check me-2 text-secondary"></i>Resumen de tu Orden</h4>
+        
+        <!-- Lista de productos -->
+        <ul class="list-group list-group-flush mb-4 bg-transparent">
+          <li class="list-group-item bg-transparent px-0 py-3 d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25" 
+              *ngFor="let item of cartItems">
+            <div>
+              <h6 class="mb-0 fw-bold">{{item.nombre}}</h6>
+              <small class="text-muted">Cant: {{item.cantidad}} x ${{item.precio}}</small>
+            </div>
+            <span class="fw-bold text-dark">${{ (item.precio * item.cantidad) }}</span>
+          </li>
+        </ul>
+
+        <!-- Total -->
+        <div class="d-flex justify-content-between align-items-center pt-3 mt-auto">
+          <h5 class="fw-bold text-secondary mb-0">Total a Pagar:</h5>
+          <h3 class="fw-bold text-success mb-0">${{total}}</h3>
         </div>
-        <div class="mb-3">
-          <label for="celular" class="form-label">Celular</label>
-          <input type="text" class="form-control" id="celular" [(ngModel)]="pedido.celular" name="celular" required>
-        </div>
-        <div class="mb-3">
-          <label for="direccion" class="form-label">Dirección</label>
-          <textarea class="form-control" id="direccion" [(ngModel)]="pedido.direccion" name="direccion" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Confirmar Pedido</button>
-      </form>
+      </div>
     </div>
   </div>
 </div>

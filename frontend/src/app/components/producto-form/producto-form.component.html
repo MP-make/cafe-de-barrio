@@ -1,50 +1,72 @@
-<div class="container mt-4 mb-5">
-    <div class="card shadow-sm border-primary">
-      <div class="card-header bg-primary text-white">
-        <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Nuevo Producto</h4>
-      </div>
-      <div class="card-body">
-        <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label fw-bold">Nombre del Café *</label>
-              <input type="text" class="form-control" formControlName="nombre">
-            </div>
-            <div class="col-md-6 mb-3" formGroupName="categoria">
-              <label class="form-label fw-bold">Categoría *</label>
-              <select class="form-select" formControlName="id">
-                <option value="" disabled selected>Seleccione...</option>
-                <option *ngFor="let c of categorias" [value]="c.id">{{c.nombre}}</option>
-              </select>
-            </div>
+<div class="container py-5 min-vh-100">
+  <div class="row mb-5">
+    <div class="col-12 text-center text-md-start">
+      <h2 class="display-6 fw-bold text-dark">Finalizar Compra</h2>
+      <p class="text-muted">Completa tus datos para recibir tu pedido.</p>
+    </div>
+  </div>
+
+  <div class="row g-5">
+    <!-- Columna Izquierda: Formulario -->
+    <div class="col-lg-7">
+      <div class="card shadow-sm border-0 rounded-4 p-4 p-md-5 bg-white">
+        <h4 class="fw-bold mb-4 border-bottom pb-3"><i class="bi bi-person-lines-fill me-2 text-secondary"></i>Datos de Entrega</h4>
+        
+        <form [formGroup]="checkoutForm" (ngSubmit)="confirmarPedido()">
+          
+          <div class="mb-4">
+            <label class="form-label fw-bold text-secondary small text-uppercase">Nombre Completo</label>
+            <input type="text" class="form-control form-control-lg bg-light border-0 shadow-sm" formControlName="clienteNombre" placeholder="Ej. Juan Pérez">
           </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label fw-bold">Precio *</label>
-              <div class="input-group">
-                <span class="input-group-text">$</span>
-                <input type="number" class="form-control" formControlName="precio">
-              </div>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label fw-bold">Stock Inicial *</label>
-              <input type="number" class="form-control" formControlName="stock">
-            </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold text-secondary small text-uppercase">Número de Celular</label>
+            <input type="text" class="form-control form-control-lg bg-light border-0 shadow-sm" formControlName="celular" placeholder="Ej. 987654321">
           </div>
-          <div class="mb-3">
-            <label class="form-label fw-bold">URL de la Imagen</label>
-            <input type="text" class="form-control" formControlName="imagenUrl" placeholder="https://...">
+
+          <div class="mb-5">
+            <label class="form-label fw-bold text-secondary small text-uppercase">Dirección de Entrega</label>
+            <textarea class="form-control bg-light border-0 shadow-sm" formControlName="direccion" rows="3" placeholder="Ej. Av. Principal 123, Referencia..."></textarea>
           </div>
-          <div class="mb-3">
-            <label class="form-label fw-bold">Descripción</label>
-            <textarea class="form-control" formControlName="descripcion" rows="2"></textarea>
-          </div>
-          <div class="text-end">
-            <button type="submit" class="btn btn-success px-4" [disabled]="productoForm.invalid">
-              Guardar en Catálogo
-            </button>
-          </div>
+
+          <!-- Botón de Confirmación -->
+          <button type="submit" class="btn btn-dark btn-lg w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" 
+                  [disabled]="checkoutForm.invalid || cartItems.length === 0 || isSubmitting">
+            <ng-container *ngIf="!isSubmitting">
+              <i class="bi bi-check2-circle fs-5"></i> Confirmar y Pagar
+            </ng-container>
+            <ng-container *ngIf="isSubmitting">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Procesando orden...
+            </ng-container>
+          </button>
         </form>
       </div>
     </div>
+
+    <!-- Columna Derecha: Resumen del Pedido -->
+    <div class="col-lg-5">
+      <div class="card shadow-sm border-0 rounded-4 p-4 bg-light">
+        <h4 class="fw-bold mb-4 border-bottom pb-3"><i class="bi bi-bag-check me-2 text-secondary"></i>Resumen de tu Orden</h4>
+        
+        <!-- Lista de productos -->
+        <ul class="list-group list-group-flush mb-4 bg-transparent">
+          <li class="list-group-item bg-transparent px-0 py-3 d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25" 
+              *ngFor="let item of cartItems">
+            <div>
+              <h6 class="mb-0 fw-bold">{{item.nombre}}</h6>
+              <small class="text-muted">Cant: {{item.cantidad}} x ${{item.precio}}</small>
+            </div>
+            <span class="fw-bold text-dark">${{ (item.precio * item.cantidad) }}</span>
+          </li>
+        </ul>
+
+        <!-- Total -->
+        <div class="d-flex justify-content-between align-items-center pt-3 mt-auto">
+          <h5 class="fw-bold text-secondary mb-0">Total a Pagar:</h5>
+          <h3 class="fw-bold text-success mb-0">${{total}}</h3>
+        </div>
+      </div>
+    </div>
   </div>
+</div>

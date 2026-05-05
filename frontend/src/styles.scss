@@ -1,3 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 @import "bootstrap/dist/css/bootstrap.min.css";
 @import "bootstrap-icons/font/bootstrap-icons.css";
+body {
+    /* Añadimos un gradiente oscuro semitransparente (rgba) SOBRE tu imagen */
+    background-image: linear-gradient(rgba(26, 20, 16, 0.88), rgba(26, 20, 16, 0.88)), url('/fondo.webp');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: #1a1410;
+  }

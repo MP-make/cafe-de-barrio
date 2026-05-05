@@ -56,7 +56,7 @@ export class CartService {
     this.cartSubject.next(this.items);
   }
 
-  // Recuperar del navegador al entrar a la página
+  // Recuperar del navegador al entrar a la pï¿½gina
   private cargarCarrito() {
     const carritoGuardado = localStorage.getItem('carrito');
     if (carritoGuardado) {
