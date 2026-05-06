@@ -24,7 +24,7 @@ export class CatalogoComponent implements OnInit {
     private productoService: ProductoService,
     private cartService: CartService,
     private categoriaService: CategoriaService,
-    private cd: ChangeDetectorRef // <--- INYECTAMOS EL DETECTOR DE CAMBIOS
+    private cd: ChangeDetectorRef 
   ) {}
 
   ngOnInit(): void {
@@ -34,43 +34,50 @@ export class CatalogoComponent implements OnInit {
   loadData(): void {
     this.isLoading = true;
 
-    // 1. Cargar productos
     this.productoService.getProductos().subscribe({
       next: (productos) => {
-        console.log('Productos recibidos del backend:', productos);
         this.productos = productos;
-        this.isLoading = false; // Ocultamos el spinner
-        
-        // FORZAMOS LA ACTUALIZACIÓN DE LA PANTALLA
+        this.isLoading = false; 
         this.cd.detectChanges(); 
       },
       error: (err: any) => {
         console.error('Error cargando productos:', err);
         this.isLoading = false; 
-        this.cd.detectChanges(); // Actualizamos incluso si hay error
+        this.cd.detectChanges();
       }
     });
 
-    // 2. Cargar categorías de forma independiente
     this.categoriaService.getCategorias().subscribe({
       next: (categorias) => {
-        console.log('Categorías cargadas:', categorias);
         this.categorias = categorias;
-        this.cd.detectChanges(); // Forzamos actualización al recibir categorías
+        this.cd.detectChanges();
       },
-      error: (err: any) => {
-        console.error('Error cargando categorías:', err);
-      }
+      error: (err: any) => console.error('Error cargando categorías:', err)
     });
   }
 
-  onCategoriaChange(): void {
-    // El filtrado lo hace el getter
+  // --- MÉTODOS DE CORRECCIÓN DE IMÁGENES ---
+  
+  getImagenUrl(nombreArchivo?: string): string {
+    if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
+      return '/logo.webp'; // Imagen por defecto
+    }
+    if (nombreArchivo.startsWith('http')) {
+      return nombreArchivo;
+    }
+    // Aseguramos la ruta completa al backend con la carpeta uploads
+    return `http://localhost:8080/uploads/${nombreArchivo}`; 
   }
+
+  manejarErrorImagen(event: any) {
+    // Si la imagen no existe en el servidor, ponemos el logo
+    event.target.src = '/logo.webp';
+  }
+
+  // ------------------------------------------
 
   get filteredProductos(): Producto[] {
     if (this.selectedCategoria) {
-      // Usamos == en lugar de === por si el HTML envía el ID como string ('1' == 1)
       return this.productos.filter(p => p.categoriaId == this.selectedCategoria);
     }
     return this.productos;
@@ -78,6 +85,6 @@ export class CatalogoComponent implements OnInit {
 
   agregarAlCarrito(producto: Producto) {
     this.cartService.agregar(producto);
-    alert('¡Producto añadido al carrito! ☕');
+    alert('¡Excelente elección! Añadido al pedido. ☕');
   }
 }

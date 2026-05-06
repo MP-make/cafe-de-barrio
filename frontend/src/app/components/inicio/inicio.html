@@ -1,31 +1,65 @@
-<div class="container-fluid p-0">
+<div class="dark-theme-wrapper">
   
-    <!-- Hero Section -->
-    <section class="hero text-white text-center position-relative">
-      <div class="overlay d-flex flex-column justify-content-center align-items-center h-100 px-3">
-        <h1 class="display-3 fw-bold mb-3 text-warning" style="letter-spacing: -1px;">Café de Barrio</h1>
-        <p class="lead mb-4 fs-4 fw-light">El sabor auténtico de la ciudad, directo a tu taza.</p>
-        <a routerLink="/catalogo" class="btn btn-warning btn-lg rounded-pill px-5 fw-bold shadow-lg mt-3">
-          <i class="bi bi-cup-hot me-2"></i>Ver nuestro Catálogo
-        </a>
+    <!-- SECCIÓN 1: HERO (Contenido Centrado) -->
+    <section class="hero-premium">
+      <video #heroVideo autoplay muted loop playsinline class="video-background">
+        <source src="1.mp4" type="video/mp4">
+      </video>
+      <div class="video-overlay-50"></div>
+      
+      <!-- Contenedor centrado -->
+      <div class="container hero-content z-depth-1">
+        <h1 class="display-title">CAFÉ DE BARRIO</h1>
+        <p class="subtitle-premium">EL ARTE DE LA EXTRACCIÓN EN CADA GOTA</p>
+        <div class="cta-wrapper">
+          <a routerLink="/catalogo" class="btn-premium-ghost">EXPLORAR CATÁLOGO</a>
+        </div>
       </div>
     </section>
   
-    <!-- Categorías Section con Imágenes -->
-    <section class="py-5" style="background-color: #f8f9fa;">
-      <div class="container py-5">
-        <div class="text-center mb-5">
-          <h2 class="fw-bold" style="color: #2c1e16;">Nuestras Especialidades</h2>
-          <div class="mx-auto mt-2" style="width: 60px; height: 3px; background-color: #d4a373;"></div>
+    <!-- SECCIÓN 2: CATEGORÍAS (Espaciado Premium) -->
+    <section class="section-padding bg-matte">
+      <div class="container">
+        <div class="section-header text-center mb-huge">
+          <h2 class="title-modern text-white">NUESTRAS ESPECIALIDADES</h2>
+          <div class="accent-line mx-auto mt-3"></div>
         </div>
         
+        <div class="row g-5 justify-content-center">
+          <div class="col-md-3 col-6" *ngFor="let categoria of categorias">
+            <div class="card-category-premium" [routerLink]="['/catalogo']" [queryParams]="{categoria: categoria.id}">
+              <h5 class="m-0 text-warning">{{ categoria.nombre | uppercase }}</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  
+    <!-- SECCIÓN 3: PRODUCTOS DESTACADOS -->
+    <section class="section-padding position-relative overflow-hidden">
+      <video muted loop playsinline class="video-background lazy-video">
+        <source src="2.mp4" type="video/mp4">
+      </video>
+      <div class="video-overlay-80"></div>
+  
+      <div class="container position-relative z-depth-1">
+        <div class="section-header text-center mb-huge">
+          <h2 class="title-modern text-white">FAVORITOS DE LA CASA</h2>
+          <div class="accent-line mx-auto mt-3"></div>
+        </div>
+  
         <div class="row g-4 justify-content-center">
-          <!-- Iteramos las categorías y les ponemos imagen de fondo -->
-          <div class="col-md-3 col-sm-6" *ngFor="let categoria of categorias">
-            <div class="card h-100 shadow-sm border-0 category-card overflow-hidden" [routerLink]="['/catalogo']" [queryParams]="{categoria: categoria.id}">
-              <img [src]="getImagenCategoria(categoria.nombre)" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ categoria.nombre }}">
-              <div class="card-body text-center p-3" style="background-color: #2c1e16;">
-                <h5 class="card-title fw-bold m-0 text-warning">{{ categoria.nombre }}</h5>
+          <div class="col-lg-3 col-md-6" *ngFor="let producto of productos">
+            <div class="product-card-dark">
+              <div class="product-img-box">
+                <img [src]="getImagenUrl(producto.imagenUrl)" (error)="$any($event.target).src = 'logo.webp'">
+              </div>
+              <div class="product-info-dark p-4 text-center">
+                <h4 class="fw-bold text-white mb-2">{{ producto.nombre | uppercase }}</h4>
+                <p class="text-white-50 small mb-4">{{ producto.descripcion | slice:0:50 }}...</p>
+                <button class="btn-premium-solid" (click)="agregarAlCarrito(producto)">
+                  PEDIR — ${{ producto.precio }}
+                </button>
               </div>
             </div>
           </div>
@@ -33,42 +67,17 @@
       </div>
     </section>
   
-    <!-- Productos Destacados Section -->
-    <section class="py-5" style="background-color: #ffffff;">
-      <div class="container py-5">
-        <div class="text-center mb-5">
-          <h2 class="fw-bold" style="color: #2c1e16;">Los Más Solicitados</h2>
-          <div class="mx-auto mt-2" style="width: 60px; height: 3px; background-color: #d4a373;"></div>
-        </div>
-  
-        <div class="row g-4">
-          <div class="col-lg-3 col-md-4 col-sm-6" *ngFor="let producto of productos">
-            <div class="card h-100 shadow-sm border-0 product-card">
-              <div class="img-wrapper position-relative">
-                <img [src]="getImagenUrl(producto.imagenUrl)" class="card-img-top" alt="{{ producto.nombre }}">
-                <!-- Etiqueta de más vendido -->
-                <span class="badge bg-danger position-absolute top-0 start-0 m-2 shadow"><i class="bi bi-fire me-1"></i>Top Ventas</span>
-              </div>
-              <div class="card-body d-flex flex-column p-4">
-                <h5 class="card-title fw-bold text-dark mb-1">{{ producto.nombre }}</h5>
-                <p class="card-text text-muted small flex-grow-1 mt-2 text-truncate" style="max-height: 40px;">{{ producto.descripcion }}</p>
-                
-                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                  <span class="fs-5 fw-bold" style="color: #a06b3e;">${{ producto.precio }}</span>
-                  <button class="btn btn-outline-warning rounded-circle p-2 lh-1" (click)="agregarAlCarrito(producto)" title="Añadir al carrito">
-                    <i class="bi bi-cart-plus fs-5"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-  
-        <div class="text-center mt-5 pt-3">
-          <a routerLink="/catalogo" class="btn btn-outline-dark btn-lg rounded-pill px-5">
-            Ver Todos los Productos <i class="bi bi-arrow-right ms-2"></i>
-          </a>
-        </div>
+    <!-- SECCIÓN 4: MÉTODOS -->
+    <section class="hero-premium mini-hero">
+      <video muted loop playsinline class="video-background lazy-video">
+        <source src="3.mp4" type="video/mp4">
+      </video>
+      <div class="video-overlay-50"></div>
+      <div class="container position-relative z-depth-1 text-center">
+        <h2 class="display-title-small">MÉTODOS ARTESANALES</h2>
+        <p class="text-premium-light mx-auto" style="max-width: 700px;">
+          Cada filtrado es una conexión emocional entre el campo y tu mesa.
+        </p>
       </div>
     </section>
   </div>
