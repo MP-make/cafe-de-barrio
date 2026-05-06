@@ -1,6 +1,5 @@
 package com.cafedebarrio.backend.entity;
 import jakarta.persistence.*;
-
 @Entity
 @Table(name = "categorias")
 public class Categoria {

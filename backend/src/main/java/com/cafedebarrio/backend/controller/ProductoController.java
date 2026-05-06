@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/productos")
+@CrossOrigin(origins = "http://localhost:4200")
 // Ya no usamos @RequiredArgsConstructor aquí
 public class ProductoController {
 
@@ -32,5 +33,10 @@ public class ProductoController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductoResponseDTO> createProducto(@Valid @ModelAttribute ProductoRequestDTO dto) {
         return new ResponseEntity<>(productoService.crearProducto(dto), HttpStatus.CREATED);
+    }
+    
+    @GetMapping("/search")
+    public org.springframework.http.ResponseEntity<List<com.cafedebarrio.backend.dto.ProductoResponseDTO>> searchProductos(@org.springframework.web.bind.annotation.RequestParam String query) {
+        return org.springframework.http.ResponseEntity.ok(productoService.buscarProductos(query));
     }
 }

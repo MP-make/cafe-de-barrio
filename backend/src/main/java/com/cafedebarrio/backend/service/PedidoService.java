@@ -6,7 +6,6 @@ import com.cafedebarrio.backend.entity.Pedido;
 import com.cafedebarrio.backend.entity.Producto;
 import com.cafedebarrio.backend.repository.PedidoRepository;
 import com.cafedebarrio.backend.repository.ProductoRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,25 +14,42 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
     private final ProductoRepository productoRepository;
 
+    public PedidoService(PedidoRepository pedidoRepository, ProductoRepository productoRepository) {
+        this.pedidoRepository = pedidoRepository;
+        this.productoRepository = productoRepository;
+    }
+
     @Transactional
     public Pedido crearPedido(Pedido pedido) {
         // Validar y calcular total
         BigDecimal total = BigDecimal.ZERO;
-        for (DetallePedido detalle : pedido.getDetalles()) {
-            Producto producto = productoRepository.findById(detalle.getProducto().getId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + detalle.getProducto().getId()));
-            detalle.setProducto(producto);
-            detalle.setPrecioUnitario(producto.getPrecio());
-            detalle.setSubtotal(producto.getPrecio().multiply(BigDecimal.valueOf(detalle.getCantidad())));
-            producto.setStock(producto.getStock() - detalle.getCantidad()); // Actualizar stock
-            total = total.add(detalle.getSubtotal());
+        
+        // Verificamos que vengan detalles para evitar NullPointerException
+        if (pedido.getDetalles() != null) {
+            for (DetallePedido detalle : pedido.getDetalles()) {
+                
+                // 👇 AQUÍ ESTÁ LA SOLUCIÓN: Vinculamos el hijo (detalle) con el padre (pedido)
+                detalle.setPedido(pedido);
+                
+                Producto producto = productoRepository.findById(detalle.getProducto().getId())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + detalle.getProducto().getId()));
+                
+                detalle.setProducto(producto);
+                detalle.setPrecioUnitario(producto.getPrecio());
+                detalle.setSubtotal(producto.getPrecio().multiply(BigDecimal.valueOf(detalle.getCantidad())));
+                
+                // Actualizar stock
+                producto.setStock(producto.getStock() - detalle.getCantidad()); 
+                
+                total = total.add(detalle.getSubtotal());
+            }
         }
+        
         pedido.setTotal(total);
         return pedidoRepository.save(pedido);
     }

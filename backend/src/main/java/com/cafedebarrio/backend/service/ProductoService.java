@@ -22,7 +22,6 @@ public class ProductoService {
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
 
-    // Inyección de dependencias mediante constructor manual (Forma recomendada en Spring sin Lombok)
     public ProductoService(ProductoRepository productoRepository, CategoriaRepository categoriaRepository) {
         this.productoRepository = productoRepository;
         this.categoriaRepository = categoriaRepository;
@@ -35,6 +34,12 @@ public class ProductoService {
             ? productoRepository.findByCategoriaId(categoriaId) 
             : productoRepository.findAll();
             
+        return productos.stream().map(this::mapToDTO).collect(Collectors.toList());
+    }
+
+    // NUEVO: Método del buscador
+    public List<ProductoResponseDTO> buscarProductos(String query) {
+        List<Producto> productos = productoRepository.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(query, query);
         return productos.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 

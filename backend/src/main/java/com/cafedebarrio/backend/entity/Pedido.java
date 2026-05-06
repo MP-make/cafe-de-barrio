@@ -1,8 +1,5 @@
 package com.cafedebarrio.backend.entity;
-
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -10,8 +7,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "pedidos")
-@Getter
-@Setter
 public class Pedido {
 
     @Id
@@ -46,4 +41,29 @@ public class Pedido {
         detalles.add(detalle);
         detalle.setPedido(this);
     }
+
+    // Getters and Setters
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+
+    public String getClienteNombre() { return clienteNombre; }
+    public void setClienteNombre(String clienteNombre) { this.clienteNombre = clienteNombre; }
+
+    public String getCelular() { return celular; }
+    public void setCelular(String celular) { this.celular = celular; }
+
+    public String getDireccion() { return direccion; }
+    public void setDireccion(String direccion) { this.direccion = direccion; }
+
+    public ZonedDateTime getFecha() { return fecha; }
+    public void setFecha(ZonedDateTime fecha) { this.fecha = fecha; }
+
+    public EstadoPedido getEstado() { return estado; }
+    public void setEstado(EstadoPedido estado) { this.estado = estado; }
+
+    public BigDecimal getTotal() { return total; }
+    public void setTotal(BigDecimal total) { this.total = total; }
+
+    public List<DetallePedido> getDetalles() { return detalles; }
+    public void setDetalles(List<DetallePedido> detalles) { this.detalles = detalles; }
 }
