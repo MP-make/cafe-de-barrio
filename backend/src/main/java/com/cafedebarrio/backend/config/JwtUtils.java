@@ -8,8 +8,8 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {
-    // Clave secreta larga para que el algoritmo HS256 esté feliz
-    private String jwtSecret = "CafeDeBarrioSecretKeyParaSeguridadJWT2026SistemaDeVentasSuperSeguro"; 
+    // IMPORTANTE: La clave para HS512 debe tener al menos 64 caracteres.
+    private String jwtSecret = "CafeDeBarrioSecretKeyParaSeguridadJWTDebeSerMuyLarga1234567890!!!"; 
     private int jwtExpirationMs = 86400000; // 24 horas
 
     public String generateToken(UserDetailsImpl userDetails) {
@@ -18,8 +18,7 @@ public class JwtUtils {
                 .claim("rol", userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", ""))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                // AQUÍ CAMBIAMOS A HS256
-                .signWith(SignatureAlgorithm.HS256, jwtSecret) 
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 

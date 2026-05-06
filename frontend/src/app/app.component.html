@@ -1,4 +1,7 @@
-<nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top" style="background-color: rgba(44, 33, 27, 0.96); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(212, 163, 115, 0.2);">
+<!-- ================================================================= -->
+<!-- 1. HEADER PÚBLICO (Solo visible para Clientes, oculto en Admin)   -->
+<!-- ================================================================= -->
+<nav *ngIf="!isAdminView" class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top" style="background-color: rgba(44, 33, 27, 0.96); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(212, 163, 115, 0.2);">
   <div class="container py-1">
     
     <a class="navbar-brand fw-bold d-flex align-items-center gap-3 fs-4" routerLink="/">
@@ -17,24 +20,15 @@
             <i class="bi bi-shop me-1"></i> Catálogo
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link px-3 fw-medium" routerLink="/admin" routerLinkActive="active text-warning">
-            <i class="bi bi-gear-fill me-1"></i> Panel Admin
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link px-3 fw-medium" routerLink="/pedidos" routerLinkActive="active text-warning">
-            <i class="bi bi-clipboard-check me-1"></i> Pedidos
-          </a>
-        </li>
       </ul>
 
       <div class="d-flex align-items-center">
-        <!-- BOTÓN DE LUPA AGREGADO AQUÍ -->
+        <!-- LUPA DE BÚSQUEDA -->
         <button class="btn btn-outline-light rounded-pill px-3 me-3" style="border-color: #d4a373; color: #d4a373;" (click)="openSearch()">
           <i class="bi bi-search"></i>
         </button>
 
+        <!-- CARRITO DE COMPRAS -->
         <a routerLink="/checkout" class="btn btn-outline-light rounded-pill px-4 position-relative d-flex align-items-center gap-2 border-opacity-50 transition-all" style="border-color: #d4a373;">
           <i class="bi bi-cart3 fs-5" style="color: #d4a373;"></i>
           <span class="d-none d-sm-inline">Mi Pedido</span>
@@ -47,11 +41,49 @@
   </div>
 </nav>
 
-<main class="container-fluid px-0 min-vh-100">
-  <router-outlet></router-outlet>
-</main>
+<!-- ================================================================= -->
+<!-- 2. ESTRUCTURA PRINCIPAL (Se adapta si es Tienda o es Admin)       -->
+<!-- ================================================================= -->
+<div [ngClass]="{'admin-layout': isAdminView}">
+  
+  <!-- SIDEBAR DEL ADMINISTRADOR (Solo aparece si está logueado y en /admin) -->
+  <aside class="admin-sidebar shadow" *ngIf="isAdminView && authService.isLoggedIn()">
+    <div class="p-4 text-center border-bottom border-secondary" style="border-color: #4a3b32 !important;">
+      <h5 class="text-warning fw-bold m-0">Panel Admin</h5>
+      <small class="text-white-50">Gestión de Tienda</small>
+    </div>
+    
+    <ul class="nav flex-column p-3 gap-2">
+      <li class="nav-item">
+        <a class="nav-link text-white rounded p-3" routerLink="/admin" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active-sidebar">
+          <i class="bi bi-box-seam me-2"></i>Inventario
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-white rounded p-3" routerLink="/admin/pedidos" routerLinkActive="active-sidebar">
+          <i class="bi bi-clipboard-check me-2"></i>Pedidos
+        </a>
+      </li>
+    </ul>
 
-<footer class="py-5 mt-5" style="background-color: rgba(26, 20, 16, 0.95); border-top: 2px solid #2c211b;">
+    <div class="mt-auto p-3">
+      <button (click)="cerrarSesion()" class="btn btn-outline-danger w-100 py-2 rounded-pill">
+        <i class="bi bi-box-arrow-left me-2"></i>Cerrar Sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- CONTENEDOR DE LAS VISTAS (Outlet único) -->
+  <main [ngClass]="{'admin-content': isAdminView, 'container-fluid px-0 min-vh-100': !isAdminView}">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>
+
+<!-- ================================================================= -->
+<!-- 3. FOOTER PÚBLICO (Solo visible para Clientes, oculto en Admin)   -->
+<!-- ================================================================= -->
+<footer *ngIf="!isAdminView" class="py-5 mt-5" style="background-color: rgba(26, 20, 16, 0.95); border-top: 2px solid #2c211b;">
   <div class="container text-center">
     <img src="/logo.webp" alt="Logo Footer" height="40" class="rounded-circle mb-3 opacity-75 grayscale-hover">
     <p class="text-white-50 small mb-1">&copy; 2026 Café de Barrio. Todos los derechos reservados.</p>
@@ -59,7 +91,9 @@
   </div>
 </footer>
 
-<!-- MODAL FLOTANTE DE BÚSQUEDA -->
+<!-- ================================================================= -->
+<!-- MODAL FLOTANTE DE BÚSQUEDA (Sin cambios, funciona perfecto)       -->
+<!-- ================================================================= -->
 <div class="search-modal" *ngIf="showSearch" (click)="closeSearch()">
   <div class="search-content" (click)="$event.stopPropagation()">
     <div class="d-flex justify-content-between align-items-center mb-4">

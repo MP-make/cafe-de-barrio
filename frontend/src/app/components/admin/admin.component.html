@@ -1,0 +1,17 @@
+<div class='admin-layout'>
+  <aside class='sidebar'>
+    <div class='sidebar-header'>
+      <h4>Panel Admin</h4>
+    </div>
+    <nav class='sidebar-nav'>
+      <a routerLink='/admin/productos' routerLinkActive='active'>Crear Producto</a>
+      <a routerLink='/admin/pedidos' routerLinkActive='active'>Ver Pedidos</a>
+    </nav>
+    <div class='sidebar-footer'>
+      <button class='btn btn-danger' (click)='logout()'>Cerrar Sesión</button>
+    </div>
+  </aside>
+  <main class='content'>
+    <router-outlet></router-outlet>
+  </main>
+</div>
