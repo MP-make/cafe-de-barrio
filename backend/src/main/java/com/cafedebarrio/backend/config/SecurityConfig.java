@@ -8,6 +8,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,14 +34,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-            .cors(Customizer.withDefaults()) // Usa la configuración CORS definida abajo
+            .cors(Customizer.withDefaults())
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ESENCIAL: Permite que el navegador consulte los CORS
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
                 .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/uploads/**").permitAll() 
+                .requestMatchers("/error").permitAll() // <-- NUEVO: Para evitar falsos 403 en imágenes faltantes
                 .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
-                .requestMatchers("/api/productos/**").hasRole("ADMIN")
-                .requestMatchers("/api/pedidos/**").hasRole("ADMIN")
+                .requestMatchers("/api/productos/**").authenticated()
+                .requestMatchers("/api/pedidos/**").authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -49,21 +52,19 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Configuración definitiva de CORS incrustada en Seguridad
+    // Para ignorar las fotos a nivel global
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/uploads/**");
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // Origen exacto de tu Frontend
-        configuration.setAllowedOrigins(java.util.Arrays.asList("http://localhost:4200")); 
-        
-        configuration.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        
-        // ¡ESTE ASTERISCO ES EL QUE SOLUCIONA TU ERROR DE CONSOLA!
-        configuration.setAllowedHeaders(java.util.Arrays.asList("*")); 
-        
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200")); 
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*")); 
         configuration.setAllowCredentials(true);
-        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

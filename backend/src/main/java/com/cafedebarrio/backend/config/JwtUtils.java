@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {
-    // IMPORTANTE: La clave para HS512 debe tener al menos 64 caracteres.
+    // Clave segura y robusta
     private String jwtSecret = "CafeDeBarrioSecretKeyParaSeguridadJWTDebeSerMuyLarga1234567890!!!"; 
     private int jwtExpirationMs = 86400000; // 24 horas
 
@@ -18,7 +18,8 @@ public class JwtUtils {
                 .claim("rol", userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", ""))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                // 👇 MAGIA AQUÍ: Cambiamos a HS256, el estándar de la industria
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }
 

@@ -37,7 +37,6 @@ public class ProductoService {
         return productos.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
-    // NUEVO: Método del buscador
     public List<ProductoResponseDTO> buscarProductos(String query) {
         List<Producto> productos = productoRepository.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(query, query);
         return productos.stream().map(this::mapToDTO).collect(Collectors.toList());
@@ -72,6 +71,48 @@ public class ProductoService {
 
         Producto guardado = productoRepository.save(producto);
         return mapToDTO(guardado);
+    }
+
+    // --- MÉTODOS AÑADIDOS PARA ACTUALIZAR Y ELIMINAR ---
+
+    public ProductoResponseDTO actualizarProducto(Integer id, ProductoRequestDTO dto) {
+        Producto producto = productoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+            .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
+        producto.setNombre(dto.getNombre());
+        producto.setDescripcion(dto.getDescripcion());
+        producto.setPrecio(dto.getPrecio());
+        producto.setStock(dto.getStock());
+        producto.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
+        producto.setCategoria(categoria);
+
+        if (dto.getImagenFile() != null && !dto.getImagenFile().isEmpty()) {
+            try {
+                String fileName = UUID.randomUUID().toString() + "_" + dto.getImagenFile().getOriginalFilename();
+                Path filePath = Paths.get(UPLOAD_DIR + fileName);
+                
+                Files.createDirectories(filePath.getParent());
+                Files.write(filePath, dto.getImagenFile().getBytes());
+                
+                producto.setImagenUrl("/" + fileName); 
+                
+            } catch (IOException e) {
+                throw new RuntimeException("Error al actualizar la imagen", e);
+            }
+        }
+
+        Producto actualizado = productoRepository.save(producto);
+        return mapToDTO(actualizado);
+    }
+
+    public void eliminarProducto(Integer id) {
+        if (!productoRepository.existsById(id)) {
+            throw new RuntimeException("Producto no encontrado");
+        }
+        productoRepository.deleteById(id);
     }
 
     private ProductoResponseDTO mapToDTO(Producto producto) {

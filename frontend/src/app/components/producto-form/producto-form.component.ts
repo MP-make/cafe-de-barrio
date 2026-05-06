@@ -15,20 +15,21 @@ import autoTable from 'jspdf-autotable';
   styleUrl: './producto-form.scss'
 })
 export class ProductoFormComponent implements OnInit {
+  // Datos
   productos: Producto[] = [];
   filteredProductos: Producto[] = [];
   categorias: Categoria[] = [];
   
+  // Filtros
   searchTerm: string = '';
   selectedFilterCategoria: string = '';
 
+  // Control de Formulario y Modal
   productoForm!: FormGroup;
   selectedFile: File | null = null;
   isSubmitting: boolean = false;
   editMode: boolean = false;
   currentProductId: number | null = null;
-
-  // NUEVO: Control nativo de Angular para el Modal
   mostrarModal: boolean = false;
 
   constructor(
@@ -55,11 +56,13 @@ export class ProductoFormComponent implements OnInit {
   }
 
   loadData() {
+    // Cargar Categorías
     this.categoriaService.getCategorias().subscribe({
       next: (data) => this.categorias = data,
       error: (err: any) => console.error('Error cargando categorías', err)
     });
 
+    // Cargar Productos
     this.productoService.getProductos().subscribe({
       next: (data: any) => {
         this.productos = Array.isArray(data) ? data : (data.content || data.data || []);
@@ -78,13 +81,13 @@ export class ProductoFormComponent implements OnInit {
     });
   }
 
-  // --- CONTROL DEL MODAL CON ANGULAR ---
+  // --- CONTROL DEL MODAL ---
   abrirModalNuevo() {
     this.editMode = false;
     this.currentProductId = null;
     this.productoForm.reset({ precio: 0, stock: 0, categoriaId: '' });
     this.selectedFile = null;
-    this.mostrarModal = true; // Activa el modal
+    this.mostrarModal = true; 
   }
 
   abrirModalEditar(producto: Producto) {
@@ -97,15 +100,15 @@ export class ProductoFormComponent implements OnInit {
       stock: producto.stock,
       categoriaId: producto.categoriaId
     });
-    this.selectedFile = null;
-    this.mostrarModal = true; // Activa el modal
+    this.selectedFile = null; // Al editar, la imagen es opcional
+    this.mostrarModal = true; 
   }
 
   cerrarModal() {
-    this.mostrarModal = false; // Oculta el modal
+    this.mostrarModal = false; 
   }
 
-  // --- CRUD ---
+  // --- CRUD (Crear y Editar) ---
   guardarProducto() {
     if (this.productoForm.invalid) {
       alert('Completa los campos obligatorios.');
@@ -124,29 +127,40 @@ export class ProductoFormComponent implements OnInit {
     formData.append('precio', this.productoForm.get('precio')?.value.toString());
     formData.append('stock', this.productoForm.get('stock')?.value.toString());
     formData.append('categoriaId', this.productoForm.get('categoriaId')?.value.toString());
-    if (this.selectedFile) formData.append('imagenFile', this.selectedFile);
+    
+    if (this.selectedFile) {
+      formData.append('imagenFile', this.selectedFile);
+    }
 
     if (!this.editMode) {
+      // POST: Crear nuevo producto
       this.productoService.crearProducto(formData).subscribe({
-        next: () => {
-          this.finalizarGuardado('¡Café registrado con éxito!');
-        },
+        next: () => this.finalizarGuardado('¡Café registrado con éxito!'),
         error: (err: any) => this.manejarError(err)
       });
     } else {
-      alert('Función de actualización en construcción.');
-      this.isSubmitting = false;
+      // PUT: Actualizar producto existente
+      if (this.currentProductId) {
+        this.productoService.actualizarProducto(this.currentProductId, formData).subscribe({
+          next: () => this.finalizarGuardado('¡Café actualizado correctamente!'),
+          error: (err: any) => this.manejarError(err)
+        });
+      }
     }
   }
 
+  // --- ELIMINAR ---
   eliminarProducto(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar este café del menú?')) {
-      (this.productoService as any).eliminarProducto(id).subscribe({
+    if (confirm('¿Estás seguro de que deseas eliminar este producto permanentemente?')) {
+      this.productoService.eliminarProducto(id).subscribe({
         next: () => {
-          alert('Producto eliminado.');
-          this.loadData();
+          alert('🗑️ Producto eliminado del catálogo.');
+          this.loadData(); // Refrescar la tabla al instante
         },
-        error: (err: any) => console.error(err)
+        error: (err: any) => {
+          console.error('Error al eliminar:', err);
+          alert('Hubo un error al eliminar. Revisa la consola.');
+        }
       });
     }
   }
@@ -155,19 +169,20 @@ export class ProductoFormComponent implements OnInit {
     this.isSubmitting = false;
     alert(mensaje);
     this.loadData();
-    this.cerrarModal(); // Usamos la función nativa para cerrarlo
+    this.cerrarModal(); 
   }
 
   manejarError(err: any) {
     this.isSubmitting = false;
     console.error(err);
-    alert('Ocurrió un error. Revisa la consola.');
+    alert('Ocurrió un error. Revisa la consola para más detalles.');
   }
 
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
   }
 
+  // --- UTILIDADES ---
   getCategoriaNombre(id: number | undefined): string {
     if (!id) return 'Desconocida';
     const cat = this.categorias.find(c => c.id === id);
@@ -179,14 +194,18 @@ export class ProductoFormComponent implements OnInit {
     return `http://localhost:8080/uploads/${nombreArchivo}`; 
   }
 
+  // --- EXPORTAR A PDF ---
   exportarPDF() {
     const doc = new jsPDF();
+    
+    // Título y Fecha
     doc.setFontSize(18);
     doc.text('Inventario de Productos - Café de Barrio', 14, 22);
     doc.setFontSize(11);
     doc.setTextColor(100);
     doc.text(`Fecha de reporte: ${new Date().toLocaleDateString()}`, 14, 30);
 
+    // Tabla autogenerada
     autoTable(doc, {
       startY: 35,
       head: [['ID', 'Nombre', 'Categoría', 'Precio', 'Stock']],
@@ -198,8 +217,10 @@ export class ProductoFormComponent implements OnInit {
         p.stock?.toString() || '0'
       ]),
       theme: 'grid',
-      headStyles: { fillColor: [20, 15, 10] }
+      headStyles: { fillColor: [20, 15, 10] } // Color café oscuro corporativo
     });
+    
+    // Descarga automática
     doc.save('inventario-cafe.pdf');
   }
 }

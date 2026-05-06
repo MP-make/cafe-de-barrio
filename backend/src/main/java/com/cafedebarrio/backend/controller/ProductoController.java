@@ -14,13 +14,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/productos")
 @CrossOrigin(origins = "http://localhost:4200")
-// Ya no usamos @RequiredArgsConstructor aquí
 public class ProductoController {
 
     private final ProductoService productoService;
 
-    // ¡SOLUCIÓN DEFINITIVA! Constructor explícito y manual.
-    // Esto evita que Maven y Java se quejen de que la variable no está inicializada.
     public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
     }
@@ -36,7 +33,22 @@ public class ProductoController {
     }
     
     @GetMapping("/search")
-    public org.springframework.http.ResponseEntity<List<com.cafedebarrio.backend.dto.ProductoResponseDTO>> searchProductos(@org.springframework.web.bind.annotation.RequestParam String query) {
-        return org.springframework.http.ResponseEntity.ok(productoService.buscarProductos(query));
+    public ResponseEntity<List<ProductoResponseDTO>> searchProductos(@RequestParam String query) {
+        return ResponseEntity.ok(productoService.buscarProductos(query));
+    }
+
+    // --- MÉTODOS AÑADIDOS PARA ACTUALIZAR Y ELIMINAR ---
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductoResponseDTO> updateProducto(
+            @PathVariable Integer id, 
+            @Valid @ModelAttribute ProductoRequestDTO dto) {
+        return ResponseEntity.ok(productoService.actualizarProducto(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProducto(@PathVariable Integer id) {
+        productoService.eliminarProducto(id);
+        return ResponseEntity.noContent().build();
     }
 }
