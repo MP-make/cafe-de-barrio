@@ -4,21 +4,23 @@ import { CheckoutComponent } from './components/checkout/checkout.component';
 import { ProductoFormComponent } from './components/producto-form/producto-form.component';
 import { AdminPedidosComponent } from './components/admin-pedidos/admin-pedidos.component';
 import { LoginComponent } from './components/login/login.component';
+import { InicioComponent } from './components/inicio/inicio'; // Importaci√≥n corregida
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: '', redirectTo: '/catalogo', pathMatch: 'full' },
+  { path: '', redirectTo: '/inicio', pathMatch: 'full' },
   
   // Vistas de Cliente
-  { path: 'catalogo', component: CatalogoComponent, title: 'Cat·logo | CafÈ de Barrio' },
-  { path: 'checkout', component: CheckoutComponent, title: 'Finalizar Pedido | CafÈ de Barrio' },
+  { path: 'inicio', component: InicioComponent, title: 'Inicio | Caf√© de Barrio' },
+  { path: 'catalogo', component: CatalogoComponent, title: 'Cat√°logo | Caf√© de Barrio' },
+  { path: 'checkout', component: CheckoutComponent, title: 'Finalizar Pedido | Caf√© de Barrio' },
   
-  // Vistas de AdministraciÛn
-  { path: 'admin/productos', component: ProductoFormComponent, canActivate: [AuthGuard], title: 'Panel de Inventario | CafÈ de Barrio' },
-  { path: 'admin/productos/:id', component: ProductoFormComponent, canActivate: [AuthGuard], title: 'Editar Producto | CafÈ de Barrio' },
-  { path: 'admin/pedidos', component: AdminPedidosComponent, canActivate: [AuthGuard], title: 'GestiÛn de Pedidos | CafÈ de Barrio' },
+  // Vistas de Administraci√≥n
+  { path: 'admin/productos', component: ProductoFormComponent, canActivate: [AuthGuard], title: 'Panel de Inventario | Caf√© de Barrio' },
+  { path: 'admin/productos/:id', component: ProductoFormComponent, canActivate: [AuthGuard], title: 'Editar Producto | Caf√© de Barrio' },
+  { path: 'admin/pedidos', component: AdminPedidosComponent, canActivate: [AuthGuard], title: 'Gesti√≥n de Pedidos | Caf√© de Barrio' },
   
-  // ComodÌn para rutas no encontradas
-  { path: '**', redirectTo: '/catalogo' }
+  // Comod√≠n para rutas no encontradas
+  { path: '**', redirectTo: '/inicio' }
 ];

@@ -1,0 +1,73 @@
+/* Hero Section (Fondo de portada con efecto Parallax) */
+.hero {
+    /* Imagen de granos de café elegante y oscura por defecto */
+    background-image: url('https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Esto crea el efecto elegante al hacer scroll */
+    height: 80vh;
+    min-height: 500px;
+  
+    .overlay {
+      background: linear-gradient(rgba(44, 30, 22, 0.7), rgba(26, 20, 16, 0.9));
+      width: 100%;
+    }
+  }
+  
+  /* Tarjetas de Categoría */
+  .category-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+    border-radius: 16px;
+    
+    .icon-circle {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: rgba(212, 163, 115, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+  
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+      border-bottom: 4px solid #d4a373 !important;
+  
+      .icon-circle {
+        background-color: #d4a373;
+        i { color: #ffffff !important; }
+      }
+    }
+  }
+  
+  /* Tarjetas de Producto */
+  .product-card {
+    transition: all 0.3s ease;
+    border-radius: 16px;
+    overflow: hidden;
+    
+    .img-wrapper {
+      overflow: hidden;
+      height: 220px;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+      }
+    }
+  
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+      
+      .img-wrapper img {
+        transform: scale(1.08); /* Pequeño zoom elegante a la foto */
+      }
+    }
+  }
