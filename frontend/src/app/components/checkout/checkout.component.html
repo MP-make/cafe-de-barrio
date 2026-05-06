@@ -1,16 +1,22 @@
-<div class="container py-5 min-vh-100">
+<div class="container py-5">
+  
+  <!-- Cabecera corregida para que resalte -->
   <div class="row mb-5">
     <div class="col-12 text-center text-md-start">
-      <h2 class="display-6 fw-bold text-dark">Finalizar Compra</h2>
-      <p class="text-muted">Completa tus datos para recibir tu pedido.</p>
+      <h2 class="display-6 fw-bold checkout-title d-flex align-items-center gap-3 justify-content-center justify-content-md-start">
+        <i class="bi bi-cart-check"></i> Finalizar Compra
+      </h2>
+      <p class="checkout-subtitle fs-5">Completa tus datos para recibir tu pedido.</p>
     </div>
   </div>
 
   <div class="row g-5">
     <!-- Columna Izquierda: Formulario -->
     <div class="col-lg-7">
-      <div class="card shadow-sm border-0 rounded-4 p-4 p-md-5 bg-white">
-        <h4 class="fw-bold mb-4 border-bottom pb-3"><i class="bi bi-person-lines-fill me-2 text-secondary"></i>Datos de Entrega</h4>
+      <div class="card glass-card p-4 p-md-5">
+        <h4 class="fw-bold mb-4 border-bottom pb-3 text-dark">
+          <i class="bi bi-person-lines-fill me-2" style="color: #a06b3e;"></i>Datos de Entrega
+        </h4>
         
         <form [formGroup]="checkoutForm" (ngSubmit)="confirmarPedido()">
           
@@ -29,42 +35,56 @@
             <textarea class="form-control bg-light border-0 shadow-sm" formControlName="direccion" rows="3" placeholder="Ej. Av. Principal 123, Referencia..."></textarea>
           </div>
 
-          <!-- Botón de Confirmación -->
-          <button type="submit" class="btn btn-dark btn-lg w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" 
+          <!-- Botón de Confirmación Mejorado -->
+          <button type="submit" class="btn btn-checkout btn-lg w-100 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2" 
                   [disabled]="checkoutForm.invalid || cartItems.length === 0 || isSubmitting">
             <ng-container *ngIf="!isSubmitting">
-              <i class="bi bi-check2-circle fs-5"></i> Confirmar y Pagar
+              <i class="bi bi-shield-lock fs-5"></i> Confirmar y Pagar Orden
             </ng-container>
             <ng-container *ngIf="isSubmitting">
               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-              Procesando orden...
+              Procesando orden de forma segura...
             </ng-container>
           </button>
         </form>
       </div>
     </div>
 
-    <!-- Columna Derecha: Resumen del Pedido -->
+    <!-- Columna Derecha: Resumen del Pedido con Miniaturas -->
     <div class="col-lg-5">
-      <div class="card shadow-sm border-0 rounded-4 p-4 bg-light">
-        <h4 class="fw-bold mb-4 border-bottom pb-3"><i class="bi bi-bag-check me-2 text-secondary"></i>Resumen de tu Orden</h4>
+      <div class="card glass-card p-4">
+        <h4 class="fw-bold mb-4 border-bottom pb-3 text-dark">
+          <i class="bi bi-bag-check me-2" style="color: #a06b3e;"></i>Resumen de tu Orden
+        </h4>
         
-        <!-- Lista de productos -->
+        <!-- Lista de productos con imágenes -->
         <ul class="list-group list-group-flush mb-4 bg-transparent">
           <li class="list-group-item bg-transparent px-0 py-3 d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25" 
               *ngFor="let item of cartItems">
-            <div>
-              <h6 class="mb-0 fw-bold">{{item.nombre}}</h6>
-              <small class="text-muted">Cant: {{item.cantidad}} x ${{item.precio}}</small>
+            
+            <div class="d-flex align-items-center gap-3">
+              <!-- MINIATURA DEL PRODUCTO CON REEMPLAZO INTELIGENTE -->
+              <img [src]="getImagenUrl(item.producto.imagenUrl)" 
+                   (error)="handleImageError($event)"
+                   alt="{{item.producto.nombre}}" 
+                   class="product-thumbnail">
+              
+              <!-- INFO DEL PRODUCTO -->
+              <div>
+                <h6 class="mb-0 fw-bold text-dark">{{item.producto.nombre}}</h6>
+                <small class="text-muted">Cant: {{item.cantidad}} x ${{item.producto.precio}}</small>
+              </div>
             </div>
-            <span class="fw-bold text-dark">${{ (item.precio * item.cantidad) }}</span>
+
+            <!-- SUBTOTAL POR ITEM -->
+            <span class="fw-bold text-dark fs-5">${{ (item.producto.precio * item.cantidad) }}</span>
           </li>
         </ul>
 
-        <!-- Total -->
-        <div class="d-flex justify-content-between align-items-center pt-3 mt-auto">
+        <!-- Total General -->
+        <div class="d-flex justify-content-between align-items-center pt-3 mt-auto bg-light p-3 rounded-4 border">
           <h5 class="fw-bold text-secondary mb-0">Total a Pagar:</h5>
-          <h3 class="fw-bold text-success mb-0">${{total}}</h3>
+          <h2 class="fw-black text-success mb-0 fw-bold">${{total}}</h2>
         </div>
       </div>
     </div>

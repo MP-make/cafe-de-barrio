@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CategoriaService, Categoria } from '../../services/categoria';
-import { ProductoService, Producto } from '../../services/producto.service';
+import { ProductoService } from '../../services/producto.service';
 
 @Component({
   selector: 'app-producto-form',

@@ -30,6 +30,11 @@
       </ul>
 
       <div class="d-flex align-items-center">
+        <!-- BOTÓN DE LUPA AGREGADO AQUÍ -->
+        <button class="btn btn-outline-light rounded-pill px-3 me-3" style="border-color: #d4a373; color: #d4a373;" (click)="openSearch()">
+          <i class="bi bi-search"></i>
+        </button>
+
         <a routerLink="/checkout" class="btn btn-outline-light rounded-pill px-4 position-relative d-flex align-items-center gap-2 border-opacity-50 transition-all" style="border-color: #d4a373;">
           <i class="bi bi-cart3 fs-5" style="color: #d4a373;"></i>
           <span class="d-none d-sm-inline">Mi Pedido</span>
@@ -42,14 +47,6 @@
   </div>
 </nav>
 
-<div class="position-relative overflow-hidden text-center text-white py-5 mb-4">
-  <div class="container py-4">
-    <h1 class="display-3 fw-bold mb-2" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Bienvenido a Café de Barrio</h1>
-    <p class="lead fs-4 opacity-75 fw-light">Descubre los mejores cafés de la ciudad.</p>
-    <div class="mx-auto mt-4" style="width: 60px; height: 3px; background-color: #d4a373;"></div>
-  </div>
-</div>
-
 <main class="container-fluid px-0 min-vh-100">
   <router-outlet></router-outlet>
 </main>
@@ -61,3 +58,53 @@
     <p class="text-warning small opacity-50 fw-light">Hecho con pasión por el buen café.</p>
   </div>
 </footer>
+
+<!-- MODAL FLOTANTE DE BÚSQUEDA -->
+<div class="search-modal" *ngIf="showSearch" (click)="closeSearch()">
+  <div class="search-content" (click)="$event.stopPropagation()">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h5 class="mb-0 fw-bold" style="color: #4a3b32;"><i class="bi bi-search me-2 text-warning"></i>¿Qué estás buscando?</h5>
+      <button class="btn btn-close" (click)="closeSearch()"></button>
+    </div>
+    
+    <input type="text" class="form-control form-control-lg mb-4 shadow-sm rounded-pill px-4 border-warning" 
+           placeholder="Ej: Latte, Capuchino, Postres..." 
+           (input)="onSearch($event)" [value]="searchQuery" autofocus>
+    
+    <!-- Sugerencias (Empty State) -->
+    <div *ngIf="!searchQuery.trim() && results.length === 0" class="text-center py-4">
+      <i class="bi bi-cup-hot fs-1 text-muted opacity-25 mb-3 d-block"></i>
+      <h6 class="text-muted mb-3 fw-bold">Categorías Populares</h6>
+      <div class="d-flex flex-wrap justify-content-center gap-2">
+        <button *ngFor="let cat of categorias" class="btn btn-sm rounded-pill" 
+                style="background-color: rgba(212, 163, 115, 0.1); color: #a06b3e; border: 1px solid #d4a373;"
+                (click)="filterByCategory(cat.id)">
+          {{cat.nombre}}
+        </button>
+      </div>
+    </div>
+    
+    <!-- Resultados en Tiempo Real -->
+    <div *ngIf="results.length > 0" class="results">
+      <div *ngFor="let p of results" class="result-item d-flex align-items-center p-3 border-bottom" 
+           (click)="closeSearch(); router.navigate(['/catalogo'])">
+        
+        <img [src]="getImagenUrl(p.imagenUrl)" 
+             (error)="handleImageError($event)" 
+             class="me-3 shadow-sm" 
+             style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px; border: 1px solid #eee;">
+             
+        <div class="flex-grow-1">
+          <strong class="text-dark">{{p.nombre}}</strong>
+          <div class="text-muted small text-truncate" style="max-width: 250px;">{{p.descripcion}}</div>
+        </div>
+        <span class="fw-bold fs-5" style="color: #a06b3e;">${{p.precio}}</span>
+      </div>
+    </div>
+
+    <!-- Sin Resultados -->
+    <div *ngIf="searchQuery.trim() && results.length === 0" class="text-center py-5">
+      <h6 class="text-muted">No encontramos nada para "{{searchQuery}}"</h6>
+    </div>
+  </div>
+</div>

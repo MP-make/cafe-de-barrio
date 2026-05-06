@@ -1,64 +1,77 @@
-<div class="container py-5 min-vh-100">
-  
-  <!-- Cabecera -->
-  <div class="row align-items-center mb-4">
-    <div class="col-12">
-      <h2 class="fw-bold text-dark mb-1 d-flex align-items-center gap-3">
-        <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px;">
-          <i class="bi bi-box-seam fs-4"></i>
-        </div>
-        Administrar Pedidos
-      </h2>
-      <p class="text-muted ms-5 ps-3 mb-0">Gestiona las órdenes entrantes y actualiza su estado.</p>
+<!-- Envolvemos todo en el nuevo contenedor flotante -->
+<div class="admin-pedidos-wrapper mx-3 mx-lg-auto">
+  <div class="content-layer">
+    
+    <!-- Cabecera -->
+    <div class="row align-items-center mb-4">
+      <div class="col-12">
+        <h2 class="fw-bold header-title mb-2 d-flex align-items-center gap-3">
+          <div class="icon-box rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px;">
+            <i class="bi bi-box-seam fs-4"></i>
+          </div>
+          Administrar Pedidos
+        </h2>
+        <p class="header-subtitle ms-5 ps-3 mb-0">Gestiona las órdenes entrantes y actualiza su estado.</p>
+      </div>
     </div>
-  </div>
 
-  <!-- Tabla Premium -->
-  <div class="card shadow-sm border-0 rounded-4 overflow-hidden bg-white">
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="bg-light">
-          <tr>
-            <th scope="col" class="ps-4 py-3 text-uppercase small fw-bold text-secondary">ID</th>
-            <th scope="col" class="py-3 text-uppercase small fw-bold text-secondary">Cliente</th>
-            <th scope="col" class="py-3 text-uppercase small fw-bold text-secondary">Celular</th>
-            <th scope="col" class="py-3 text-uppercase small fw-bold text-secondary">Dirección</th>
-            <th scope="col" class="py-3 text-uppercase small fw-bold text-secondary">Total</th>
-            <th scope="col" class="pe-4 py-3 text-uppercase small fw-bold text-secondary">Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- TU LÓGICA INTACTA -->
-          <tr *ngFor="let pedido of pedidos" class="border-bottom border-light">
-            <td class="ps-4 fw-bold text-dark">#{{pedido.id}}</td>
-            <td class="fw-medium">{{pedido.clienteNombre}}</td>
-            <td><i class="bi bi-telephone text-secondary me-2"></i>{{pedido.celular}}</td>
-            <td>
-              <span class="d-inline-block text-truncate" style="max-width: 200px;" title="{{pedido.direccion}}">
-                {{pedido.direccion}}
-              </span>
-            </td>
-            <td class="fw-bold text-success">${{pedido.total}}</td>
-            <td class="pe-4" style="width: 200px;">
-              <!-- TU LÓGICA DE EVENTOS INTACTA -->
-              <select class="form-select form-select-sm rounded-pill shadow-none fw-semibold border-secondary" 
-                      [value]="pedido.estado" 
-                      (change)="updateEstado(pedido, $any($event.target).value)">
-                <!-- TU LÓGICA DE ESTADOS INTACTA -->
-                <option *ngFor="let estado of estados" [value]="estado">{{estado}}</option>
-              </select>
-            </td>
-          </tr>
+    <!-- Tabla Premium -->
+    <div class="card overflow-hidden">
+      <div class="table-responsive">
+        <table class="table custom-table table-hover align-middle">
+          <thead class="bg-light">
+            <tr>
+              <th scope="col" class="ps-4 text-uppercase small fw-bold text-secondary">ID</th>
+              <th scope="col" class="text-uppercase small fw-bold text-secondary">Cliente</th>
+              <th scope="col" class="text-uppercase small fw-bold text-secondary">Celular</th>
+              <th scope="col" class="text-uppercase small fw-bold text-secondary">Dirección</th>
+              <th scope="col" class="text-uppercase small fw-bold text-secondary">Productos</th> <!-- NUEVA COLUMNA -->
+              <th scope="col" class="text-uppercase small fw-bold text-secondary">Total</th>
+              <th scope="col" class="pe-4 text-uppercase small fw-bold text-secondary">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Fila del pedido -->
+            <tr *ngFor="let pedido of pedidos" class="border-bottom border-light bg-white">
+              <td class="ps-4 fw-bold text-dark">#{{pedido.id}}</td>
+              <td class="fw-medium">{{pedido.clienteNombre}}</td>
+              <td><i class="bi bi-telephone text-secondary me-2"></i>{{pedido.celular}}</td>
+              <td>
+                <span class="d-inline-block text-truncate" style="max-width: 150px;" title="{{pedido.direccion}}">
+                  {{pedido.direccion}}
+                </span>
+              </td>
+              
+              <!-- AQUÍ LISTAMOS LOS PRODUCTOS (SIN LOS SIGNOS ?) -->
+              <td>
+                <ul class="list-unstyled mb-0 small" style="max-height: 80px; overflow-y: auto;">
+                  <li *ngFor="let detalle of pedido.detalles" class="text-nowrap text-truncate" style="max-width: 180px;" [title]="detalle.producto.nombre">
+                    <span class="fw-bold text-dark">{{detalle.cantidad}}x</span> {{detalle.producto.nombre}}
+                  </li>
+                </ul>
+              </td>
 
-          <!-- Mensaje si no hay pedidos -->
-          <tr *ngIf="pedidos.length === 0">
-            <td colspan="6" class="text-center py-5 text-muted">
-              <i class="bi bi-inbox fs-2 mb-2 d-block opacity-50"></i>
-              No hay pedidos registrados en el sistema.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              <td class="fw-bold text-success">${{pedido.total}}</td>
+              <td class="pe-4" style="width: 160px;">
+                <select class="form-select form-select-sm rounded-pill shadow-none border-secondary" 
+                        [value]="pedido.estado" 
+                        (change)="updateEstado(pedido, $any($event.target).value)">
+                  <option *ngFor="let estado of estados" [value]="estado">{{estado}}</option>
+                </select>
+              </td>
+            </tr>
+
+            <!-- Mensaje si no hay pedidos -->
+            <tr *ngIf="pedidos.length === 0">
+              <td colspan="7" class="text-center py-5 text-muted bg-white">
+                <i class="bi bi-inbox fs-2 mb-2 d-block opacity-50"></i>
+                No hay pedidos registrados en el sistema.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
   </div>
 </div>

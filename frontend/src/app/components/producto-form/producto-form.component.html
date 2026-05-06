@@ -1,70 +1,118 @@
-<div class="container py-5 min-vh-100">
-  <div class="row mb-5">
-    <div class="col-12 text-center text-md-start">
-      <h2 class="display-6 fw-bold text-dark">Finalizar Compra</h2>
-      <p class="text-muted">Completa tus datos para recibir tu pedido.</p>
-    </div>
-  </div>
-
-  <div class="row g-5">
-    <!-- Columna Izquierda: Formulario -->
-    <div class="col-lg-7">
-      <div class="card shadow-sm border-0 rounded-4 p-4 p-md-5 bg-white">
-        <h4 class="fw-bold mb-4 border-bottom pb-3"><i class="bi bi-person-lines-fill me-2 text-secondary"></i>Datos de Entrega</h4>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <!-- Aumentamos el ancho para que no se vea angosto -->
+    <div class="col-lg-10 col-xl-8">
+      
+      <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
         
-        <form [formGroup]="checkoutForm" (ngSubmit)="confirmarPedido()">
-          
-          <div class="mb-4">
-            <label class="form-label fw-bold text-secondary small text-uppercase">Nombre Completo</label>
-            <input type="text" class="form-control form-control-lg bg-light border-0 shadow-sm" formControlName="clienteNombre" placeholder="Ej. Juan Pérez">
+        <!-- Cabecera Premium -->
+        <div class="card-header bg-dark text-white p-4 p-md-5 border-0 d-flex align-items-center gap-3">
+          <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 60px; height: 60px;">
+            <i class="bi bi-cup-hot-fill fs-3" style="color: #6f4e37;"></i>
           </div>
-
-          <div class="mb-4">
-            <label class="form-label fw-bold text-secondary small text-uppercase">Número de Celular</label>
-            <input type="text" class="form-control form-control-lg bg-light border-0 shadow-sm" formControlName="celular" placeholder="Ej. 987654321">
+          <div>
+            <h2 class="mb-0 fw-bold tracking-tight">Registrar Nuevo Café</h2>
+            <p class="mb-0 text-white-50 fs-6">Completa los detalles para expandir el catálogo.</p>
           </div>
-
-          <div class="mb-5">
-            <label class="form-label fw-bold text-secondary small text-uppercase">Dirección de Entrega</label>
-            <textarea class="form-control bg-light border-0 shadow-sm" formControlName="direccion" rows="3" placeholder="Ej. Av. Principal 123, Referencia..."></textarea>
-          </div>
-
-          <!-- Botón de Confirmación -->
-          <button type="submit" class="btn btn-dark btn-lg w-100 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" 
-                  [disabled]="checkoutForm.invalid || cartItems.length === 0 || isSubmitting">
-            <ng-container *ngIf="!isSubmitting">
-              <i class="bi bi-check2-circle fs-5"></i> Confirmar y Pagar
-            </ng-container>
-            <ng-container *ngIf="isSubmitting">
-              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-              Procesando orden...
-            </ng-container>
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Columna Derecha: Resumen del Pedido -->
-    <div class="col-lg-5">
-      <div class="card shadow-sm border-0 rounded-4 p-4 bg-light">
-        <h4 class="fw-bold mb-4 border-bottom pb-3"><i class="bi bi-bag-check me-2 text-secondary"></i>Resumen de tu Orden</h4>
+        </div>
         
-        <!-- Lista de productos -->
-        <ul class="list-group list-group-flush mb-4 bg-transparent">
-          <li class="list-group-item bg-transparent px-0 py-3 d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25" 
-              *ngFor="let item of cartItems">
-            <div>
-              <h6 class="mb-0 fw-bold">{{item.nombre}}</h6>
-              <small class="text-muted">Cant: {{item.cantidad}} x ${{item.precio}}</small>
+        <div class="card-body p-4 p-md-5 bg-white">
+          <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()" class="needs-validation" novalidate>
+            
+            <!-- SECCIÓN 1: Información General -->
+            <h5 class="fw-bold text-dark border-bottom pb-3 mb-4 d-flex align-items-center gap-2">
+              <i class="bi bi-card-text text-secondary"></i> Información General
+            </h5>
+            
+            <div class="row g-4 mb-5">
+              <div class="col-md-6">
+                <label class="form-label fw-bold text-secondary small text-uppercase">Nombre del Café <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-lg border-0 bg-light shadow-sm" formControlName="nombre" placeholder="Ej. Espresso Doble">
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label fw-bold text-secondary small text-uppercase">Categoría <span class="text-danger">*</span></label>
+                <select class="form-select form-select-lg border-0 bg-light shadow-sm" formControlName="categoriaId">
+                  <option value="" disabled selected>Seleccione una categoría...</option>
+                  <option *ngFor="let c of categorias" [value]="c.id">{{c.nombre}}</option>
+                </select>
+              </div>
             </div>
-            <span class="fw-bold text-dark">${{ (item.precio * item.cantidad) }}</span>
-          </li>
-        </ul>
+            
+            <!-- SECCIÓN 2: Precio e Inventario -->
+            <h5 class="fw-bold text-dark border-bottom pb-3 mb-4 d-flex align-items-center gap-2">
+              <i class="bi bi-tags text-secondary"></i> Precio e Inventario
+            </h5>
 
-        <!-- Total -->
-        <div class="d-flex justify-content-between align-items-center pt-3 mt-auto">
-          <h5 class="fw-bold text-secondary mb-0">Total a Pagar:</h5>
-          <h3 class="fw-bold text-success mb-0">${{total}}</h3>
+            <div class="row g-4 mb-5">
+              <div class="col-md-6">
+                <label class="form-label fw-bold text-secondary small text-uppercase">Precio Unitario <span class="text-danger">*</span></label>
+                <div class="input-group input-group-lg shadow-sm">
+                  <span class="input-group-text bg-dark border-0 text-white"><i class="bi bi-currency-dollar"></i></span>
+                  <input type="number" class="form-control border-0 bg-light" formControlName="precio" placeholder="0.00">
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label fw-bold text-secondary small text-uppercase">Stock Inicial <span class="text-danger">*</span></label>
+                <div class="input-group input-group-lg shadow-sm">
+                  <span class="input-group-text bg-dark border-0 text-white"><i class="bi bi-box-seam"></i></span>
+                  <input type="number" class="form-control border-0 bg-light" formControlName="stock" placeholder="0">
+                </div>
+              </div>
+            </div>
+            
+            <!-- SECCIÓN 3: Multimedia y Detalles -->
+            <h5 class="fw-bold text-dark border-bottom pb-3 mb-4 d-flex align-items-center gap-2">
+              <i class="bi bi-image text-secondary"></i> Multimedia y Descripción
+            </h5>
+
+            <div class="row g-4 mb-4">
+              <div class="col-12">
+                <label for="imagenFile" class="form-label fw-bold text-secondary small text-uppercase">Fotografía del Producto <span class="text-danger">*</span></label>
+                
+                <!-- Diseño estilo "Dropzone" -->
+                <div class="p-5 text-center bg-light rounded-4 position-relative" style="border: 2px dashed #dee2e6;">
+                  <i class="bi bi-cloud-arrow-up-fill display-4 text-secondary opacity-50 mb-3"></i>
+                  <h6 class="text-dark fw-bold mb-1">Sube la imagen desde tu dispositivo</h6>
+                  <p class="text-muted small mb-4">Formatos recomendados: JPG, PNG o WEBP.</p>
+                  
+                  <input type="file" class="form-control shadow-sm mx-auto" id="imagenFile" (change)="onFileSelected($event)" accept="image/*" style="max-width: 350px;">
+                </div>
+              </div>
+              
+              <div class="col-12 mt-4">
+                <label class="form-label fw-bold text-secondary small text-uppercase">Descripción Detallada</label>
+                <textarea class="form-control border-0 bg-light shadow-sm" formControlName="descripcion" rows="4" placeholder="Describe el origen de los granos, notas de cata o el nivel de tostado..."></textarea>
+              </div>
+            </div>
+            
+            <!-- Botones de Acción -->
+            <div class="d-flex justify-content-end align-items-center mt-5 pt-4 border-top gap-3">
+              <button type="button" class="btn btn-light btn-lg px-4 fw-bold rounded-pill text-secondary shadow-sm">Cancelar</button>
+              
+              <!-- ESTE ES EL BOTÓN ACTUALIZADO CON SPINNER Y BLOQUEO -->
+              <button type="submit" class="btn btn-dark btn-lg px-5 fw-bold rounded-pill shadow-sm d-flex align-items-center gap-2" 
+                      [disabled]="productoForm.invalid || !selectedFile || isSubmitting">
+                
+                <!-- Estado Normal -->
+                <ng-container *ngIf="!isSubmitting">
+                  <i class="bi bi-check2-circle"></i> 
+                  <span>Publicar en Catálogo</span>
+                </ng-container>
+
+                <!-- Estado Cargando -->
+                <ng-container *ngIf="isSubmitting">
+                  <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                  <span>Subiendo imagen...</span>
+                </ng-container>
+
+              </button>
+            </div>
+
+          </form>
         </div>
       </div>
     </div>
