@@ -6,6 +6,7 @@ import { AdminPedidosComponent } from './components/admin-pedidos/admin-pedidos.
 import { LoginComponent } from './components/login/login.component';
 import { InicioComponent } from './components/inicio/inicio'; // Importación corregida
 import { AuthGuard } from './guards/auth.guard';
+import { AdminComponent } from './components/admin/admin.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -17,9 +18,12 @@ export const routes: Routes = [
   { path: 'checkout', component: CheckoutComponent, title: 'Finalizar Pedido | Café de Barrio' },
   
   // Vistas de Administración
-  { path: 'admin/productos', component: ProductoFormComponent, canActivate: [AuthGuard], title: 'Panel de Inventario | Café de Barrio' },
-  { path: 'admin/productos/:id', component: ProductoFormComponent, canActivate: [AuthGuard], title: 'Editar Producto | Café de Barrio' },
-  { path: 'admin/pedidos', component: AdminPedidosComponent, canActivate: [AuthGuard], title: 'Gestión de Pedidos | Café de Barrio' },
+{ path: 'admin', component: AdminComponent, canActivate: [AuthGuard], children: [
+  { path: '', redirectTo: 'productos', pathMatch: 'full' },
+  { path: 'productos', component: ProductoFormComponent, title: 'Panel de Inventario | Café de Barrio' },
+  { path: 'productos/:id', component: ProductoFormComponent, title: 'Editar Producto | Café de Barrio' },
+  { path: 'pedidos', component: AdminPedidosComponent, title: 'Gestión de Pedidos | Café de Barrio' },
+] },
   
   // Comodín para rutas no encontradas
   { path: '**', redirectTo: '/inicio' }

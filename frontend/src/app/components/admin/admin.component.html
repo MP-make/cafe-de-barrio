@@ -1,17 +1,45 @@
-<div class='admin-layout'>
-  <aside class='sidebar'>
-    <div class='sidebar-header'>
-      <h4>Panel Admin</h4>
+<div class="admin-container">
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <div class="logo-icon">☕</div>
+      <div class="brand-text">
+        <span class="title">CAFÉ DE BARRIO</span>
+        <span class="subtitle">Panel de Control</span>
+      </div>
     </div>
-    <nav class='sidebar-nav'>
-      <a routerLink='/admin/productos' routerLinkActive='active'>Crear Producto</a>
-      <a routerLink='/admin/pedidos' routerLinkActive='active'>Ver Pedidos</a>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">GESTIÓN</div>
+      
+      <a routerLink="/admin/productos" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-box-seam"></i>
+        <span>Inventario</span>
+      </a>
+
+      <a routerLink="/admin/pedidos" routerLinkActive="active" class="nav-item">
+        <i class="bi bi-receipt"></i>
+        <span>Pedidos</span>
+        <span class="badge-new">NUEVO</span>
+      </a>
+
+      <div class="nav-label mt-4">SISTEMA</div>
+      <a routerLink="/" class="nav-item">
+        <i class="bi bi-house"></i>
+        <span>Ver Tienda</span>
+      </a>
     </nav>
-    <div class='sidebar-footer'>
-      <button class='btn btn-danger' (click)='logout()'>Cerrar Sesi�n</button>
+
+    <div class="sidebar-footer">
+      <button class="btn-logout" (click)="logout()">
+        <i class="bi bi-box-arrow-left"></i>
+        <span>Cerrar Sesión</span>
+      </button>
     </div>
   </aside>
-  <main class='content'>
-    <router-outlet></router-outlet>
+
+  <main class="admin-main">
+    <div class="content-viewport">
+      <router-outlet></router-outlet>
+    </div>
   </main>
 </div>

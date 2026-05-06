@@ -1,119 +1,170 @@
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <!-- Aumentamos el ancho para que no se vea angosto -->
-    <div class="col-lg-10 col-xl-8">
+<div class="admin-inventario-wrapper container-fluid">
+  <div class="content-layer">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+      <div>
+        <h2 class="fw-bold header-title mb-1 d-flex align-items-center gap-3">
+          <div class="icon-box rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+            <i class="bi bi-box-seam fs-5"></i>
+          </div>
+          Inventario de Tienda
+        </h2>
+        <p class="header-subtitle mb-0 ms-5 ps-2">Gestiona el catálogo, stock y precios.</p>
+      </div>
       
-      <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-        
-        <!-- Cabecera Premium -->
-        <div class="card-header bg-dark text-white p-4 p-md-5 border-0 d-flex align-items-center gap-3">
-          <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 60px; height: 60px;">
-            <i class="bi bi-cup-hot-fill fs-3" style="color: #6f4e37;"></i>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-light btn-sm d-flex align-items-center gap-2 px-3" (click)="exportarPDF()">
+          <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i> Exportar PDF
+        </button>
+        <button class="btn btn-warning fw-bold btn-sm d-flex align-items-center gap-2 px-3" (click)="abrirModalNuevo()">
+          <i class="bi bi-plus-lg fs-5"></i> Nuevo Producto
+        </button>
+      </div>
+    </div>
+
+    <div class="card filter-card mb-4 bg-transparent border-0">
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control border-0 shadow-none bg-light" 
+                   placeholder="Buscar por nombre..." [(ngModel)]="searchTerm" (input)="aplicarFiltros()">
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <select class="form-select form-select-sm border-0 shadow-none bg-light" 
+                  [(ngModel)]="selectedFilterCategoria" (change)="aplicarFiltros()">
+            <option value="">Todas las categorías</option>
+            <option *ngFor="let c of categorias" [value]="c.id">{{c.nombre}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card main-table-card overflow-hidden">
+      <div class="table-responsive">
+        <table class="table custom-table table-hover align-middle mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th scope="col" class="ps-4">Producto</th>
+              <th scope="col">Categoría</th>
+              <th scope="col">Precio</th>
+              <th scope="col">Stock</th>
+              <th scope="col" class="text-center pe-4">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of filteredProductos" class="border-bottom border-light bg-white">
+              <td class="ps-4">
+                <div class="d-flex align-items-center gap-3">
+                  <img [src]="getImagenUrl(p.imagenUrl)" class="rounded-3 shadow-sm border" style="width: 50px; height: 50px; object-fit: cover;">
+                  <div>
+                    <h6 class="mb-0 fw-bold text-dark">{{p.nombre}}</h6>
+                    <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;">{{p.descripcion}}</small>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge bg-secondary border border-light">{{ getCategoriaNombre(p.categoriaId) }}</span></td>
+              <td class="fw-bold text-success">${{p.precio}}</td>
+              <td>
+                <span class="badge" [ngClass]="p.stock > 5 ? 'bg-info text-dark' : 'bg-danger'">
+                  {{p.stock}} unid.
+                </span>
+              </td>
+              <td class="text-center pe-4">
+                <div class="btn-group shadow-sm">
+                  <button class="btn btn-light btn-sm text-primary border" (click)="abrirModalEditar(p)">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button class="btn btn-light btn-sm text-danger border" (click)="eliminarProducto(p.id!)">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredProductos.length === 0">
+              <td colspan="5" class="text-center py-5 text-muted bg-white">
+                <i class="bi bi-box-seam fs-2 mb-2 d-block opacity-50"></i>
+                No se encontraron productos.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" [class.show]="mostrarModal" [style.display]="mostrarModal ? 'block' : 'none'" tabindex="-1" style="background-color: rgba(0,0,0,0.6);">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+      
+      <div class="modal-header bg-dark text-white p-4 border-0">
+        <div class="d-flex align-items-center gap-3">
+          <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+            <i class="bi bi-cup-hot-fill fs-4" style="color: #6f4e37;"></i>
           </div>
           <div>
-            <h2 class="mb-0 fw-bold tracking-tight">Registrar Nuevo Café</h2>
-            <p class="mb-0 text-white-50 fs-6">Completa los detalles para expandir el catálogo.</p>
+            <h4 class="mb-0 fw-bold">{{ editMode ? 'Editar Producto' : 'Registrar Nuevo Café' }}</h4>
           </div>
         </div>
-        
-        <div class="card-body p-4 p-md-5 bg-white">
-          <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()" class="needs-validation" novalidate>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()"></button>
+      </div>
+      
+      <div class="modal-body p-4 p-md-5 bg-white">
+        <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()" class="needs-validation" novalidate>
+          
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-secondary small text-uppercase">Nombre <span class="text-danger">*</span></label>
+              <input type="text" class="form-control bg-light" formControlName="nombre" placeholder="Ej. Espresso Doble">
+            </div>
             
-            <!-- SECCIÓN 1: Información General -->
-            <h5 class="fw-bold text-dark border-bottom pb-3 mb-4 d-flex align-items-center gap-2">
-              <i class="bi bi-card-text text-secondary"></i> Información General
-            </h5>
-            
-            <div class="row g-4 mb-5">
-              <div class="col-md-6">
-                <label class="form-label fw-bold text-secondary small text-uppercase">Nombre del Café <span class="text-danger">*</span></label>
-                <input type="text" class="form-control form-control-lg border-0 bg-light shadow-sm" formControlName="nombre" placeholder="Ej. Espresso Doble">
-              </div>
-              
-              <div class="col-md-6">
-                <label class="form-label fw-bold text-secondary small text-uppercase">Categoría <span class="text-danger">*</span></label>
-                <select class="form-select form-select-lg border-0 bg-light shadow-sm" formControlName="categoriaId">
-                  <option value="" disabled selected>Seleccione una categoría...</option>
-                  <option *ngFor="let c of categorias" [value]="c.id">{{c.nombre}}</option>
-                </select>
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-secondary small text-uppercase">Categoría <span class="text-danger">*</span></label>
+              <select class="form-select bg-light" formControlName="categoriaId">
+                <option value="" disabled selected>Seleccione...</option>
+                <option *ngFor="let c of categorias" [value]="c.id">{{c.nombre}}</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-secondary small text-uppercase">Precio <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-dark text-white"><i class="bi bi-currency-dollar"></i></span>
+                <input type="number" class="form-control bg-light" formControlName="precio">
               </div>
             </div>
             
-            <!-- SECCIÓN 2: Precio e Inventario -->
-            <h5 class="fw-bold text-dark border-bottom pb-3 mb-4 d-flex align-items-center gap-2">
-              <i class="bi bi-tags text-secondary"></i> Precio e Inventario
-            </h5>
+            <div class="col-md-6">
+              <label class="form-label fw-bold text-secondary small text-uppercase">Stock <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-dark text-white"><i class="bi bi-box-seam"></i></span>
+                <input type="number" class="form-control bg-light" formControlName="stock">
+              </div>
+            </div>
 
-            <div class="row g-4 mb-5">
-              <div class="col-md-6">
-                <label class="form-label fw-bold text-secondary small text-uppercase">Precio Unitario <span class="text-danger">*</span></label>
-                <div class="input-group input-group-lg shadow-sm">
-                  <span class="input-group-text bg-dark border-0 text-white"><i class="bi bi-currency-dollar"></i></span>
-                  <input type="number" class="form-control border-0 bg-light" formControlName="precio" placeholder="0.00">
-                </div>
-              </div>
-              
-              <div class="col-md-6">
-                <label class="form-label fw-bold text-secondary small text-uppercase">Stock Inicial <span class="text-danger">*</span></label>
-                <div class="input-group input-group-lg shadow-sm">
-                  <span class="input-group-text bg-dark border-0 text-white"><i class="bi bi-box-seam"></i></span>
-                  <input type="number" class="form-control border-0 bg-light" formControlName="stock" placeholder="0">
-                </div>
-              </div>
+            <div class="col-12">
+              <label class="form-label fw-bold text-secondary small text-uppercase">Fotografía (Requerida en nuevos) <span *ngIf="!editMode" class="text-danger">*</span></label>
+              <input type="file" class="form-control bg-light" (change)="onFileSelected($event)" accept="image/*">
             </div>
             
-            <!-- SECCIÓN 3: Multimedia y Detalles -->
-            <h5 class="fw-bold text-dark border-bottom pb-3 mb-4 d-flex align-items-center gap-2">
-              <i class="bi bi-image text-secondary"></i> Multimedia y Descripción
-            </h5>
-
-            <div class="row g-4 mb-4">
-              <div class="col-12">
-                <label for="imagenFile" class="form-label fw-bold text-secondary small text-uppercase">Fotografía del Producto <span class="text-danger">*</span></label>
-                
-                <!-- Diseño estilo "Dropzone" -->
-                <div class="p-5 text-center bg-light rounded-4 position-relative" style="border: 2px dashed #dee2e6;">
-                  <i class="bi bi-cloud-arrow-up-fill display-4 text-secondary opacity-50 mb-3"></i>
-                  <h6 class="text-dark fw-bold mb-1">Sube la imagen desde tu dispositivo</h6>
-                  <p class="text-muted small mb-4">Formatos recomendados: JPG, PNG o WEBP.</p>
-                  
-                  <input type="file" class="form-control shadow-sm mx-auto" id="imagenFile" (change)="onFileSelected($event)" accept="image/*" style="max-width: 350px;">
-                </div>
-              </div>
-              
-              <div class="col-12 mt-4">
-                <label class="form-label fw-bold text-secondary small text-uppercase">Descripción Detallada</label>
-                <textarea class="form-control border-0 bg-light shadow-sm" formControlName="descripcion" rows="4" placeholder="Describe el origen de los granos, notas de cata o el nivel de tostado..."></textarea>
-              </div>
+            <div class="col-12">
+              <label class="form-label fw-bold text-secondary small text-uppercase">Descripción</label>
+              <textarea class="form-control bg-light" formControlName="descripcion" rows="3" placeholder="Detalles del producto..."></textarea>
             </div>
-            
-            <!-- Botones de Acción -->
-            <div class="d-flex justify-content-end align-items-center mt-5 pt-4 border-top gap-3">
-              <button type="button" class="btn btn-light btn-lg px-4 fw-bold rounded-pill text-secondary shadow-sm">Cancelar</button>
-              
-              <!-- ESTE ES EL BOTÓN ACTUALIZADO CON SPINNER Y BLOQUEO -->
-              <button type="submit" class="btn btn-dark btn-lg px-5 fw-bold rounded-pill shadow-sm d-flex align-items-center gap-2" 
-                      [disabled]="productoForm.invalid || !selectedFile || isSubmitting">
-                
-                <!-- Estado Normal -->
-                <ng-container *ngIf="!isSubmitting">
-                  <i class="bi bi-check2-circle"></i> 
-                  <span>Publicar en Catálogo</span>
-                </ng-container>
+          </div>
+          
+          <div class="d-flex justify-content-end pt-3 border-top gap-2">
+            <button type="button" class="btn btn-light px-4 fw-bold" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn btn-warning fw-bold px-5" 
+                    [disabled]="productoForm.invalid || (!editMode && !selectedFile) || isSubmitting">
+              <span *ngIf="!isSubmitting"><i class="bi bi-check2-circle"></i> Guardar</span>
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+            </button>
+          </div>
 
-                <!-- Estado Cargando -->
-                <ng-container *ngIf="isSubmitting">
-                  <div class="spinner-border spinner-border-sm" role="status">
-                    <span class="visually-hidden">Cargando...</span>
-                  </div>
-                  <span>Subiendo imagen...</span>
-                </ng-container>
-
-              </button>
-            </div>
-
-          </form>
-        </div>
+        </form>
       </div>
     </div>
   </div>

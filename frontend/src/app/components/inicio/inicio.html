@@ -1,41 +1,48 @@
+<div class="noise-overlay"></div>
+
 <div class="dark-theme-wrapper">
   
-    <!-- SECCIÓN 1: HERO (Contenido Centrado) -->
     <section class="hero-premium">
       <video #heroVideo autoplay muted loop playsinline class="video-background">
         <source src="1.mp4" type="video/mp4">
       </video>
       <div class="video-overlay-50"></div>
       
-      <!-- Contenedor centrado -->
       <div class="container hero-content z-depth-1">
         <h1 class="display-title">CAFÉ DE BARRIO</h1>
-        <p class="subtitle-premium">EL ARTE DE LA EXTRACCIÓN EN CADA GOTA</p>
-        <div class="cta-wrapper">
+        <p class="subtitle-premium reveal-item">EL ARTE DE LA EXTRACCIÓN EN CADA GOTA</p>
+        <div class="cta-wrapper reveal-item" style="transition-delay: 0.2s;">
           <a routerLink="/catalogo" class="btn-premium-ghost">EXPLORAR CATÁLOGO</a>
         </div>
       </div>
     </section>
   
-    <!-- SECCIÓN 2: CATEGORÍAS (Espaciado Premium) -->
     <section class="section-padding bg-matte">
       <div class="container">
-        <div class="section-header text-center mb-huge">
+        <div class="section-header text-center mb-huge reveal-item">
           <h2 class="title-modern text-white">NUESTRAS ESPECIALIDADES</h2>
           <div class="accent-line mx-auto mt-3"></div>
         </div>
         
-        <div class="row g-5 justify-content-center">
-          <div class="col-md-3 col-6" *ngFor="let categoria of categorias">
-            <div class="card-category-premium" [routerLink]="['/catalogo']" [queryParams]="{categoria: categoria.id}">
-              <h5 class="m-0 text-warning">{{ categoria.nombre | uppercase }}</h5>
+        <div class="row g-4 justify-content-center">
+          <div class="col-lg-3 col-md-6 col-sm-6" *ngFor="let categoria of categorias; let i = index">
+            <div class="card-category-premium reveal-item" 
+                 [ngStyle]="{'transition-delay': (i * 0.1) + 's'}"
+                 [routerLink]="['/catalogo']" 
+                 [queryParams]="{categoria: categoria.id}">
+              
+              <div class="category-number">0{{ i + 1 }}</div>
+              <div class="category-content">
+                <h5 class="category-title text-warning">{{ categoria.nombre | uppercase }}</h5>
+                <div class="category-arrow">→</div>
+              </div>
+              
             </div>
           </div>
         </div>
       </div>
     </section>
   
-    <!-- SECCIÓN 3: PRODUCTOS DESTACADOS -->
     <section class="section-padding position-relative overflow-hidden">
       <video muted loop playsinline class="video-background lazy-video">
         <source src="2.mp4" type="video/mp4">
@@ -43,14 +50,14 @@
       <div class="video-overlay-80"></div>
   
       <div class="container position-relative z-depth-1">
-        <div class="section-header text-center mb-huge">
+        <div class="section-header text-center mb-huge reveal-item">
           <h2 class="title-modern text-white">FAVORITOS DE LA CASA</h2>
           <div class="accent-line mx-auto mt-3"></div>
         </div>
   
         <div class="row g-4 justify-content-center">
-          <div class="col-lg-3 col-md-6" *ngFor="let producto of productos">
-            <div class="product-card-dark">
+          <div class="col-lg-3 col-md-6" *ngFor="let producto of productos; let i = index">
+            <div class="product-card-dark reveal-item" [ngStyle]="{'transition-delay': (i * 0.15) + 's'}">
               <div class="product-img-box">
                 <img [src]="getImagenUrl(producto.imagenUrl)" (error)="$any($event.target).src = 'logo.webp'">
               </div>
@@ -67,7 +74,6 @@
       </div>
     </section>
   
-    <!-- SECCIÓN 4: MÉTODOS -->
     <section class="hero-premium mini-hero">
       <video muted loop playsinline class="video-background lazy-video">
         <source src="3.mp4" type="video/mp4">
@@ -75,7 +81,7 @@
       <div class="video-overlay-50"></div>
       <div class="container position-relative z-depth-1 text-center">
         <h2 class="display-title-small">MÉTODOS ARTESANALES</h2>
-        <p class="text-premium-light mx-auto" style="max-width: 700px;">
+        <p class="text-premium-light mx-auto reveal-item" style="max-width: 700px; transition-delay: 0.2s;">
           Cada filtrado es una conexión emocional entre el campo y tu mesa.
         </p>
       </div>

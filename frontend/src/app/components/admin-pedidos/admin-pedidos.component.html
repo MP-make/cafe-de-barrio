@@ -1,58 +1,52 @@
-<!-- Envolvemos todo en el nuevo contenedor flotante -->
-<div class="admin-pedidos-wrapper mx-3 mx-lg-auto">
+<div class="admin-pedidos-wrapper">
   <div class="content-layer">
     
-    <!-- Cabecera -->
-    <div class="row align-items-center mb-4">
-      <div class="col-12">
-        <h2 class="fw-bold header-title mb-2 d-flex align-items-center gap-3">
-          <div class="icon-box rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px;">
-            <i class="bi bi-box-seam fs-4"></i>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="fw-bold header-title mb-1 d-flex align-items-center gap-3">
+          <div class="icon-box rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+            <i class="bi bi-box-seam fs-5"></i>
           </div>
           Administrar Pedidos
         </h2>
-        <p class="header-subtitle ms-5 ps-3 mb-0">Gestiona las órdenes entrantes y actualiza su estado.</p>
+        <p class="header-subtitle mb-0 ms-5 ps-2">Gestión de órdenes en tiempo real.</p>
       </div>
+      <button class="btn btn-outline-light btn-sm" (click)="loadPedidos()">
+        <i class="bi bi-arrow-clockwise me-1"></i> Refrescar
+      </button>
     </div>
 
-    <!-- Tabla Premium -->
     <div class="card overflow-hidden">
       <div class="table-responsive">
-        <table class="table custom-table table-hover align-middle">
+        <table class="table custom-table table-hover align-middle mb-0">
           <thead class="bg-light">
             <tr>
               <th scope="col" class="ps-4 text-uppercase small fw-bold text-secondary">ID</th>
               <th scope="col" class="text-uppercase small fw-bold text-secondary">Cliente</th>
-              <th scope="col" class="text-uppercase small fw-bold text-secondary">Celular</th>
-              <th scope="col" class="text-uppercase small fw-bold text-secondary">Dirección</th>
-              <th scope="col" class="text-uppercase small fw-bold text-secondary">Productos</th> <!-- NUEVA COLUMNA -->
+              <th scope="col" class="text-uppercase small fw-bold text-secondary">Productos</th>
               <th scope="col" class="text-uppercase small fw-bold text-secondary">Total</th>
               <th scope="col" class="pe-4 text-uppercase small fw-bold text-secondary">Estado</th>
             </tr>
           </thead>
           <tbody>
-            <!-- Fila del pedido -->
             <tr *ngFor="let pedido of pedidos" class="border-bottom border-light bg-white">
               <td class="ps-4 fw-bold text-dark">#{{pedido.id}}</td>
-              <td class="fw-medium">{{pedido.clienteNombre}}</td>
-              <td><i class="bi bi-telephone text-secondary me-2"></i>{{pedido.celular}}</td>
               <td>
-                <span class="d-inline-block text-truncate" style="max-width: 150px;" title="{{pedido.direccion}}">
-                  {{pedido.direccion}}
-                </span>
+                <div class="d-flex flex-column">
+                  <span class="fw-medium text-dark">{{pedido.clienteNombre}}</span>
+                  <small class="text-muted"><i class="bi bi-telephone me-1"></i>{{pedido.celular}}</small>
+                  <small class="text-muted"><i class="bi bi-geo-alt me-1"></i><span class="d-inline-block text-truncate" style="max-width: 150px;" [title]="pedido.direccion">{{pedido.direccion}}</span></small>
+                </div>
               </td>
-              
-              <!-- AQUÍ LISTAMOS LOS PRODUCTOS (SIN LOS SIGNOS ?) -->
               <td>
-                <ul class="list-unstyled mb-0 small" style="max-height: 80px; overflow-y: auto;">
-                  <li *ngFor="let detalle of pedido.detalles" class="text-nowrap text-truncate" style="max-width: 180px;" [title]="detalle.producto.nombre">
-                    <span class="fw-bold text-dark">{{detalle.cantidad}}x</span> {{detalle.producto.nombre}}
+                <ul class="list-unstyled mb-0 small" style="max-height: 70px; overflow-y: auto;">
+                  <li *ngFor="let detalle of pedido.detalles" class="text-nowrap text-truncate" style="max-width: 200px;" [title]="detalle.producto.nombre">
+                    <span class="badge bg-light text-dark border me-1">{{detalle.cantidad}}x</span> {{detalle.producto.nombre}}
                   </li>
                 </ul>
               </td>
-
               <td class="fw-bold text-success">${{pedido.total}}</td>
-              <td class="pe-4" style="width: 160px;">
+              <td class="pe-4" style="width: 170px;">
                 <select class="form-select form-select-sm rounded-pill shadow-none border-secondary" 
                         [value]="pedido.estado" 
                         (change)="updateEstado(pedido, $any($event.target).value)">
@@ -61,11 +55,10 @@
               </td>
             </tr>
 
-            <!-- Mensaje si no hay pedidos -->
             <tr *ngIf="pedidos.length === 0">
-              <td colspan="7" class="text-center py-5 text-muted bg-white">
+              <td colspan="5" class="text-center py-5 text-muted bg-white">
                 <i class="bi bi-inbox fs-2 mb-2 d-block opacity-50"></i>
-                No hay pedidos registrados en el sistema.
+                No hay pedidos registrados.
               </td>
             </tr>
           </tbody>
