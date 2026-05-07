@@ -189,9 +189,29 @@ export class ProductoFormComponent implements OnInit {
     return cat ? cat.nombre : 'Desconocida';
   }
 
+  // --- MÉTODOS DE CORRECCIÓN DE IMÁGENES ---
+  
   getImagenUrl(nombreArchivo?: string): string {
-    if (!nombreArchivo) return 'logo.webp';
-    return `https://cafe-de-barrio-backend.onrender.com/uploads/${nombreArchivo}`; 
+    // 1. Si no hay imagen, devolvemos el logo por defecto
+    if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
+      return '/logo.webp'; 
+    }
+    
+    // 2. Si ya es una URL web completa, la dejamos pasar
+    if (nombreArchivo.startsWith('http') || nombreArchivo.startsWith('data:')) {
+      return nombreArchivo;
+    }
+
+    // 3. PARCHE: Limpiamos el texto por si es un producto viejo que se guardó con "/uploads/" en tu base de datos
+    let nombreLimpio = nombreArchivo;
+    if (nombreArchivo.startsWith('/uploads/')) {
+      nombreLimpio = nombreArchivo.replace('/uploads/', '');
+    }
+
+    // 4. Armamos la URL oficial apuntando a TU bóveda pública de Supabase
+    const SUPABASE_STORAGE_URL = 'https://olxldsfzyixhwivznemo.supabase.co/storage/v1/object/public/productos/';
+    
+    return `${SUPABASE_STORAGE_URL}${nombreLimpio}`;
   }
 
   // --- EXPORTAR A PDF ---

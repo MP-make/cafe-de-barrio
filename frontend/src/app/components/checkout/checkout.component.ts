@@ -85,21 +85,32 @@ export class CheckoutComponent implements OnInit {
   }
 
   // --- NUEVAS FUNCIONES PARA LAS IMÁGENES ---
+// --- NUEVAS FUNCIONES PARA LAS IMÁGENES (CONECTADO A SUPABASE) ---
 
-  // 1. Construye la ruta completa hacia el backend (AGREGADO EL SIGNO ?)
-  getImagenUrl(nombreArchivo?: string): string {
-    if (!nombreArchivo) {
-      return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
-    }
-    if (nombreArchivo.startsWith('http')) {
-      return nombreArchivo; // Por si ya es un link completo
-    }
-    // Asegúrate de que tu backend sirva imágenes en esta ruta
-    return `https://cafe-de-barrio-backend.onrender.com\${nombreArchivo}`; 
+getImagenUrl(nombreArchivo?: string): string {
+  // 1. Si no hay imagen, ponemos una de respaldo
+  if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
+    return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
+  }
+  
+  // 2. Si ya es un link completo, lo dejamos pasar
+  if (nombreArchivo.startsWith('http') || nombreArchivo.startsWith('data:')) {
+    return nombreArchivo;
   }
 
-  // 2. Si la imagen del backend no carga (Error 404), ponemos el café de respaldo
-  handleImageError(event: any) {
-    event.target.src = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
+  // 3. PARCHE: Si el nombre viene con el "/uploads/" viejo de la base de datos, se lo quitamos
+  let nombreLimpio = nombreArchivo;
+  if (nombreArchivo.startsWith('/uploads/')) {
+    nombreLimpio = nombreArchivo.replace('/uploads/', '');
   }
+
+  // 4. URL oficial apuntando a tu bóveda pública de Supabase
+  const SUPABASE_STORAGE_URL = 'https://olxldsfzyixhwivznemo.supabase.co/storage/v1/object/public/productos/';
+  
+  return `${SUPABASE_STORAGE_URL}${nombreLimpio}`;
+}
+
+handleImageError(event: any) {
+  event.target.src = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
+}
 }
