@@ -1,64 +1,79 @@
-<div class="admin-pedidos-wrapper">
+<div class="admin-pedidos-wrapper p-2 p-md-4">
   <div class="content-layer">
     
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
       <div>
         <h2 class="fw-bold header-title mb-1 d-flex align-items-center gap-3">
-          <div class="icon-box rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-            <i class="bi bi-box-seam fs-5"></i>
+          <div class="icon-box rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; min-width: 45px;">
+            <i class="bi bi-receipt fs-5"></i>
           </div>
           Administrar Pedidos
         </h2>
-        <p class="header-subtitle mb-0 ms-5 ps-2">Gestión de órdenes en tiempo real.</p>
+        <p class="header-subtitle mb-0 ms-0 ms-md-5 ps-md-2 mt-2 mt-md-0">Gestión de órdenes en tiempo real.</p>
       </div>
-      <button class="btn btn-outline-light btn-sm" (click)="loadPedidos()">
-        <i class="bi bi-arrow-clockwise me-1"></i> Refrescar
-      </button>
+      
+      <div class="d-flex gap-2 flex-wrap align-items-center">
+        <select class="form-select form-select-sm border-0 shadow-none bg-light fw-medium" 
+                style="width: auto; min-width: 140px;" 
+                [(ngModel)]="filtroEstado" (change)="aplicarFiltro()">
+          <option value="TODOS">Todos los pedidos</option>
+          <option *ngFor="let est of estados" [value]="est">{{est}}</option>
+        </select>
+
+        <button class="btn btn-outline-light btn-sm d-flex align-items-center gap-1 px-3" (click)="loadPedidos()">
+          <i class="bi bi-arrow-clockwise fs-6"></i> Refrescar
+        </button>
+      </div>
     </div>
 
-    <div class="card overflow-hidden">
+    <div class="card overflow-hidden shadow-sm">
       <div class="table-responsive">
-        <table class="table custom-table table-hover align-middle mb-0">
+        <table class="table custom-table table-hover align-middle mb-0" style="min-width: 650px;">
           <thead class="bg-light">
             <tr>
               <th scope="col" class="ps-4 text-uppercase small fw-bold text-secondary">ID</th>
               <th scope="col" class="text-uppercase small fw-bold text-secondary">Cliente</th>
               <th scope="col" class="text-uppercase small fw-bold text-secondary">Productos</th>
               <th scope="col" class="text-uppercase small fw-bold text-secondary">Total</th>
-              <th scope="col" class="pe-4 text-uppercase small fw-bold text-secondary">Estado</th>
+              <th scope="col" class="pe-4 text-uppercase small fw-bold text-secondary text-center">Estado</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let pedido of pedidos" class="border-bottom border-light bg-white">
-              <td class="ps-4 fw-bold text-dark">#{{pedido.id}}</td>
+            <tr *ngFor="let pedido of filteredPedidos" class="border-bottom border-light bg-white">
+              <td class="ps-4 fw-bold text-dark fs-5 text-muted">#{{pedido.id}}</td>
               <td>
                 <div class="d-flex flex-column">
-                  <span class="fw-medium text-dark">{{pedido.clienteNombre}}</span>
+                  <span class="fw-bold text-dark">{{pedido.clienteNombre}}</span>
                   <small class="text-muted"><i class="bi bi-telephone me-1"></i>{{pedido.celular}}</small>
                   <small class="text-muted"><i class="bi bi-geo-alt me-1"></i><span class="d-inline-block text-truncate" style="max-width: 150px;" [title]="pedido.direccion">{{pedido.direccion}}</span></small>
                 </div>
               </td>
               <td>
-                <ul class="list-unstyled mb-0 small" style="max-height: 70px; overflow-y: auto;">
-                  <li *ngFor="let detalle of pedido.detalles" class="text-nowrap text-truncate" style="max-width: 200px;" [title]="detalle.producto.nombre">
-                    <span class="badge bg-light text-dark border me-1">{{detalle.cantidad}}x</span> {{detalle.producto.nombre}}
+                <ul class="list-unstyled mb-0 small" style="max-height: 75px; overflow-y: auto;">
+                  <li *ngFor="let detalle of pedido.detalles" class="text-nowrap text-truncate mb-1" style="max-width: 200px;" [title]="detalle.producto.nombre">
+                    <span class="badge bg-light text-dark border me-1">{{detalle.cantidad}}x</span> <span class="fw-medium">{{detalle.producto.nombre}}</span>
                   </li>
                 </ul>
               </td>
-              <td class="fw-bold text-success">${{pedido.total}}</td>
-              <td class="pe-4" style="width: 170px;">
-                <select class="form-select form-select-sm rounded-pill shadow-none border-secondary" 
+              <td class="fw-bold text-success fs-6">${{pedido.total}}</td>
+              <td class="pe-4" style="width: 180px;">
+                <select class="form-select form-select-sm rounded-pill shadow-none fw-bold" 
+                        [ngClass]="{
+                          'bg-warning text-dark border-warning': pedido.estado === 'PENDIENTE',
+                          'bg-info text-dark border-info': pedido.estado === 'EN_PREPARACION',
+                          'bg-success text-white border-success': pedido.estado === 'ENTREGADO'
+                        }"
                         [value]="pedido.estado" 
                         (change)="updateEstado(pedido, $any($event.target).value)">
-                  <option *ngFor="let estado of estados" [value]="estado">{{estado}}</option>
+                  <option *ngFor="let estado of estados" [value]="estado" class="bg-white text-dark">{{estado}}</option>
                 </select>
               </td>
             </tr>
 
-            <tr *ngIf="pedidos.length === 0">
+            <tr *ngIf="filteredPedidos.length === 0">
               <td colspan="5" class="text-center py-5 text-muted bg-white">
                 <i class="bi bi-inbox fs-2 mb-2 d-block opacity-50"></i>
-                No hay pedidos registrados.
+                No hay pedidos en la categoría "{{filtroEstado}}".
               </td>
             </tr>
           </tbody>
