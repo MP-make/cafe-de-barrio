@@ -38,14 +38,12 @@ export class AppComponent implements OnInit {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       const url = event.urlAfterRedirects;
-      this.isAdminView = url.includes('/admin') && !url.includes('/login');
+      this.isAdminView = url.includes('/admin') || url.includes('/login');
     });
   }
 
-  // --- NUEVA LÓGICA DE SESIÓN ---
+  // --- LÓGICA DE SESIÓN ---
   get isLoggedIn(): boolean {
-    // Si tu AuthService tiene un método específico, cámbialo aquí. 
-    // Por defecto, verificamos si hay un token guardado en el navegador.
     return !!localStorage.getItem('token'); 
   }
 
@@ -59,8 +57,12 @@ export class AppComponent implements OnInit {
     this.searchTerm$.pipe(debounceTime(300), distinctUntilChanged()).subscribe(query => {
       if (query.trim()) {
         this.productoService.buscarProductos(query).subscribe({
-          next: (res) => this.results = res,
-          error: (err) => this.results = []
+          next: (res) => {
+            this.results = res;
+          },
+          error: (err) => {
+            this.results = [];
+          }
         });
       } else {
         this.results = [];
@@ -91,5 +93,9 @@ export class AppComponent implements OnInit {
     }
     const SUPABASE_STORAGE_URL = 'https://olxldsfzyixhwivznemo.supabase.co/storage/v1/object/public/productos/';
     return `${SUPABASE_STORAGE_URL}${nombreLimpio}`;
+  }
+
+  handleImageError(event: any) {
+    event.target.src = '/logo.webp';
   }
 }

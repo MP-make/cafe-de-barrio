@@ -14,12 +14,12 @@
       <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-3">
         <li class="nav-item">
           <a class="nav-link px-3 fw-medium premium-link" routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-            <i class="bi bi-house-door me-1 d-lg-none"></i> Inicio
+            <i class="bi bi-house-door me-1"></i> Inicio
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link px-3 fw-medium premium-link" routerLink="/catalogo" routerLinkActive="active">
-            <i class="bi bi-shop me-1 d-lg-none"></i> Catálogo
+            <i class="bi bi-shop me-1"></i> Catálogo
           </a>
         </li>
       </ul>
@@ -31,8 +31,9 @@
           <i class="bi bi-search search-icon-btn"></i>
         </div>
 
-        <a *ngIf="!isLoggedIn" routerLink="/login" class="btn rounded-pill px-4 d-flex align-items-center premium-login-btn">
-          <i class="bi bi-person me-2 fs-5"></i> Iniciar Sesión
+        <a *ngIf="!isLoggedIn" routerLink="/login" class="login-expandable">
+          <i class="bi bi-person login-icon-btn"></i>
+          <span class="login-text">Iniciar Sesión</span>
         </a>
 
         <a *ngIf="isLoggedIn" routerLink="/checkout" class="btn btn-premium-cart rounded-pill px-4 position-relative d-flex align-items-center gap-2">
