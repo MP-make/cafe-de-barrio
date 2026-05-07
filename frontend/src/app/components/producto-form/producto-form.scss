@@ -1,87 +1,108 @@
-// Contenedor principal "Dashboard Flotante" (Igual a pedidos)
+// Contenedor principal
 .admin-inventario-wrapper {
-    position: relative;
-    background-image: url('/FONDO-PARA-PEDIDOS.webp'); // Mismo fondo oscuro
-    background-size: cover;
-    background-position: center;
-    border-radius: 20px;
-    padding: 2.5rem;
+  position: relative;
+  background-image: url('/FONDO-PARA-PEDIDOS.webp'); 
+  background-size: cover;
+  background-position: center;
+  border-radius: 20px;
+  padding: 1.5rem; // Padding menor en móviles
+  margin: 0.5rem auto; // Margen menor en móviles
+  max-width: 1200px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  
+  @media (min-width: 768px) {
+    padding: 2.5rem; // Padding original en escritorio
     margin: 1.5rem auto;
-    max-width: 1200px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, rgba(20, 15, 10, 0.9) 0%, rgba(40, 25, 15, 0.75) 100%);
-      backdrop-filter: blur(8px);
-      z-index: 0;
-    }
-  
-    .content-layer {
-      position: relative;
-      z-index: 1;
-    }
   }
   
-  // Textos
-  .header-title {
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(20, 15, 10, 0.9) 0%, rgba(40, 25, 15, 0.75) 100%);
+    backdrop-filter: blur(8px);
+    z-index: 0;
+  }
+
+  .content-layer {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Textos
+.header-title {
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  font-size: 1.5rem; // Un poco más pequeño en móvil
+
+  @media (min-width: 768px) {
+    font-size: 2rem;
+  }
+  
+  .icon-box {
+    background: linear-gradient(135deg, #d4a373 0%, #a06b3e 100%);
     color: #ffffff;
-    letter-spacing: -0.5px;
-    
-    .icon-box {
-      background: linear-gradient(135deg, #d4a373 0%, #a06b3e 100%);
-      color: #ffffff;
-    }
   }
+}
+
+.header-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+}
+
+// Tabla Premium y Scroll Horizontal Suave
+.main-table-card {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 12px;
+  border: none;
   
-  .header-subtitle {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9rem;
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; // Suaviza el scroll en iOS
+    &::-webkit-scrollbar { height: 6px; }
+    &::-webkit-scrollbar-thumb { background-color: rgba(212, 163, 115, 0.5); border-radius: 10px; }
   }
-  
-  // Tabla Premium
-  .main-table-card {
-    background-color: rgba(255, 255, 255, 0.95) !important;
-    border-radius: 12px;
-    border: none;
-    
-    .table-responsive {
-      &::-webkit-scrollbar { height: 6px; }
-      &::-webkit-scrollbar-thumb { background-color: rgba(212, 163, 115, 0.5); border-radius: 10px; }
+}
+
+.custom-table {
+  th {
+    padding: 1rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #6c757d;
+    background-color: #f8f9fa;
+    white-space: nowrap; // Evita que los títulos se rompan en 2 líneas
+  }
+  td {
+    vertical-align: middle;
+    padding: 1rem;
+  }
+  tbody tr:hover { 
+    background-color: rgba(212, 163, 115, 0.05) !important; 
+  }
+}
+
+// Botoncito de Sumar Stock
+.btn-outline-success {
+  transition: all 0.2s ease;
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+// Estilos del Modal
+.modal-content {
+  .modal-header {
+    border-bottom: 2px solid #d4a373 !important;
+  }
+  .form-control, .form-select {
+    border: 1px solid #dee2e6;
+    &:focus {
+      border-color: #d4a373;
+      box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25);
     }
   }
-  
-  .custom-table {
-    th {
-      padding: 1.2rem 1rem;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      font-weight: 700;
-      color: #6c757d;
-      background-color: #f8f9fa;
-    }
-    td {
-      vertical-align: middle;
-      padding: 1rem;
-    }
-    tbody tr:hover { 
-      background-color: rgba(212, 163, 115, 0.05) !important; 
-    }
-  }
-  
-  // Estilos del Modal
-  .modal-content {
-    .modal-header {
-      border-bottom: 2px solid #d4a373 !important;
-    }
-    .form-control, .form-select {
-      border: 1px solid #dee2e6;
-      &:focus {
-        border-color: #d4a373;
-        box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25);
-      }
-    }
-  }
+}

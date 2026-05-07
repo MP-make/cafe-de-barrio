@@ -23,6 +23,7 @@ export class ProductoFormComponent implements OnInit {
   // Filtros
   searchTerm: string = '';
   selectedFilterCategoria: string = '';
+  selectedFilterStock: string = ''; // <-- NUEVO: Filtro de stock
 
   // Control de Formulario y Modal
   productoForm!: FormGroup;
@@ -56,29 +57,60 @@ export class ProductoFormComponent implements OnInit {
   }
 
   loadData() {
-    // Cargar Categorías
     this.categoriaService.getCategorias().subscribe({
       next: (data) => this.categorias = data,
       error: (err: any) => console.error('Error cargando categorías', err)
     });
 
-    // Cargar Productos
     this.productoService.getProductos().subscribe({
       next: (data: any) => {
         this.productos = Array.isArray(data) ? data : (data.content || data.data || []);
-        this.filteredProductos = [...this.productos];
+        this.aplicarFiltros(); // <-- Aplica los filtros apenas carga
         this.cdr.detectChanges();
       },
       error: (err: any) => console.error('Error cargando productos', err)
     });
   }
 
+  // --- FILTROS AVANZADOS ---
   aplicarFiltros() {
     this.filteredProductos = this.productos.filter(p => {
       const matchName = p.nombre.toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchCat = this.selectedFilterCategoria ? (p.categoriaId?.toString() || '') === this.selectedFilterCategoria : true;
-      return matchName && matchCat;
+      
+      // Lógica de Stock
+      let matchStock = true;
+      if (this.selectedFilterStock === 'normal') matchStock = p.stock > 5;
+      else if (this.selectedFilterStock === 'bajo') matchStock = p.stock > 0 && p.stock <= 5;
+      else if (this.selectedFilterStock === 'agotado') matchStock = p.stock === 0;
+
+      return matchName && matchCat && matchStock;
     });
+  }
+
+  // --- SUMA RÁPIDA DE STOCK ---
+  sumarStockRapido(producto: Producto) {
+    const cantidad = prompt(`¿Cuántas unidades deseas sumarle al stock de "${producto.nombre}"?`, '1');
+    
+    if (cantidad && !isNaN(Number(cantidad)) && Number(cantidad) > 0) {
+      const nuevoStock = producto.stock + Number(cantidad);
+      
+      const formData = new FormData();
+      formData.append('nombre', producto.nombre);
+      formData.append('descripcion', producto.descripcion || '');
+      formData.append('precio', producto.precio.toString());
+      formData.append('stock', nuevoStock.toString());
+      formData.append('categoriaId', producto.categoriaId!.toString());
+      // No agregamos imagenFile, para que el backend conserve la imagen actual
+
+      this.productoService.actualizarProducto(producto.id!, formData).subscribe({
+        next: () => {
+          producto.stock = nuevoStock; // Actualiza en la vista al instante
+          this.aplicarFiltros();
+        },
+        error: (err: any) => this.manejarError(err)
+      });
+    }
   }
 
   // --- CONTROL DEL MODAL ---
@@ -100,7 +132,7 @@ export class ProductoFormComponent implements OnInit {
       stock: producto.stock,
       categoriaId: producto.categoriaId
     });
-    this.selectedFile = null; // Al editar, la imagen es opcional
+    this.selectedFile = null;
     this.mostrarModal = true; 
   }
 
@@ -133,13 +165,11 @@ export class ProductoFormComponent implements OnInit {
     }
 
     if (!this.editMode) {
-      // POST: Crear nuevo producto
       this.productoService.crearProducto(formData).subscribe({
         next: () => this.finalizarGuardado('¡Café registrado con éxito!'),
         error: (err: any) => this.manejarError(err)
       });
     } else {
-      // PUT: Actualizar producto existente
       if (this.currentProductId) {
         this.productoService.actualizarProducto(this.currentProductId, formData).subscribe({
           next: () => this.finalizarGuardado('¡Café actualizado correctamente!'),
@@ -149,13 +179,12 @@ export class ProductoFormComponent implements OnInit {
     }
   }
 
-  // --- ELIMINAR ---
   eliminarProducto(id: number) {
     if (confirm('¿Estás seguro de que deseas eliminar este producto permanentemente?')) {
       this.productoService.eliminarProducto(id).subscribe({
         next: () => {
           alert('🗑️ Producto eliminado del catálogo.');
-          this.loadData(); // Refrescar la tabla al instante
+          this.loadData();
         },
         error: (err: any) => {
           console.error('Error al eliminar:', err);
@@ -189,43 +218,31 @@ export class ProductoFormComponent implements OnInit {
     return cat ? cat.nombre : 'Desconocida';
   }
 
-  // --- MÉTODOS DE CORRECCIÓN DE IMÁGENES ---
-  
+  // --- MÉTODOS DE CORRECCIÓN DE IMÁGENES (SUPABASE) ---
   getImagenUrl(nombreArchivo?: string): string {
-    // 1. Si no hay imagen, devolvemos el logo por defecto
     if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
       return '/logo.webp'; 
     }
-    
-    // 2. Si ya es una URL web completa, la dejamos pasar
     if (nombreArchivo.startsWith('http') || nombreArchivo.startsWith('data:')) {
       return nombreArchivo;
     }
-
-    // 3. PARCHE: Limpiamos el texto por si es un producto viejo que se guardó con "/uploads/" en tu base de datos
     let nombreLimpio = nombreArchivo;
     if (nombreArchivo.startsWith('/uploads/')) {
       nombreLimpio = nombreArchivo.replace('/uploads/', '');
     }
-
-    // 4. Armamos la URL oficial apuntando a TU bóveda pública de Supabase
     const SUPABASE_STORAGE_URL = 'https://olxldsfzyixhwivznemo.supabase.co/storage/v1/object/public/productos/';
-    
     return `${SUPABASE_STORAGE_URL}${nombreLimpio}`;
   }
 
   // --- EXPORTAR A PDF ---
   exportarPDF() {
     const doc = new jsPDF();
-    
-    // Título y Fecha
     doc.setFontSize(18);
     doc.text('Inventario de Productos - Café de Barrio', 14, 22);
     doc.setFontSize(11);
     doc.setTextColor(100);
     doc.text(`Fecha de reporte: ${new Date().toLocaleDateString()}`, 14, 30);
 
-    // Tabla autogenerada
     autoTable(doc, {
       startY: 35,
       head: [['ID', 'Nombre', 'Categoría', 'Precio', 'Stock']],
@@ -237,10 +254,9 @@ export class ProductoFormComponent implements OnInit {
         p.stock?.toString() || '0'
       ]),
       theme: 'grid',
-      headStyles: { fillColor: [20, 15, 10] } // Color café oscuro corporativo
+      headStyles: { fillColor: [20, 15, 10] }
     });
     
-    // Descarga automática
     doc.save('inventario-cafe.pdf');
   }
 }

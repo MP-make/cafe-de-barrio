@@ -1,20 +1,20 @@
-<div class="admin-inventario-wrapper container-fluid">
+<div class="admin-inventario-wrapper container-fluid p-2 p-md-4">
   <div class="content-layer">
     
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
       <div>
         <h2 class="fw-bold header-title mb-1 d-flex align-items-center gap-3">
-          <div class="icon-box rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+          <div class="icon-box rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; min-width: 45px;">
             <i class="bi bi-box-seam fs-5"></i>
           </div>
           Inventario de Tienda
         </h2>
-        <p class="header-subtitle mb-0 ms-5 ps-2">Gestiona el catálogo, stock y precios.</p>
+        <p class="header-subtitle mb-0 ms-0 ms-md-5 ps-md-2 mt-2 mt-md-0">Gestiona el catálogo, stock y precios.</p>
       </div>
       
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-outline-light btn-sm d-flex align-items-center gap-2 px-3" (click)="exportarPDF()">
-          <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i> Exportar PDF
+          <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i> Exportar
         </button>
         <button class="btn btn-warning fw-bold btn-sm d-flex align-items-center gap-2 px-3" (click)="abrirModalNuevo()">
           <i class="bi bi-plus-lg fs-5"></i> Nuevo Producto
@@ -24,26 +24,35 @@
 
     <div class="card filter-card mb-4 bg-transparent border-0">
       <div class="row g-3">
-        <div class="col-md-6 col-lg-4">
+        <div class="col-12 col-md-4">
           <div class="input-group input-group-sm">
             <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
             <input type="text" class="form-control border-0 shadow-none bg-light" 
                    placeholder="Buscar por nombre..." [(ngModel)]="searchTerm" (input)="aplicarFiltros()">
           </div>
         </div>
-        <div class="col-md-6 col-lg-3">
+        <div class="col-6 col-md-4">
           <select class="form-select form-select-sm border-0 shadow-none bg-light" 
                   [(ngModel)]="selectedFilterCategoria" (change)="aplicarFiltros()">
             <option value="">Todas las categorías</option>
             <option *ngFor="let c of categorias" [value]="c.id">{{c.nombre}}</option>
           </select>
         </div>
+        <div class="col-6 col-md-4">
+          <select class="form-select form-select-sm border-0 shadow-none bg-light" 
+                  [(ngModel)]="selectedFilterStock" (change)="aplicarFiltros()">
+            <option value="">Todos los niveles</option>
+            <option value="normal">Normal (> 5)</option>
+            <option value="bajo">Stock Bajo (1 - 5)</option>
+            <option value="agotado">Agotados (0)</option>
+          </select>
+        </div>
       </div>
     </div>
 
-    <div class="card main-table-card overflow-hidden">
+    <div class="card main-table-card overflow-hidden shadow-sm">
       <div class="table-responsive">
-        <table class="table custom-table table-hover align-middle mb-0">
+        <table class="table custom-table table-hover align-middle mb-0" style="min-width: 600px;">
           <thead class="bg-light">
             <tr>
               <th scope="col" class="ps-4">Producto</th>
@@ -57,19 +66,25 @@
             <tr *ngFor="let p of filteredProductos" class="border-bottom border-light bg-white">
               <td class="ps-4">
                 <div class="d-flex align-items-center gap-3">
-                  <img [src]="getImagenUrl(p.imagenUrl)" class="rounded-3 shadow-sm border" style="width: 50px; height: 50px; object-fit: cover;">
+                  <img [src]="getImagenUrl(p.imagenUrl)" class="rounded-3 shadow-sm border" style="width: 50px; height: 50px; min-width: 50px; object-fit: cover;">
                   <div>
                     <h6 class="mb-0 fw-bold text-dark">{{p.nombre}}</h6>
-                    <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;">{{p.descripcion}}</small>
+                    <small class="text-muted text-truncate d-inline-block" style="max-width: 150px;">{{p.descripcion}}</small>
                   </div>
                 </div>
               </td>
               <td><span class="badge bg-secondary border border-light">{{ getCategoriaNombre(p.categoriaId) }}</span></td>
               <td class="fw-bold text-success">${{p.precio}}</td>
               <td>
-                <span class="badge" [ngClass]="p.stock > 5 ? 'bg-info text-dark' : 'bg-danger'">
-                  {{p.stock}} unid.
-                </span>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge" [ngClass]="p.stock > 5 ? 'bg-info text-dark' : (p.stock > 0 ? 'bg-warning text-dark' : 'bg-danger')">
+                    {{p.stock}} unid.
+                  </span>
+                  <button class="btn btn-sm btn-light border rounded-circle d-flex align-items-center justify-content-center p-1" 
+                          title="Añadir Stock Rápido" (click)="sumarStockRapido(p)" style="width: 28px; height: 28px;">
+                    <i class="bi bi-plus text-success fw-bold"></i>
+                  </button>
+                </div>
               </td>
               <td class="text-center pe-4">
                 <div class="btn-group shadow-sm">
@@ -96,31 +111,30 @@
 </div>
 
 <div class="modal fade" [class.show]="mostrarModal" [style.display]="mostrarModal ? 'block' : 'none'" tabindex="-1" style="background-color: rgba(0,0,0,0.6);">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
     <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
       
-      <div class="modal-header bg-dark text-white p-4 border-0">
+      <div class="modal-header bg-dark text-white p-3 p-md-4 border-0">
         <div class="d-flex align-items-center gap-3">
-          <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+          <div class="bg-white rounded-circle d-flex align-items-center justify-content-center d-none d-md-flex" style="width: 50px; height: 50px;">
             <i class="bi bi-cup-hot-fill fs-4" style="color: #6f4e37;"></i>
           </div>
           <div>
-            <h4 class="mb-0 fw-bold">{{ editMode ? 'Editar Producto' : 'Registrar Nuevo Café' }}</h4>
+            <h4 class="mb-0 fw-bold fs-5 fs-md-4">{{ editMode ? 'Editar Producto' : 'Registrar Nuevo Café' }}</h4>
           </div>
         </div>
         <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()"></button>
       </div>
       
-      <div class="modal-body p-4 p-md-5 bg-white">
+      <div class="modal-body p-3 p-md-5 bg-white">
         <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()" class="needs-validation" novalidate>
-          
-          <div class="row g-4 mb-4">
-            <div class="col-md-6">
+          <div class="row g-3 g-md-4 mb-4">
+            <div class="col-12 col-md-6">
               <label class="form-label fw-bold text-secondary small text-uppercase">Nombre <span class="text-danger">*</span></label>
               <input type="text" class="form-control bg-light" formControlName="nombre" placeholder="Ej. Espresso Doble">
             </div>
             
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
               <label class="form-label fw-bold text-secondary small text-uppercase">Categoría <span class="text-danger">*</span></label>
               <select class="form-select bg-light" formControlName="categoriaId">
                 <option value="" disabled selected>Seleccione...</option>
@@ -128,7 +142,7 @@
               </select>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-6">
               <label class="form-label fw-bold text-secondary small text-uppercase">Precio <span class="text-danger">*</span></label>
               <div class="input-group">
                 <span class="input-group-text bg-dark text-white"><i class="bi bi-currency-dollar"></i></span>
@@ -136,7 +150,7 @@
               </div>
             </div>
             
-            <div class="col-md-6">
+            <div class="col-6">
               <label class="form-label fw-bold text-secondary small text-uppercase">Stock <span class="text-danger">*</span></label>
               <div class="input-group">
                 <span class="input-group-text bg-dark text-white"><i class="bi bi-box-seam"></i></span>
@@ -145,8 +159,9 @@
             </div>
 
             <div class="col-12">
-              <label class="form-label fw-bold text-secondary small text-uppercase">Fotografía (Requerida en nuevos) <span *ngIf="!editMode" class="text-danger">*</span></label>
+              <label class="form-label fw-bold text-secondary small text-uppercase">Fotografía <span *ngIf="!editMode" class="text-danger">*</span></label>
               <input type="file" class="form-control bg-light" (change)="onFileSelected($event)" accept="image/*">
+              <small *ngIf="editMode" class="text-muted" style="font-size: 0.75rem;">(Opcional. Deja vacío para conservar la foto actual).</small>
             </div>
             
             <div class="col-12">
@@ -156,8 +171,8 @@
           </div>
           
           <div class="d-flex justify-content-end pt-3 border-top gap-2">
-            <button type="button" class="btn btn-light px-4 fw-bold" (click)="cerrarModal()">Cancelar</button>
-            <button type="submit" class="btn btn-warning fw-bold px-5" 
+            <button type="button" class="btn btn-light px-3 px-md-4 fw-bold" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn btn-warning fw-bold px-4 px-md-5" 
                     [disabled]="productoForm.invalid || (!editMode && !selectedFile) || isSubmitting">
               <span *ngIf="!isSubmitting"><i class="bi bi-check2-circle"></i> Guardar</span>
               <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
