@@ -9,12 +9,7 @@ import com.cafedebarrio.backend.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
-import java.util.Base64;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,14 +17,17 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
+    
+    // 1. Inyectamos nuestro nuevo servicio de Supabase
+    private final FileStorageService fileStorageService;
 
-    public ProductoService(ProductoRepository productoRepository, CategoriaRepository categoriaRepository) {
+    public ProductoService(ProductoRepository productoRepository, 
+                           CategoriaRepository categoriaRepository,
+                           FileStorageService fileStorageService) {
         this.productoRepository = productoRepository;
         this.categoriaRepository = categoriaRepository;
+        this.fileStorageService = fileStorageService;
     }
-    private static final String UPLOAD_DIR = "uploads/";
-
-
 
     public List<ProductoResponseDTO> obtenerProductos(Integer categoriaId) {
         List<Producto> productos = (categoriaId != null) 
@@ -56,26 +54,19 @@ public class ProductoService {
         producto.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
         producto.setCategoria(categoria);
 
+        // 2. Subimos la imagen a la nube en lugar de la carpeta local
         if (dto.getImagenFile() != null && !dto.getImagenFile().isEmpty()) {
             try {
-                String fileName = UUID.randomUUID().toString() + "_" + dto.getImagenFile().getOriginalFilename();
-                Path filePath = Paths.get(UPLOAD_DIR + fileName);
-                
-                Files.createDirectories(filePath.getParent());
-                Files.write(filePath, dto.getImagenFile().getBytes());
-                
-                producto.setImagenUrl("/uploads/" + fileName); 
-                
+                String fileName = fileStorageService.uploadFile(dto.getImagenFile());
+                producto.setImagenUrl(fileName); // Guardamos solo el nombre (el Frontend arma la URL)
             } catch (IOException e) {
-                throw new RuntimeException("Error al guardar la imagen", e);
+                throw new RuntimeException("Error al guardar la imagen en la nube", e);
             }
         }
 
         Producto guardado = productoRepository.save(producto);
         return mapToDTO(guardado);
     }
-
-    // --- MÉTODOS AÑADIDOS PARA ACTUALIZAR Y ELIMINAR ---
 
     public ProductoResponseDTO actualizarProducto(Integer id, ProductoRequestDTO dto) {
         Producto producto = productoRepository.findById(id)
@@ -93,16 +84,16 @@ public class ProductoService {
 
         if (dto.getImagenFile() != null && !dto.getImagenFile().isEmpty()) {
             try {
-                String fileName = UUID.randomUUID().toString() + "_" + dto.getImagenFile().getOriginalFilename();
-                Path filePath = Paths.get(UPLOAD_DIR + fileName);
+                // 3. ¡Mejora! Si el producto ya tenía una foto, la borramos de Supabase para no ocupar espacio
+                if (producto.getImagenUrl() != null) {
+                    fileStorageService.deleteFile(producto.getImagenUrl());
+                }
                 
-                Files.createDirectories(filePath.getParent());
-                Files.write(filePath, dto.getImagenFile().getBytes());
-                
-                producto.setImagenUrl("/uploads/" + fileName); 
-                
+                // Subimos la nueva foto
+                String fileName = fileStorageService.uploadFile(dto.getImagenFile());
+                producto.setImagenUrl(fileName);
             } catch (IOException e) {
-                throw new RuntimeException("Error al actualizar la imagen", e);
+                throw new RuntimeException("Error al actualizar la imagen en la nube", e);
             }
         }
 
@@ -111,9 +102,14 @@ public class ProductoService {
     }
 
     public void eliminarProducto(Integer id) {
-        if (!productoRepository.existsById(id)) {
-            throw new RuntimeException("Producto no encontrado");
+        Producto producto = productoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+            
+        // 4. ¡Mejora! Borramos la imagen de la nube antes de borrar el producto de la base de datos
+        if (producto.getImagenUrl() != null) {
+            fileStorageService.deleteFile(producto.getImagenUrl());
         }
+
         productoRepository.deleteById(id);
     }
 
