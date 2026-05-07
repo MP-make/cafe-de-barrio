@@ -62,7 +62,7 @@ public class ProductoService {
                 Files.createDirectories(filePath.getParent());
                 Files.write(filePath, dto.getImagenFile().getBytes());
                 
-                producto.setImagenUrl("https://cafe-de-barrio.onrender.com/uploads/" + fileName); 
+                producto.setImagenUrl("/uploads/" + fileName); 
                 
             } catch (IOException e) {
                 throw new RuntimeException("Error al guardar la imagen", e);
@@ -97,7 +97,7 @@ public class ProductoService {
                 Files.createDirectories(filePath.getParent());
                 Files.write(filePath, dto.getImagenFile().getBytes());
                 
-                producto.setImagenUrl("https://cafe-de-barrio.onrender.com/uploads/" + fileName); 
+                producto.setImagenUrl("/uploads/" + fileName); 
                 
             } catch (IOException e) {
                 throw new RuntimeException("Error al actualizar la imagen", e);
