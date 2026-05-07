@@ -1,59 +1,148 @@
-.login-container {
+$gold-aged: #C5A059;
+$matte-black: #0A0A0A;
+$coffee-dark: #2c1e16;
+
+.login-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: url('/fondo.webp') no-repeat center center fixed;
+  min-height: 100vh;
+  background-image: url('/FONDO-PARA-PEDIDOS.webp'); // Usa tu fondo elegante
   background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 1rem;
+
+  .background-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(20, 15, 10, 0.85); // Oscurece el fondo
+    backdrop-filter: blur(8px);
+  }
 }
 
 .login-card {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 20px;
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+
+  .logo-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid $gold-aged;
+    padding: 3px;
+  }
+
+  .title-text {
+    color: $coffee-dark;
+    letter-spacing: 1px;
+  }
 }
 
-h2 {
-  text-align: center;
-  color: #8B4513;
+/* --- TABS PRINCIPALES (Cliente / Admin) --- */
+.main-tabs {
+  border-bottom: 2px solid #eee;
+  
+  .tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 12px 0;
+    font-weight: 700;
+    color: #999;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+
+    &.active {
+      color: $coffee-dark;
+      border-bottom-color: $coffee-dark;
+    }
+
+    &:hover:not(.active) {
+      color: #555;
+    }
+  }
 }
 
-.form-group {
-  margin-bottom: 1rem;
+/* --- SUB-TABS (Ingresar / Crear Cuenta) --- */
+.sub-tabs {
+  .sub-tab-btn {
+    background: transparent;
+    border: none;
+    padding: 10px 0;
+    font-weight: 700;
+    color: #888;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+
+    &.active {
+      background: #ffffff;
+      color: $coffee-dark;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+  }
 }
 
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #8B4513;
+/* --- FORMULARIOS Y BOTONES --- */
+.form-control {
+  border: 1px solid #e0e0e0;
+  font-weight: 500;
+  color: #333;
+  
+  &:focus {
+    border-color: $gold-aged;
+    box-shadow: 0 0 0 0.25rem rgba(197, 160, 89, 0.2);
+  }
 }
 
-input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #8B4513;
-  color: white;
+.btn-premium-solid {
+  background: linear-gradient(135deg, $gold-aged 0%, #a06b3e 100%);
+  color: #ffffff;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: 0.3s;
+  border-radius: 8px;
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 8px 20px rgba(197, 160, 89, 0.4);
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    background: #ccc;
+    opacity: 0.7;
+  }
 }
 
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.btn-admin {
+  transition: 0.3s ease;
+  border-radius: 8px;
+  &:hover:not(:disabled) {
+    background: $coffee-dark !important;
+    border-color: $gold-aged !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
 }
 
-.error {
-  color: red;
-  text-align: center;
+/* --- ANIMACIONES SUAVES --- */
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

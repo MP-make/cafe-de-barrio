@@ -25,17 +25,28 @@
       </ul>
 
       <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
-        <button class="btn search-btn rounded-circle d-flex align-items-center justify-content-center" (click)="openSearch()">
-          <i class="bi bi-search"></i>
-        </button>
+        
+        <div class="search-expandable" (click)="openSearch()">
+          <span class="search-text">Buscar café...</span>
+          <i class="bi bi-search search-icon-btn"></i>
+        </div>
 
-        <a routerLink="/checkout" class="btn btn-premium-cart rounded-pill px-4 position-relative d-flex align-items-center gap-2">
+        <a *ngIf="!isLoggedIn" routerLink="/admin/login" class="btn btn-outline-light rounded-pill px-4 premium-login-btn">
+          <i class="bi bi-person me-1"></i> Iniciar Sesión
+        </a>
+
+        <a *ngIf="isLoggedIn" routerLink="/checkout" class="btn btn-premium-cart rounded-pill px-4 position-relative d-flex align-items-center gap-2">
           <i class="bi bi-cart3 fs-5"></i>
           <span class="d-none d-sm-inline fw-bold">Mi Pedido</span>
           <span class="badge rounded-pill bg-danger border border-light position-absolute top-0 start-100 translate-middle shadow-sm" *ngIf="cartItemCount > 0">
             {{cartItemCount}}
           </span>
         </a>
+        
+        <button *ngIf="isLoggedIn" class="btn btn-link text-white-50 p-0 ms-2" (click)="cerrarSesion()" title="Cerrar sesión">
+          <i class="bi bi-box-arrow-right fs-5"></i>
+        </button>
+
       </div>
     </div>
   </div>

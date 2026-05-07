@@ -38,8 +38,15 @@ export class AppComponent implements OnInit {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       const url = event.urlAfterRedirects;
-      this.isAdminView = url.includes('/admin') || url.includes('/login');
+      this.isAdminView = url.includes('/admin') && !url.includes('/login');
     });
+  }
+
+  // --- NUEVA LÓGICA DE SESIÓN ---
+  get isLoggedIn(): boolean {
+    // Si tu AuthService tiene un método específico, cámbialo aquí. 
+    // Por defecto, verificamos si hay un token guardado en el navegador.
+    return !!localStorage.getItem('token'); 
   }
 
   ngOnInit(): void {
@@ -71,7 +78,6 @@ export class AppComponent implements OnInit {
   onSearch(event: any) { this.searchQuery = event.target.value; this.searchTerm$.next(this.searchQuery); }
   filterByCategory(id: number) { this.closeSearch(); this.router.navigate(['/catalogo'], { queryParams: { categoria: id } }); }
 
-  // --- CORRECCIÓN DE IMÁGENES DEL BUSCADOR (SUPABASE) ---
   getImagenUrl(nombreArchivo?: string): string {
     if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
       return '/logo.webp'; 
