@@ -11,7 +11,7 @@ export interface Categoria {
   providedIn: 'root',
 })
 export class CategoriaService {
-  private apiUrl = 'https://cafe-de-barrio-backend.onrender.com/api/categorias';
+  private apiUrl = 'https://cafe-de-barrio.onrender.com/api/categorias';
 
   constructor(private http: HttpClient) { }
 

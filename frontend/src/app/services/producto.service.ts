@@ -7,7 +7,7 @@ import { Producto } from '../models/producto.model';
   providedIn: 'root'
 })
 export class ProductoService {
-  private apiUrl = 'https://cafe-de-barrio-backend.onrender.com/api/productos';
+  private apiUrl = 'https://cafe-de-barrio.onrender.com/api/productos';
 
   constructor(private http: HttpClient) { }
 
