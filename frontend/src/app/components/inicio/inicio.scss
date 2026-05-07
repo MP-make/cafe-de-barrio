@@ -304,6 +304,67 @@ $white-dim: #F5F5F5;
     transform: translateY(0);
   }
 }
+
+/* =========================================================
+   AJUSTES RESPONSIVOS PARA 2 COLUMNAS EN MÓVILES
+   ========================================================= */
+   @media (max-width: 767px) {
+  
+    /* 1. Ajustes para Categorías (Especialidades) */
+    .card-category-premium {
+      padding: 1.2rem 1rem;
+      height: 150px; /* Reducimos la altura */
+      
+      .category-number { font-size: 1rem; }
+      .category-title { font-size: 0.8rem; letter-spacing: 0px; }
+      .category-arrow { font-size: 1.2rem; }
+    }
+  
+    /* 2. Ajustes para Productos (Favoritos) */
+    .product-card-dark {
+      .product-img-box {
+        height: 160px; /* Hacemos la foto más pequeña para que entren dos */
+      }
+      
+      .product-info-dark {
+        padding: 1rem 0.5rem !important; /* Menos relleno lateral */
+        
+        h4 { font-size: 0.85rem; margin-bottom: 0.5rem !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        p { font-size: 0.7rem; margin-bottom: 0.8rem !important; display: none; } /* Ocultamos la descripción en móviles para ahorrar espacio */
+        
+        .btn-premium-solid {
+          padding: 0.5rem 0.2rem;
+          font-size: 0.7rem;
+          letter-spacing: 0px;
+        }
+      }
+    }
+  
+    /* 3. Ajustes para Métodos Artesanales */
+    .method-card {
+      padding: 1.5rem 0.8rem;
+      
+      .method-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+      }
+      
+      .method-title {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .method-desc {
+        font-size: 0.65rem;
+        line-height: 1.4;
+      }
+    }
+  
+    /* Títulos de sección más pequeños en móviles */
+    .title-modern {
+      font-size: 1.5rem;
+    }
+  }
 /* --- Mantén tus estilos anteriores y solo actualiza/añade estos --- */
 
 .mini-hero {

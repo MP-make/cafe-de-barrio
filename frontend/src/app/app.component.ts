@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
   cartItemCount: number = 0;
   isAdminView = false;
   currentYear = new Date().getFullYear();
+  isMenuOpen = false; // <--- ¡NUEVA VARIABLE!
 
   showSearch = false;
   searchQuery = '';
@@ -74,7 +75,14 @@ export class AppComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['/catalogo']);
   }
+  
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
 
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
   openSearch() { this.showSearch = true; }
   closeSearch() { this.showSearch = false; this.results = []; this.searchQuery = ''; }
   onSearch(event: any) { this.searchQuery = event.target.value; this.searchTerm$.next(this.searchQuery); }

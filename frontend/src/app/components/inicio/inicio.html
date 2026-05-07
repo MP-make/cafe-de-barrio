@@ -25,7 +25,7 @@
         </div>
         
         <div class="row g-4 justify-content-center">
-          <div class="col-lg-3 col-md-6 col-sm-6" *ngFor="let categoria of categorias; let i = index">
+          <div class="col-lg-3 col-md-6 col-6" *ngFor="let categoria of categorias; let i = index">
             <div class="card-category-premium reveal-item" 
                  [ngStyle]="{'transition-delay': (i * 0.1) + 's'}"
                  [routerLink]="['/catalogo']" 
@@ -56,7 +56,7 @@
         </div>
   
         <div class="row g-4 justify-content-center">
-          <div class="col-lg-3 col-md-6" *ngFor="let producto of productos; let i = index">
+          <div class="col-lg-3 col-md-6 col-6" *ngFor="let producto of productos; let i = index">
             <div class="product-card-dark reveal-item" [ngStyle]="{'transition-delay': (i * 0.15) + 's'}">
               <div class="product-img-box">
                 <img [src]="getImagenUrl(producto.imagenUrl)" (error)="$any($event.target).src = 'logo.webp'">
@@ -88,7 +88,7 @@
 
         <div class="row g-4 justify-content-center mt-2">
           
-          <div class="col-lg-4 col-md-6">
+          <div class="col-lg-4 col-md-6 col-6">
             <div class="method-card reveal-item" style="transition-delay: 0.2s;">
               <div class="method-icon"><i class="bi bi-funnel"></i></div>
               <h4 class="method-title">V60 & Chemex</h4>
@@ -96,7 +96,7 @@
             </div>
           </div>
 
-          <div class="col-lg-4 col-md-6">
+          <div class="col-lg-4 col-md-6 col-6">
             <div class="method-card reveal-item" style="transition-delay: 0.3s;">
               <div class="method-icon"><i class="bi bi-moisture"></i></div>
               <h4 class="method-title">Cold Brew</h4>
@@ -104,7 +104,7 @@
             </div>
           </div>
 
-          <div class="col-lg-4 col-md-6">
+          <div class="col-lg-4 col-md-6 col-6">
             <div class="method-card reveal-item" style="transition-delay: 0.4s;">
               <div class="method-icon"><i class="bi bi-cup-hot"></i></div>
               <h4 class="method-title">Prensa Francesa</h4>
