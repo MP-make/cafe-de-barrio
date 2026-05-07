@@ -28,28 +28,24 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router
   ) {
-    // Formulario de Inicio de Sesión
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
 
-    // Formulario de Registro (AHORA CON EMAIL)
     this.registerForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(4)]],
-      email: ['', [Validators.required, Validators.email]], // <--- CAMPO NUEVO
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
   }
 
-  // Validador personalizado para confirmar contraseña
   passwordMatchValidator(g: FormGroup) {
     return g.get('password')?.value === g.get('confirmPassword')?.value
       ? null : { 'mismatch': true };
   }
 
-  // Cambiar entre Cliente y Admin
   setMainTab(tab: 'CLIENTE' | 'ADMIN') {
     this.activeMainTab = tab;
     this.errorMessage = '';
@@ -57,7 +53,6 @@ export class LoginComponent {
     this.loginForm.reset();
   }
 
-  // Cambiar entre Ingresar y Crear Cuenta
   setClientTab(tab: 'LOGIN' | 'REGISTER') {
     this.activeClientTab = tab;
     this.errorMessage = '';
@@ -73,13 +68,27 @@ export class LoginComponent {
       
       this.authService.login(this.loginForm.value).subscribe({
         next: (response: any) => {
+          // 1. Guardamos el token
           this.authService.setToken(response.token);
           this.isSubmitting = false;
           
-          // Redirección inteligente según el rol/pestaña
+          // 2. Extraemos el rol del token (CLIENTE o ADMIN)
+          const userRole = this.authService.getRole();
+
+          // 3. Verificamos si está intentando entrar por la puerta correcta
           if (this.activeMainTab === 'ADMIN') {
-            this.router.navigate(['/admin/productos']);
+            
+            if (userRole === 'ADMIN') {
+              // Es Admin de verdad, lo dejamos pasar
+              this.router.navigate(['/admin/productos']);
+            } else {
+              // Es un Cliente intentando hacerse pasar por Admin
+              this.authService.logout(); // Le borramos el token
+              this.errorMessage = 'Acceso denegado. Esta cuenta no tiene permisos de Administrador.';
+            }
+
           } else {
+            // Está en la pestaña de Cliente
             this.router.navigate(['/catalogo']);
           }
         },
@@ -98,12 +107,11 @@ export class LoginComponent {
       
       const newUser = {
         username: this.registerForm.value.username,
-        email: this.registerForm.value.email, // <--- ENVIAMOS EL CORREO AL BACKEND
+        email: this.registerForm.value.email,
         password: this.registerForm.value.password,
         rol: 'CLIENTE' 
       };
 
-      // Llamada al backend
       if(typeof (this.authService as any).register === 'function') {
         (this.authService as any).register(newUser).subscribe({
           next: () => {
@@ -116,9 +124,6 @@ export class LoginComponent {
             this.errorMessage = 'Hubo un error. Es posible que el usuario o correo ya existan.';
           }
         });
-      } else {
-        this.isSubmitting = false;
-        this.errorMessage = '⚠️ Falta conectar el método register() en tu AuthService.';
       }
     }
   }
