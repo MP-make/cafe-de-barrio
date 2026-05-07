@@ -8,6 +8,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays; // <-- AÑADIDO PARA LA LISTA
+
 @Configuration
 public class CorsConfig {
 
@@ -20,7 +22,10 @@ public class CorsConfig {
         // ⚠️ MODO DIOS: Permite que Vercel, Localhost, o cualquier origen se conecte
         config.addAllowedOriginPattern("*"); 
         config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+        
+        // 🛠️ LA CORRECCIÓN: Declaramos los métodos uno por uno. 
+        // Esto evita que el navegador bloquee el PUT y el DELETE cuando hay credenciales.
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         
         source.registerCorsConfiguration("/**", config);
         

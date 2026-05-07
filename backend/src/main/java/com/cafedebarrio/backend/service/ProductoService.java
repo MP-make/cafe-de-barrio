@@ -17,8 +17,6 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
-    
-    // 1. Inyectamos nuestro nuevo servicio de Supabase
     private final FileStorageService fileStorageService;
 
     public ProductoService(ProductoRepository productoRepository, 
@@ -54,11 +52,10 @@ public class ProductoService {
         producto.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
         producto.setCategoria(categoria);
 
-        // 2. Subimos la imagen a la nube en lugar de la carpeta local
         if (dto.getImagenFile() != null && !dto.getImagenFile().isEmpty()) {
             try {
                 String fileName = fileStorageService.uploadFile(dto.getImagenFile());
-                producto.setImagenUrl(fileName); // Guardamos solo el nombre (el Frontend arma la URL)
+                producto.setImagenUrl(fileName); 
             } catch (IOException e) {
                 throw new RuntimeException("Error al guardar la imagen en la nube", e);
             }
@@ -83,13 +80,18 @@ public class ProductoService {
         producto.setCategoria(categoria);
 
         if (dto.getImagenFile() != null && !dto.getImagenFile().isEmpty()) {
+            
+            // ESCUDO 1: Intentamos borrar la foto vieja, si falla, ignoramos y seguimos
             try {
-                // 3. ¡Mejora! Si el producto ya tenía una foto, la borramos de Supabase para no ocupar espacio
-                if (producto.getImagenUrl() != null) {
+                if (producto.getImagenUrl() != null && !producto.getImagenUrl().isEmpty()) {
                     fileStorageService.deleteFile(producto.getImagenUrl());
                 }
-                
-                // Subimos la nueva foto
+            } catch (Exception e) {
+                System.out.println("⚠️ Advertencia: No se pudo borrar la foto anterior en Supabase. " + e.getMessage());
+            }
+            
+            // Subimos la nueva foto
+            try {
                 String fileName = fileStorageService.uploadFile(dto.getImagenFile());
                 producto.setImagenUrl(fileName);
             } catch (IOException e) {
@@ -103,14 +105,26 @@ public class ProductoService {
 
     public void eliminarProducto(Integer id) {
         Producto producto = productoRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+            .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
             
-        // 4. ¡Mejora! Borramos la imagen de la nube antes de borrar el producto de la base de datos
-        if (producto.getImagenUrl() != null) {
-            fileStorageService.deleteFile(producto.getImagenUrl());
+        // ESCUDO 2: Intentamos borrar la imagen en Supabase, si falla, ignoramos y seguimos
+        try {
+            if (producto.getImagenUrl() != null && !producto.getImagenUrl().isEmpty()) {
+                fileStorageService.deleteFile(producto.getImagenUrl());
+            }
+        } catch (Exception e) {
+            System.out.println("⚠️ Advertencia: No se pudo borrar la foto en Supabase al eliminar. " + e.getMessage());
         }
 
-        productoRepository.deleteById(id);
+        // ESCUDO 3: Intentamos borrar el producto. Si está atado a un Pedido, hacemos Baja Lógica.
+        try {
+            productoRepository.delete(producto);
+            System.out.println("✅ Producto eliminado físicamente de la base de datos.");
+        } catch (Exception e) {
+            System.out.println("⚠️ El producto está en un pedido. Cambiando estado a INACTIVO.");
+            producto.setActivo(false);
+            productoRepository.save(producto);
+        }
     }
 
     private ProductoResponseDTO mapToDTO(Producto producto) {

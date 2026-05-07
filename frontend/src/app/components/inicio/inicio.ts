@@ -5,6 +5,7 @@ import { CartService } from '../../services/cart.service';
 import { CategoriaService, Categoria } from '../../services/categoria';
 import { ProductoService } from '../../services/producto.service';
 import { Producto } from '../../models/producto.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-inicio',
@@ -21,7 +22,8 @@ export class InicioComponent implements OnInit, AfterViewInit {
     private categoriaService: CategoriaService,
     private productoService: ProductoService,
     private cartService: CartService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -105,6 +107,10 @@ export class InicioComponent implements OnInit, AfterViewInit {
   }
 
   agregarAlCarrito(producto: Producto) { 
+    if (!this.authService.isLoggedIn()) {
+      alert('Debes iniciar sesión para agregar productos al carrito.');
+      return;
+    }
     this.cartService.agregar(producto);
     alert('Añadido a tu selección. ☕');
   }
