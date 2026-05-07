@@ -191,7 +191,7 @@ export class ProductoFormComponent implements OnInit {
 
   getImagenUrl(nombreArchivo?: string): string {
     if (!nombreArchivo) return 'logo.webp';
-    return `http://localhost:8080/uploads/${nombreArchivo}`; 
+    return `https://cafe-de-barrio-backend.onrender.com/uploads/${nombreArchivo}`; 
   }
 
   // --- EXPORTAR A PDF ---

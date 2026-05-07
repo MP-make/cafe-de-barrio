@@ -7,7 +7,7 @@ import { Pedido, EstadoPedido } from '../models/pedido.model';
   providedIn: 'root'
 })
 export class PedidoService {
-  private apiUrl = 'http://localhost:8080/api/pedidos';
+  private apiUrl = 'https://cafe-de-barrio-backend.onrender.com/api/pedidos';
 
   constructor(private http: HttpClient) { }
 

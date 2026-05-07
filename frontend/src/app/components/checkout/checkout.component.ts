@@ -95,7 +95,7 @@ export class CheckoutComponent implements OnInit {
       return nombreArchivo; // Por si ya es un link completo
     }
     // Asegúrate de que tu backend sirva imágenes en esta ruta
-    return `http://localhost:8080\${nombreArchivo}`; 
+    return `https://cafe-de-barrio-backend.onrender.com\${nombreArchivo}`; 
   }
 
   // 2. Si la imagen del backend no carga (Error 404), ponemos el café de respaldo

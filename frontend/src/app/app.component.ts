@@ -87,7 +87,7 @@ export class AppComponent implements OnInit {
   getImagenUrl(nombreArchivo?: string): string {
     if (!nombreArchivo) return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
     if (nombreArchivo.startsWith('http')) return nombreArchivo;
-    return `http://localhost:8080/uploads/${nombreArchivo}`; 
+    return `https://cafe-de-barrio-backend.onrender.com/uploads/${nombreArchivo}`; 
   }
 
   handleImageError(event: any) {
