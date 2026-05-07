@@ -34,16 +34,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-            .cors(Customizer.withDefaults()) // Carga la configuración CORS de abajo
+            .cors(Customizer.withDefaults()) // Activa el CORS de abajo
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CRÍTICO PARA CORS
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // DEJA PASAR EL PRE-FLIGHT DEL NAVEGADOR
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/uploads/**").permitAll() 
                 .requestMatchers("/error").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
-                .requestMatchers("/api/productos/**").authenticated()
-                .requestMatchers("/api/pedidos/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/productos/**", "/api/categorias/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -52,22 +49,23 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Para ignorar las fotos a nivel global en seguridad
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers("/uploads/**");
     }
 
-    // --- AQUÍ ESTABA EL PROBLEMA: AÑADIDA LA URL DE VERCEL ---
+    // --- OPCIÓN NUCLEAR DE CORS ---
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(
+        // Usamos Patterns para evitar bloqueos tontos por una "/"
+        configuration.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:4200", 
-            "https://cafe-de-barrio.vercel.app" // <-- ¡VITAL PARA QUE VERCEL FUNCIONE!
+            "https://cafe-de-barrio.vercel.app",
+            "https://*.vercel.app" // Por si Vercel cambia tu URL de preview
         )); 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept")); 
+        configuration.setAllowedHeaders(Arrays.asList("*")); // Acepta cualquier cabecera
         configuration.setAllowCredentials(true);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
