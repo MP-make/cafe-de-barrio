@@ -136,4 +136,6 @@ export class InicioComponent implements OnInit, AfterViewInit {
     event.target.src = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
   }
 
+  
+
 }

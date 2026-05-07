@@ -233,6 +233,64 @@ $white-dim: #F5F5F5;
   }
 }
 
+/* --- 5. SECCIÓN DE MÉTODOS ARTESANALES --- */
+.methods-section {
+  // Sobrescribimos el alto fijo para darle espacio a las tarjetas
+  height: auto !important; 
+  min-height: 85vh;
+  padding: 6rem 0;
+}
+
+.method-card {
+  background: rgba(20, 20, 20, 0.6); // Fondo oscuro semitransparente
+  border: 1px solid rgba(197, 160, 89, 0.2); // Borde con el color $gold-aged
+  border-radius: 8px;
+  padding: 2.5rem 2rem;
+  height: 100%;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  // Efecto de cristal
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  &:hover {
+    background: rgba(197, 160, 89, 0.1);
+    border-color: $gold-aged;
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+
+    .method-icon {
+      color: $white-pure;
+      transform: scale(1.1);
+    }
+  }
+
+  .method-icon {
+    font-size: 2.5rem;
+    color: $gold-aged;
+    margin-bottom: 1.2rem;
+    transition: 0.3s ease;
+    display: inline-block;
+  }
+
+  .method-title {
+    color: $white-pure;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .method-desc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
 /* --- 1. CLASES PARA SCROLL REVEALS (Fade In + Slide Up) --- */
 .reveal-item {
   opacity: 0;
