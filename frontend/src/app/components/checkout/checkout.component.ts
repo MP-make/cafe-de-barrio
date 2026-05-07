@@ -18,7 +18,10 @@ export class CheckoutComponent implements OnInit {
   checkoutForm!: FormGroup;
   cartItems: CartItem[] = [];
   total: number = 0;
+  
+  // Variables para la simulación de pago
   isSubmitting: boolean = false;
+  processingMessage: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -28,17 +31,32 @@ export class CheckoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // 1. Cargar el carrito
+    // 1. Decodificar el Token para obtener el nombre
+    let nombreUsuario = '';
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        nombreUsuario = payload.sub || ''; 
+      } catch (e) {
+        console.warn('No se pudo decodificar el token para extraer el nombre.');
+      }
+    }
+
+    // 2. Cargar el carrito
     this.cartService.getCart().subscribe(items => {
       this.cartItems = items;
       this.calcularTotal();
     });
 
-    // 2. Inicializar el formulario
+    // 3. Inicializar el formulario con validaciones estrictas
     this.checkoutForm = this.fb.group({
-      clienteNombre: ['', [Validators.required, Validators.minLength(3)]],
-      celular: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]], // Formato peruano de 9 dígitos
-      direccion: ['', [Validators.required, Validators.minLength(5)]]
+      clienteNombre: [nombreUsuario, [Validators.required, Validators.minLength(3)]],
+      // Celular: Empieza con 9 y tiene 9 dígitos exactos
+      celular: ['', [Validators.required, Validators.pattern('^9[0-9]{8}$')]], 
+      // Dirección: Mínimo 5 letras, pero OBLIGATORIO que contenga al menos una letra (no solo números)
+      direccion: ['', [Validators.required, Validators.minLength(5), Validators.pattern('.*[a-zA-ZáéíóúÁÉÍÓÚñÑ].*')]],
+      metodoPago: ['tarjeta', Validators.required] 
     });
   }
 
@@ -48,69 +66,62 @@ export class CheckoutComponent implements OnInit {
 
   confirmarPedido(): void {
     if (this.checkoutForm.invalid || this.cartItems.length === 0) {
-      alert('Por favor completa tus datos o añade productos al carrito.');
+      // Marcamos todos los campos como "tocados" para que se pinten de rojo si intentan pagar vacíos
+      this.checkoutForm.markAllAsTouched();
       return;
     }
 
     this.isSubmitting = true;
+    this.processingMessage = 'Conectando con pasarela segura...';
 
-    // 3. Armar el JSON exactamente como lo pide tu PedidoService.java
-    const pedidoPayload: Pedido = {
-      clienteNombre: this.checkoutForm.value.clienteNombre,
-      celular: this.checkoutForm.value.celular,
-      direccion: this.checkoutForm.value.direccion,
-      estado: EstadoPedido.PENDIENTE,
-      total: this.total,
-      detalles: this.cartItems.map(item => ({
-        cantidad: item.cantidad,
-        precioUnitario: item.producto.precio,
-        subtotal: item.producto.precio * item.cantidad,
-        producto: { id: item.producto.id } as any
-      }))
-    };
-    
-    // 4. Enviar al backend
-    this.pedidoService.createPedido(pedidoPayload).subscribe({
-      next: (res: any) => {
-        alert('Pedido confirmado exitosamente!');
-        this.cartService.clearCart(); // Limpiar el carrito local
-        this.router.navigate(['/catalogo']); // Regresar al catálogo
-      },
-      error: (err: any) => {
-        console.error('Error al confirmar pedido:', err);
-        alert('Error al confirmar el pedido. Inténtalo de nuevo.');
-        this.isSubmitting = false; // Buena práctica: liberar el botón si hay error
-      }
-    });
+    // SIMULADOR DE PASARELA DE PAGO 
+    setTimeout(() => {
+      this.processingMessage = 'Procesando transacción...';
+      
+      setTimeout(() => {
+        const pedidoPayload: Pedido = {
+          clienteNombre: this.checkoutForm.value.clienteNombre,
+          celular: this.checkoutForm.value.celular,
+          direccion: this.checkoutForm.value.direccion,
+          estado: EstadoPedido.PENDIENTE,
+          total: this.total,
+          detalles: this.cartItems.map(item => ({
+            cantidad: item.cantidad,
+            precioUnitario: item.producto.precio,
+            subtotal: item.producto.precio * item.cantidad,
+            producto: { id: item.producto.id } as any
+          }))
+        };
+        
+        this.pedidoService.createPedido(pedidoPayload).subscribe({
+          next: (res: any) => {
+            alert('¡Pago procesado y Pedido confirmado exitosamente!');
+            this.cartService.clearCart(); 
+            this.router.navigate(['/catalogo']); 
+          },
+          error: (err: any) => {
+            console.error('Error al confirmar pedido:', err);
+            alert('Error al procesar el pago. Inténtalo de nuevo.');
+            this.isSubmitting = false; 
+          }
+        });
+      }, 1500); 
+    }, 1000); 
   }
 
-  // --- NUEVAS FUNCIONES PARA LAS IMÁGENES ---
-// --- NUEVAS FUNCIONES PARA LAS IMÁGENES (CONECTADO A SUPABASE) ---
-
-getImagenUrl(nombreArchivo?: string): string {
-  // 1. Si no hay imagen, ponemos una de respaldo
-  if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
-    return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
-  }
-  
-  // 2. Si ya es un link completo, lo dejamos pasar
-  if (nombreArchivo.startsWith('http') || nombreArchivo.startsWith('data:')) {
-    return nombreArchivo;
+  // --- FUNCIONES PARA LAS IMÁGENES ---
+  getImagenUrl(nombreArchivo?: string): string {
+    if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
+      return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
+    }
+    if (nombreArchivo.startsWith('http') || nombreArchivo.startsWith('data:')) return nombreArchivo;
+    let nombreLimpio = nombreArchivo;
+    if (nombreArchivo.startsWith('/uploads/')) nombreLimpio = nombreArchivo.replace('/uploads/', '');
+    const SUPABASE_STORAGE_URL = 'https://olxldsfzyixhwivznemo.supabase.co/storage/v1/object/public/productos/';
+    return `${SUPABASE_STORAGE_URL}${nombreLimpio}`;
   }
 
-  // 3. PARCHE: Si el nombre viene con el "/uploads/" viejo de la base de datos, se lo quitamos
-  let nombreLimpio = nombreArchivo;
-  if (nombreArchivo.startsWith('/uploads/')) {
-    nombreLimpio = nombreArchivo.replace('/uploads/', '');
+  handleImageError(event: any) {
+    event.target.src = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
   }
-
-  // 4. URL oficial apuntando a tu bóveda pública de Supabase
-  const SUPABASE_STORAGE_URL = 'https://olxldsfzyixhwivznemo.supabase.co/storage/v1/object/public/productos/';
-  
-  return `${SUPABASE_STORAGE_URL}${nombreLimpio}`;
-}
-
-handleImageError(event: any) {
-  event.target.src = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
-}
 }

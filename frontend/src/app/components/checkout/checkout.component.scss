@@ -2,62 +2,143 @@
 
 // Títulos flotantes para que resalten sobre el fondo oscuro
 .checkout-title {
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: -0.5px;
+}
+  
+.checkout-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+  
+// Tarjetas estilo Glassmorphism
+.glass-card {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+  
+// Miniatura del producto
+.product-thumbnail {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid #ffffff;
+  background-color: #f8f9fa;
+  flex-shrink: 0; 
+}
+  
+// Botón de pago llamativo
+.btn-checkout {
+  background: linear-gradient(135deg, #d4a373 0%, #a06b3e 100%);
+  color: #ffffff;
+  border: none;
+  transition: all 0.3s ease;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(212, 163, 115, 0.4);
     color: #ffffff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    letter-spacing: -0.5px;
   }
   
-  .checkout-subtitle {
-    color: rgba(255, 255, 255, 0.85);
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  &:disabled {
+    background: #e0e0e0;
+    color: #9e9e9e;
+    cursor: not-allowed;
+    box-shadow: none;
   }
+}
   
-  // Tarjetas estilo Glassmorphism
-  .glass-card {
-    background-color: rgba(255, 255, 255, 0.96) !important;
-    backdrop-filter: blur(10px);
-    border-radius: 1.5rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+// Inputs de formulario
+.form-control {
+  &:focus {
+    border-color: #d4a373;
+    box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25);
   }
-  
-  // Miniatura del producto
+}
+
+/* --- ESTILOS DE PASARELA DE PAGO --- */
+.payment-method-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #ffffff;
+  transition: all 0.3s ease;
+  color: #6c757d;
+  font-weight: 600;
+  font-size: 0.9rem;
+
+  &:hover {
+    background: #f8f9fa;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+
+  &.active {
+    border-color: #d4a373;
+    background: rgba(212, 163, 115, 0.05);
+    color: #1a1410;
+    box-shadow: 0 5px 15px rgba(212, 163, 115, 0.2);
+    
+    i { color: #d4a373 !important; }
+  }
+}
+
+.text-purple { color: #7b2cbf; }
+
+.fake-card-form {
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   AJUSTES RESPONSIVOS PARA MÓVILES
+   ========================================================= */
+@media (max-width: 767px) {
+  .checkout-title {
+    font-size: 1.75rem; 
+  }
+
   .product-thumbnail {
-    width: 70px;
-    height: 70px;
-    object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    border: 2px solid #ffffff;
-    background-color: #f8f9fa;
-    flex-shrink: 0; // Evita que la imagen se aplaste
+    width: 55px; 
+    height: 55px;
+    border-radius: 8px;
   }
-  
-  // Botón de pago llamativo
+
+  .product-title-mobile {
+    font-size: 0.9rem; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px; 
+  }
+
+  .mobile-small {
+    font-size: 0.75rem;
+  }
+
   .btn-checkout {
-    background: linear-gradient(135deg, #d4a373 0%, #a06b3e 100%);
-    color: #ffffff;
-    border: none;
-    transition: all 0.3s ease;
-    
-    &:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(212, 163, 115, 0.4);
-      color: #ffffff;
-    }
-    
-    &:disabled {
-      background: #e0e0e0;
-      color: #9e9e9e;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
   }
-  
-  // Inputs de formulario más limpios
-  .form-control {
-    &:focus {
-      border-color: #d4a373;
-      box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25);
-    }
+
+  .payment-method-card {
+    padding: 0.8rem;
+    font-size: 0.8rem;
+    i { font-size: 1.5rem !important; margin-bottom: 0.2rem !important; }
   }
+}

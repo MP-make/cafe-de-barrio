@@ -1,63 +1,180 @@
-/* catalogo.scss */
+$gold-aged: #C5A059;
+$matte-black: #1a1410;
 
-// Espaciado y diseño de la tarjeta
+/* =========================================================
+   1. BARRA DE HERRAMIENTAS Y PÍLDORAS (FILTROS)
+   ========================================================= */
+.premium-search-box, .premium-sort-box {
+  background: #ffffff;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0.3rem 1.2rem;
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    border-color: $gold-aged;
+    box-shadow: 0 0 0 0.25rem rgba(197, 160, 89, 0.15) !important;
+  }
+
+  .form-control, .form-select {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #444;
+  }
+}
+
+.category-pills-wrapper {
+  display: flex;
+  gap: 0.8rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  /* Ocultar barra de scroll en navegadores Webkit */
+  &::-webkit-scrollbar { display: none; }
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
+}
+
+.category-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+
+  &.active {
+    background: $gold-aged;
+    color: $matte-black;
+    border-color: $gold-aged;
+    box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+  }
+}
+
+/* =========================================================
+   2. TARJETAS DE PRODUCTO (BASE DESKTOP)
+   ========================================================= */
 .cafe-card {
-    border-radius: 1rem !important;
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
-    border: 1px solid rgba(0, 0, 0, 0.08) !important;
-    background-color: #ffffff;
+  border-radius: 1rem !important;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  background-color: #ffffff;
+  
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
     
-    &:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
-      
-      // Pequeño zoom a la imagen al pasar el mouse
-      .card-img-top {
-        transform: scale(1.05);
-      }
+    .card-img-top { transform: scale(1.05); }
+  }
+}
+
+.img-container {
+  height: 220px;
+}
+
+.card-img-top {
+  height: 100%;
+  width: 100%;
+  transition: transform 0.6s ease;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.price-badge {
+  background: linear-gradient(135deg, #2c211b 0%, #1a1410 100%) !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.stock-badge {
+  font-size: 0.7rem;
+  color: #888;
+  background: #f8f9fa;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+.product-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.85rem;
+}
+
+.btn-add-cart {
+  transition: all 0.3s ease;
+  &:hover {
+    background: #1a1410 !important;
+    color: $gold-aged !important;
+  }
+}
+
+.fade-in { animation: fadeIn 0.5s ease-in; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* =========================================================
+   3. RESPONSIVIDAD ESTRICTA (CUADRÍCULA DE 2 EN MÓVIL)
+   ========================================================= */
+@media (max-width: 767px) {
+  
+  .img-container {
+    height: 140px; /* Foto más baja para que no ocupe toda la pantalla */
+  }
+
+  .cafe-card {
+    .card-body {
+      padding: 0.8rem !important; /* Menos relleno para ahorrar espacio */
+    }
+
+    .card-title {
+      font-size: 0.85rem !important; /* Títulos más chicos */
+    }
+
+    .price-badge {
+      font-size: 0.75rem !important;
+      padding: 0.3rem 0.6rem !important;
+    }
+
+    .stock-badge {
+      font-size: 0.6rem;
+      margin-bottom: 0.3rem !important;
+    }
+
+    /* Ocultar descripción en celular para limpiar la vista */
+    .product-desc {
+      display: none; 
+    }
+
+    .btn-add-cart {
+      padding: 0.4rem !important;
+      font-size: 0.75rem;
+      .bi { margin-right: 0 !important; }
+      .btn-text { display: inline-block; } 
     }
   }
-  
-  // Contenedor de la imagen
-  .position-relative.bg-light {
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
-    overflow: hidden; // Evita que la imagen se salga de las curvas
+
+  /* Ajustar inputs para que quepan bien uno sobre otro en móviles */
+  .premium-search-box, .premium-sort-box {
+    padding: 0.2rem 0.8rem;
+    .form-control, .form-select { font-size: 0.8rem; }
   }
-  
-  // Imagen del producto
-  .card-img-top {
-    transition: transform 0.5s ease;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-  }
-  
-  // Etiqueta del precio
-  .badge.bg-dark {
-    background: linear-gradient(135deg, #2c211b 0%, #1a1410 100%) !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-  
-  // Botón de añadir al carrito
-  .btn-outline-dark {
-    border-color: #e0e0e0;
-    color: #2c211b;
-    transition: all 0.2s ease;
-    
-    &:hover {
-      background-color: #2c211b;
-      border-color: #2c211b;
-      color: #ffffff;
-    }
-  }
-  
-  // Ajustes del texto descriptivo
-  .card-text {
-    display: -webkit-box;
-    -webkit-line-clamp: 3; /* Limita a 3 líneas la descripción */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.6;
-  }
+}
+
+/* Teléfonos muy pequeños (Se oculta la palabra "Añadir" y queda solo el icono) */
+@media (max-width: 380px) {
+  .btn-add-cart .btn-text { display: none !important; }
+}

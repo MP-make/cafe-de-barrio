@@ -1,7 +1,6 @@
-<div class="container py-5">
+<div class="container py-4 py-md-5">
   
-  <!-- Cabecera corregida para que resalte -->
-  <div class="row mb-5">
+  <div class="row mb-4 mb-md-5">
     <div class="col-12 text-center text-md-start">
       <h2 class="display-6 fw-bold checkout-title d-flex align-items-center gap-3 justify-content-center justify-content-md-start">
         <i class="bi bi-cart-check"></i> Finalizar Compra
@@ -10,81 +9,142 @@
     </div>
   </div>
 
-  <div class="row g-5">
-    <!-- Columna Izquierda: Formulario -->
+  <div class="row g-4 g-lg-5 d-flex flex-column-reverse flex-lg-row">
+    
     <div class="col-lg-7">
-      <div class="card glass-card p-4 p-md-5">
-        <h4 class="fw-bold mb-4 border-bottom pb-3 text-dark">
-          <i class="bi bi-person-lines-fill me-2" style="color: #a06b3e;"></i>Datos de Entrega
-        </h4>
+      <div class="card glass-card p-3 p-md-5">
         
         <form [formGroup]="checkoutForm" (ngSubmit)="confirmarPedido()">
           
-          <div class="mb-4">
+          <h4 class="fw-bold mb-4 border-bottom pb-3 text-dark fs-5 fs-md-4">
+            <i class="bi bi-person-lines-fill me-2" style="color: #a06b3e;"></i>1. Datos de Entrega
+          </h4>
+
+          <div class="mb-3 mb-md-4">
             <label class="form-label fw-bold text-secondary small text-uppercase">Nombre Completo</label>
-            <input type="text" class="form-control form-control-lg bg-light border-0 shadow-sm" formControlName="clienteNombre" placeholder="Ej. Juan Pérez">
+            <input type="text" 
+                   class="form-control form-control-lg bg-light border-0 shadow-sm" 
+                   [ngClass]="{'is-invalid': checkoutForm.get('clienteNombre')?.invalid && checkoutForm.get('clienteNombre')?.touched}"
+                   formControlName="clienteNombre" 
+                   placeholder="Ej. Juan Pérez">
+            <div class="invalid-feedback">Ingresa un nombre válido (mínimo 3 letras).</div>
           </div>
 
-          <div class="mb-4">
+          <div class="mb-3 mb-md-4">
             <label class="form-label fw-bold text-secondary small text-uppercase">Número de Celular</label>
-            <input type="text" class="form-control form-control-lg bg-light border-0 shadow-sm" formControlName="celular" placeholder="Ej. 987654321">
+            <input type="text" 
+                   class="form-control form-control-lg bg-light border-0 shadow-sm" 
+                   [ngClass]="{'is-invalid': checkoutForm.get('celular')?.invalid && checkoutForm.get('celular')?.touched}"
+                   formControlName="celular" 
+                   placeholder="Ej. 987654321" 
+                   maxlength="9">
+            <div class="invalid-feedback">El celular debe empezar con 9 y tener exactamente 9 dígitos.</div>
           </div>
 
-          <div class="mb-5">
+          <div class="mb-4 mb-md-5">
             <label class="form-label fw-bold text-secondary small text-uppercase">Dirección de Entrega</label>
-            <textarea class="form-control bg-light border-0 shadow-sm" formControlName="direccion" rows="3" placeholder="Ej. Av. Principal 123, Referencia..."></textarea>
+            <textarea class="form-control bg-light border-0 shadow-sm" 
+                      [ngClass]="{'is-invalid': checkoutForm.get('direccion')?.invalid && checkoutForm.get('direccion')?.touched}"
+                      formControlName="direccion" 
+                      rows="2" 
+                      placeholder="Ej. Av. Principal 123, Referencia..."></textarea>
+            <div class="invalid-feedback">La dirección debe ser real y contener letras (no solo números).</div>
           </div>
 
-          <!-- Botón de Confirmación Mejorado -->
+          <h4 class="fw-bold mb-4 border-bottom pb-3 text-dark fs-5 fs-md-4 mt-5">
+            <i class="bi bi-credit-card-2-front me-2" style="color: #a06b3e;"></i>2. Método de Pago
+          </h4>
+
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+              <label class="payment-method-card w-100 h-100" [class.active]="checkoutForm.get('metodoPago')?.value === 'tarjeta'">
+                <input type="radio" formControlName="metodoPago" value="tarjeta" class="d-none">
+                <i class="bi bi-credit-card mb-2 fs-3"></i>
+                <span>Tarjeta</span>
+              </label>
+            </div>
+            <div class="col-6 col-md-4">
+              <label class="payment-method-card w-100 h-100" [class.active]="checkoutForm.get('metodoPago')?.value === 'yape'">
+                <input type="radio" formControlName="metodoPago" value="yape" class="d-none">
+                <i class="bi bi-phone-vibrate mb-2 fs-3 text-purple"></i>
+                <span>Yape / Plin</span>
+              </label>
+            </div>
+            <div class="col-6 col-md-4">
+              <label class="payment-method-card w-100 h-100" [class.active]="checkoutForm.get('metodoPago')?.value === 'efectivo'">
+                <input type="radio" formControlName="metodoPago" value="efectivo" class="d-none">
+                <i class="bi bi-cash-stack mb-2 fs-3 text-success"></i>
+                <span>Efectivo</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="fake-card-form bg-light p-3 rounded-4 mb-5 border" *ngIf="checkoutForm.get('metodoPago')?.value === 'tarjeta'">
+            <div class="mb-3">
+              <label class="form-label text-muted small">Número de Tarjeta</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-credit-card text-muted"></i></span>
+                <input type="text" class="form-control border-start-0 ps-0" placeholder="0000 0000 0000 0000" maxlength="19">
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="form-label text-muted small">Vencimiento</label>
+                <input type="text" class="form-control" placeholder="MM/AA" maxlength="5">
+              </div>
+              <div class="col-6">
+                <label class="form-label text-muted small">CVV</label>
+                <input type="password" class="form-control" placeholder="123" maxlength="3">
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-light p-3 rounded-4 mb-5 border text-center" *ngIf="checkoutForm.get('metodoPago')?.value === 'yape'">
+            <i class="bi bi-qr-code-scan fs-1 text-dark mb-2 d-block"></i>
+            <p class="text-muted small mb-0">Al confirmar, te mostraremos el código QR para realizar el pago de S/ {{total}}.</p>
+          </div>
+
           <button type="submit" class="btn btn-checkout btn-lg w-100 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2" 
                   [disabled]="checkoutForm.invalid || cartItems.length === 0 || isSubmitting">
             <ng-container *ngIf="!isSubmitting">
-              <i class="bi bi-shield-lock fs-5"></i> Confirmar y Pagar Orden
+              <i class="bi bi-shield-check fs-5"></i> Pagar ${{total}} de forma segura
             </ng-container>
             <ng-container *ngIf="isSubmitting">
               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-              Procesando orden de forma segura...
+              {{ processingMessage }}
             </ng-container>
           </button>
         </form>
       </div>
     </div>
 
-    <!-- Columna Derecha: Resumen del Pedido con Miniaturas -->
     <div class="col-lg-5">
-      <div class="card glass-card p-4">
-        <h4 class="fw-bold mb-4 border-bottom pb-3 text-dark">
+      <div class="card glass-card p-3 p-md-4 h-100">
+        <h4 class="fw-bold mb-4 border-bottom pb-3 text-dark fs-5 fs-md-4">
           <i class="bi bi-bag-check me-2" style="color: #a06b3e;"></i>Resumen de tu Orden
         </h4>
         
-        <!-- Lista de productos con imágenes -->
-        <ul class="list-group list-group-flush mb-4 bg-transparent">
+        <ul class="list-group list-group-flush mb-4 bg-transparent overflow-auto" style="max-height: 400px;">
           <li class="list-group-item bg-transparent px-0 py-3 d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25" 
               *ngFor="let item of cartItems">
             
-            <div class="d-flex align-items-center gap-3">
-              <!-- MINIATURA DEL PRODUCTO CON REEMPLAZO INTELIGENTE -->
+            <div class="d-flex align-items-center gap-2 gap-md-3">
               <img [src]="getImagenUrl(item.producto.imagenUrl)" 
                    (error)="handleImageError($event)"
                    alt="{{item.producto.nombre}}" 
                    class="product-thumbnail">
-              
-              <!-- INFO DEL PRODUCTO -->
               <div>
-                <h6 class="mb-0 fw-bold text-dark">{{item.producto.nombre}}</h6>
-                <small class="text-muted">Cant: {{item.cantidad}} x ${{item.producto.precio}}</small>
+                <h6 class="mb-0 fw-bold text-dark product-title-mobile">{{item.producto.nombre}}</h6>
+                <small class="text-muted mobile-small">Cant: {{item.cantidad}} x ${{item.producto.precio}}</small>
               </div>
             </div>
-
-            <!-- SUBTOTAL POR ITEM -->
-            <span class="fw-bold text-dark fs-5">${{ (item.producto.precio * item.cantidad) }}</span>
+            <span class="fw-bold text-dark fs-6 fs-md-5">${{ (item.producto.precio * item.cantidad) }}</span>
           </li>
         </ul>
 
-        <!-- Total General -->
         <div class="d-flex justify-content-between align-items-center pt-3 mt-auto bg-light p-3 rounded-4 border">
-          <h5 class="fw-bold text-secondary mb-0">Total a Pagar:</h5>
-          <h2 class="fw-black text-success mb-0 fw-bold">${{total}}</h2>
+          <h5 class="fw-bold text-secondary mb-0 fs-6 fs-md-5">Total a Pagar:</h5>
+          <h2 class="fw-black text-success mb-0 fw-bold fs-3 fs-md-2">${{total}}</h2>
         </div>
       </div>
     </div>

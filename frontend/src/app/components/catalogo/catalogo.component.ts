@@ -18,7 +18,12 @@ export class CatalogoComponent implements OnInit {
   
   productos: Producto[] = [];
   categorias: Categoria[] = [];
+  
+  // Variables de filtrado
   selectedCategoria: number | null = null;
+  searchTerm: string = '';
+  sortOrder: string = 'default';
+  
   isLoading: boolean = true;
 
   constructor(
@@ -58,30 +63,54 @@ export class CatalogoComponent implements OnInit {
     });
   }
 
-  // --- MÉTODOS DE CORRECCIÓN DE IMÁGENES ---
-  
-  // --- NUEVAS FUNCIONES PARA LAS IMÁGENES (CONECTADO A SUPABASE) ---
+  // Cambiar categoría desde las píldoras
+  setCategoria(id: number | null) {
+    this.selectedCategoria = id;
+  }
 
+  get filteredProductos(): Producto[] {
+    // ⚠️ Importante: Hacemos una COPIA del array para que el sort() no destruya el orden original
+    let result = [...this.productos];
+
+    // 1. Filtrar por Categoría
+    if (this.selectedCategoria !== null) {
+      result = result.filter(p => p.categoriaId == this.selectedCategoria);
+    }
+
+    // 2. Filtrar por Nombre (Buscador)
+    if (this.searchTerm.trim() !== '') {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(p => (p.nombre || '').toLowerCase().includes(term));
+    }
+
+    // 3. Ordenamiento Seguro (Protegido contra undefined con || 0)
+    if (this.sortOrder === 'precioAsc') {
+      result = result.sort((a, b) => (a.precio || 0) - (b.precio || 0));
+    } else if (this.sortOrder === 'precioDesc') {
+      result = result.sort((a, b) => (b.precio || 0) - (a.precio || 0));
+    } else if (this.sortOrder === 'nombreAsc') {
+      result = result.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+    } else if (this.sortOrder === 'default') {
+      // Orden por defecto (por ID)
+      result = result.sort((a, b) => (a.id || 0) - (b.id || 0));
+    }
+
+    return result;
+  }
+
+  // --- MÉTODOS DE IMÁGENES ---
   getImagenUrl(nombreArchivo?: string): string {
-    // 1. Si no hay imagen, ponemos una de respaldo
     if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
       return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
     }
-    
-    // 2. Si ya es un link completo, lo dejamos pasar
     if (nombreArchivo.startsWith('http') || nombreArchivo.startsWith('data:')) {
       return nombreArchivo;
     }
-
-    // 3. PARCHE: Si el nombre viene con el "/uploads/" viejo de la base de datos, se lo quitamos
     let nombreLimpio = nombreArchivo;
     if (nombreArchivo.startsWith('/uploads/')) {
       nombreLimpio = nombreArchivo.replace('/uploads/', '');
     }
-
-    // 4. URL oficial apuntando a tu bóveda pública de Supabase
     const SUPABASE_STORAGE_URL = 'https://olxldsfzyixhwivznemo.supabase.co/storage/v1/object/public/productos/';
-    
     return `${SUPABASE_STORAGE_URL}${nombreLimpio}`;
   }
 
@@ -90,17 +119,7 @@ export class CatalogoComponent implements OnInit {
   }
 
   manejarErrorImagen(event: any) {
-    // Si la imagen no existe en el servidor, ponemos el logo
     event.target.src = '/logo.webp';
-  }
-
-  // ------------------------------------------
-
-  get filteredProductos(): Producto[] {
-    if (this.selectedCategoria) {
-      return this.productos.filter(p => p.categoriaId == this.selectedCategoria);
-    }
-    return this.productos;
   }
 
   agregarAlCarrito(producto: Producto) {
