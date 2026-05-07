@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.Base64;`nimport java.util.stream.Collectors;
 
 @Service
 public class ProductoService {
@@ -27,7 +27,7 @@ public class ProductoService {
         this.categoriaRepository = categoriaRepository;
     }
 
-    private static final String UPLOAD_DIR = "uploads/";
+
 
     public List<ProductoResponseDTO> obtenerProductos(Integer categoriaId) {
         List<Producto> productos = (categoriaId != null) 
