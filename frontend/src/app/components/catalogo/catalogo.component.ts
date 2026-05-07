@@ -62,11 +62,11 @@ export class CatalogoComponent implements OnInit {
     if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
       return '/logo.webp'; // Imagen por defecto
     }
-    if (nombreArchivo.startsWith('http')) {
+    if (nombreArchivo && (nombreArchivo.startsWith('http') || nombreArchivo.startsWith('data:'))) {
       return nombreArchivo;
     }
     // Aseguramos la ruta completa al backend con la carpeta uploads
-    return `https://cafe-de-barrio.onrender.com\${nombreArchivo}`; 
+    return `https://cafe-de-barrio.onrender.com/uploads/${nombreArchivo}`;
   }
 
   manejarErrorImagen(event: any) {
