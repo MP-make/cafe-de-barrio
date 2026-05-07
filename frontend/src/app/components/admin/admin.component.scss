@@ -9,8 +9,63 @@ $text-muted: #888;
   height: 100vh;
   background-color: #f8f9fa;
   overflow: hidden;
+  flex-direction: column; // Por defecto apilado para móvil
+
+  @media (min-width: 769px) {
+    flex-direction: row; // En PC vuelve a estar uno al lado del otro
+  }
 }
 
+// --- HEADER MÓVIL ---
+.mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: $matte-black;
+  color: white;
+  padding: 1rem 1.5rem;
+  z-index: 20;
+
+  .brand-mobile {
+    font-weight: 800;
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+  }
+
+  .mobile-toggle {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    cursor: pointer;
+  }
+
+  @media (min-width: 769px) {
+    display: none; // Oculto en PC
+  }
+}
+
+// --- OVERLAY MÓVIL ---
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 25;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  &.active {
+    display: block;
+    opacity: 1;
+  }
+
+  @media (min-width: 769px) {
+    display: none !important;
+  }
+}
+
+// --- SIDEBAR ---
 .admin-sidebar {
   width: $sidebar-width;
   background-color: $matte-black;
@@ -18,7 +73,24 @@ $text-muted: #888;
   display: flex;
   flex-direction: column;
   box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-  z-index: 10;
+  z-index: 30;
+
+  // Comportamiento Móvil (Escondido a la izquierda)
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: -$sidebar-width;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.open {
+    left: 0; // Aparece al abrir
+  }
+
+  // Comportamiento PC
+  @media (min-width: 769px) {
+    position: static;
+    left: 0;
+  }
 }
 
 .sidebar-brand {
@@ -27,6 +99,7 @@ $text-muted: #888;
   align-items: center;
   gap: 12px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: relative;
 
   .logo-icon { font-size: 1.8rem; }
   .brand-text {
@@ -35,11 +108,26 @@ $text-muted: #888;
     .title { font-weight: 800; letter-spacing: 1px; font-size: 0.9rem; }
     .subtitle { font-size: 0.7rem; color: $gold-aged; text-transform: uppercase; }
   }
+
+  .close-sidebar-btn {
+    position: absolute;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+
+    @media (min-width: 769px) {
+      display: none; // Oculto en PC
+    }
+  }
 }
 
 .sidebar-nav {
   flex: 1;
   padding: 1.5rem 1rem;
+  overflow-y: auto;
 
   .nav-label {
     font-size: 0.65rem;
@@ -116,9 +204,14 @@ $text-muted: #888;
   flex: 1;
   overflow-y: auto;
   background: #f4f4f4;
+  position: relative;
 }
 
 .content-viewport {
-  padding: 2rem;
+  padding: 1rem; // Menos padding en celular
   min-height: 100%;
+
+  @media (min-width: 769px) {
+    padding: 2rem; // Padding original en PC
+  }
 }
