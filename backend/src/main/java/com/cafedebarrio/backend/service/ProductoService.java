@@ -14,7 +14,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
-import java.util.Base64;`nimport java.util.stream.Collectors;
+import java.util.Base64;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductoService {
@@ -26,6 +27,7 @@ public class ProductoService {
         this.productoRepository = productoRepository;
         this.categoriaRepository = categoriaRepository;
     }
+    private static final String UPLOAD_DIR = "uploads/";
 
 
 
