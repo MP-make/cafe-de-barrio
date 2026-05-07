@@ -18,9 +18,9 @@ import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   title = 'Café de Barrio';
   cartItemCount: number = 0;
-  isAdminView = false; // Controla si mostramos la Tienda o el Panel Admin
+  isAdminView = false;
+  currentYear = new Date().getFullYear();
 
-  // Variables del Buscador
   showSearch = false;
   searchQuery = '';
   results: any[] = [];
@@ -31,10 +31,9 @@ export class AppComponent implements OnInit {
     private cartService: CartService,
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
-    public authService: AuthService, // <--- Inyectamos el AuthService
+    public authService: AuthService,
     public router: Router
   ) {
-    // Escuchamos la URL para apagar el header del cliente si entramos al admin
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
@@ -44,26 +43,17 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Carrito
     this.cartService.getCart().subscribe(items => {
       this.cartItemCount = items.reduce((count, item) => count + item.cantidad, 0);
     });
 
-    // Cargar sugerencias
     this.categoriaService.getCategorias().subscribe(res => this.categorias = res);
 
-    // Lógica del buscador en tiempo real
     this.searchTerm$.pipe(debounceTime(300), distinctUntilChanged()).subscribe(query => {
       if (query.trim()) {
         this.productoService.buscarProductos(query).subscribe({
-          next: (res) => {
-            console.log('Resultados del backend:', res);
-            this.results = res;
-          },
-          error: (err) => {
-            console.error('¡Ups! El backend rechazó la búsqueda:', err);
-            this.results = [];
-          }
+          next: (res) => this.results = res,
+          error: (err) => this.results = []
         });
       } else {
         this.results = [];
@@ -71,26 +61,29 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // Métodos del administrador
   cerrarSesion() {
     this.authService.logout();
     this.router.navigate(['/catalogo']);
   }
 
-  // Métodos del modal
   openSearch() { this.showSearch = true; }
   closeSearch() { this.showSearch = false; this.results = []; this.searchQuery = ''; }
   onSearch(event: any) { this.searchQuery = event.target.value; this.searchTerm$.next(this.searchQuery); }
   filterByCategory(id: number) { this.closeSearch(); this.router.navigate(['/catalogo'], { queryParams: { categoria: id } }); }
 
-  // Métodos para la imagen miniatura del buscador
+  // --- CORRECCIÓN DE IMÁGENES DEL BUSCADOR (SUPABASE) ---
   getImagenUrl(nombreArchivo?: string): string {
-    if (!nombreArchivo) return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
-    if (nombreArchivo.startsWith('http')) return nombreArchivo;
-    return `https://cafe-de-barrio-backend.onrender.com/uploads/${nombreArchivo}`; 
-  }
-
-  handleImageError(event: any) {
-    event.target.src = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
+    if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
+      return '/logo.webp'; 
+    }
+    if (nombreArchivo.startsWith('http') || nombreArchivo.startsWith('data:')) {
+      return nombreArchivo;
+    }
+    let nombreLimpio = nombreArchivo;
+    if (nombreArchivo.startsWith('/uploads/')) {
+      nombreLimpio = nombreArchivo.replace('/uploads/', '');
+    }
+    const SUPABASE_STORAGE_URL = 'https://olxldsfzyixhwivznemo.supabase.co/storage/v1/object/public/productos/';
+    return `${SUPABASE_STORAGE_URL}${nombreLimpio}`;
   }
 }

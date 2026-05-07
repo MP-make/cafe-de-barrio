@@ -1,12 +1,9 @@
-<!-- ================================================================= -->
-<!-- 1. HEADER PÚBLICO (Solo visible para Clientes, oculto en Admin)   -->
-<!-- ================================================================= -->
-<nav *ngIf="!isAdminView" class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top" style="background-color: rgba(44, 33, 27, 0.96); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(212, 163, 115, 0.2);">
-  <div class="container py-1">
+<nav *ngIf="!isAdminView" class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top premium-nav" style="background-color: rgba(20, 15, 10, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(212, 163, 115, 0.15);">
+  <div class="container py-2">
     
-    <a class="navbar-brand fw-bold d-flex align-items-center gap-3 fs-4" routerLink="/">
-      <img src="/logo.webp" alt="Logo" height="45" class="rounded-circle shadow-sm border border-warning border-opacity-25">
-      <span style="letter-spacing: 1px; color: #d4a373;">Café de Barrio</span>
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-3 fs-5 text-uppercase" routerLink="/">
+      <img src="/logo.webp" alt="Logo" height="40" class="rounded-circle shadow-sm border border-warning border-opacity-25">
+      <span style="letter-spacing: 2px; color: #d4a373;">Café de Barrio</span>
     </a>
 
     <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
@@ -14,32 +11,28 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarContent">
-      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-2">
-        <!-- BOTÓN DE INICIO AÑADIDO -->
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-3">
         <li class="nav-item">
-          <a class="nav-link px-3 fw-medium" routerLink="/inicio" routerLinkActive="active text-warning" [routerLinkActiveOptions]="{exact: true}">
-            <i class="bi bi-house-door me-1"></i> Inicio
+          <a class="nav-link px-3 fw-medium premium-link" routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+            <i class="bi bi-house-door me-1 d-lg-none"></i> Inicio
           </a>
         </li>
-        <!-- BOTÓN DE CATÁLOGO -->
         <li class="nav-item">
-          <a class="nav-link px-3 fw-medium" routerLink="/catalogo" routerLinkActive="active text-warning">
-            <i class="bi bi-shop me-1"></i> Catálogo
+          <a class="nav-link px-3 fw-medium premium-link" routerLink="/catalogo" routerLinkActive="active">
+            <i class="bi bi-shop me-1 d-lg-none"></i> Catálogo
           </a>
         </li>
-      </ul>s
+      </ul>
 
-      <div class="d-flex align-items-center">
-        <!-- LUPA DE BÚSQUEDA -->
-        <button class="btn btn-outline-light rounded-pill px-3 me-3" style="border-color: #d4a373; color: #d4a373;" (click)="openSearch()">
+      <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+        <button class="btn search-btn rounded-circle d-flex align-items-center justify-content-center" (click)="openSearch()">
           <i class="bi bi-search"></i>
         </button>
 
-        <!-- CARRITO DE COMPRAS -->
-        <a routerLink="/checkout" class="btn btn-outline-light rounded-pill px-4 position-relative d-flex align-items-center gap-2 border-opacity-50 transition-all" style="border-color: #d4a373;">
-          <i class="bi bi-cart3 fs-5" style="color: #d4a373;"></i>
-          <span class="d-none d-sm-inline">Mi Pedido</span>
-          <span class="badge rounded-pill bg-danger border border-light position-absolute top-0 start-100 translate-middle" *ngIf="cartItemCount > 0">
+        <a routerLink="/checkout" class="btn btn-premium-cart rounded-pill px-4 position-relative d-flex align-items-center gap-2">
+          <i class="bi bi-cart3 fs-5"></i>
+          <span class="d-none d-sm-inline fw-bold">Mi Pedido</span>
+          <span class="badge rounded-pill bg-danger border border-light position-absolute top-0 start-100 translate-middle shadow-sm" *ngIf="cartItemCount > 0">
             {{cartItemCount}}
           </span>
         </a>
@@ -48,62 +41,66 @@
   </div>
 </nav>
 
-<!-- ================================================================= -->
-<!-- 2. ESTRUCTURA PRINCIPAL (Se adapta si es Tienda o es Admin)       -->
-<!-- ================================================================= -->
 <div [class.admin-mode-active]="isAdminView">
     <main [ngClass]="isAdminView ? '' : 'container-fluid px-0 min-vh-100'">
       <router-outlet></router-outlet>
     </main>
-
 </div>
 
-<!-- ================================================================= -->
-<!-- 3. FOOTER PÚBLICO (Solo visible para Clientes, oculto en Admin)   -->
-<!-- ================================================================= -->
-<footer *ngIf="!isAdminView" class="py-5 mt-5" style="background-color: rgba(26, 20, 16, 0.95); border-top: 2px solid #2c211b;">
-  <div class="container text-center">
-    <img src="/logo.webp" alt="Logo Footer" height="40" class="rounded-circle mb-3 opacity-75 grayscale-hover">
-    <p class="text-white-50 small mb-1">&copy; 2026 Café de Barrio. Todos los derechos reservados.</p>
-    <p class="text-warning small opacity-50 fw-light">Hecho con pasión por el buen café.</p>
+<footer *ngIf="!isAdminView" class="footer-premium">
+  <div class="container">
+    <div class="row g-4 align-items-center justify-content-between py-5">
+      <div class="col-md-4 text-center text-md-start">
+        <img src="/logo.webp" alt="Logo Footer" height="60" class="rounded-circle mb-3 border border-secondary border-opacity-25 shadow-sm">
+        <h5 class="text-white fw-bold mb-1" style="letter-spacing: 1px;">CAFÉ DE BARRIO</h5>
+        <p class="text-white-50 small mb-0">El arte de la extracción en cada gota.</p>
+      </div>
+      
+      <div class="col-md-4 text-center">
+        <div class="social-links d-flex justify-content-center gap-3 mb-3">
+          <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="social-icon"><i class="bi bi-whatsapp"></i></a>
+        </div>
+        <p class="text-warning small opacity-75 fw-medium m-0">Abierto todos los días de 8:00 AM a 10:00 PM</p>
+      </div>
+
+      <div class="col-md-4 text-center text-md-end">
+        <p class="text-white-50 small mb-2">&copy; {{currentYear}} Café de Barrio. Todos los derechos reservados.</p>
+        <a routerLink="/admin/login" class="text-muted small text-decoration-none admin-secret-link">Acceso Empleados</a>
+      </div>
+    </div>
   </div>
 </footer>
 
-<!-- ================================================================= -->
-<!-- MODAL FLOTANTE DE BÚSQUEDA (Sin cambios, funciona perfecto)       -->
-<!-- ================================================================= -->
 <div class="search-modal" *ngIf="showSearch" (click)="closeSearch()">
   <div class="search-content" (click)="$event.stopPropagation()">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h5 class="mb-0 fw-bold" style="color: #4a3b32;"><i class="bi bi-search me-2 text-warning"></i>¿Qué estás buscando?</h5>
-      <button class="btn btn-close" (click)="closeSearch()"></button>
+      <button class="btn btn-close shadow-none" (click)="closeSearch()"></button>
     </div>
     
-    <input type="text" class="form-control form-control-lg mb-4 shadow-sm rounded-pill px-4 border-warning" 
+    <input type="text" class="form-control form-control-lg mb-4 shadow-sm rounded-pill px-4 border-warning search-input-focus" 
            placeholder="Ej: Latte, Capuchino, Postres..." 
            (input)="onSearch($event)" [value]="searchQuery" autofocus>
     
-    <!-- Sugerencias (Empty State) -->
     <div *ngIf="!searchQuery.trim() && results.length === 0" class="text-center py-4">
       <i class="bi bi-cup-hot fs-1 text-muted opacity-25 mb-3 d-block"></i>
       <h6 class="text-muted mb-3 fw-bold">Categorías Populares</h6>
       <div class="d-flex flex-wrap justify-content-center gap-2">
-        <button *ngFor="let cat of categorias" class="btn btn-sm rounded-pill" 
-                style="background-color: rgba(212, 163, 115, 0.1); color: #a06b3e; border: 1px solid #d4a373;"
+        <button *ngFor="let cat of categorias" class="btn btn-sm rounded-pill category-tag" 
                 (click)="filterByCategory(cat.id)">
           {{cat.nombre}}
         </button>
       </div>
     </div>
     
-    <!-- Resultados en Tiempo Real -->
     <div *ngIf="results.length > 0" class="results">
       <div *ngFor="let p of results" class="result-item d-flex align-items-center p-3 border-bottom" 
            (click)="closeSearch(); router.navigate(['/catalogo'])">
         
         <img [src]="getImagenUrl(p.imagenUrl)" 
-             (error)="handleImageError($event)" 
-             class="me-3 shadow-sm" 
+             class="me-3 shadow-sm result-img" 
              style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px; border: 1px solid #eee;">
              
         <div class="flex-grow-1">
@@ -114,7 +111,6 @@
       </div>
     </div>
 
-    <!-- Sin Resultados -->
     <div *ngIf="searchQuery.trim() && results.length === 0" class="text-center py-5">
       <h6 class="text-muted">No encontramos nada para "{{searchQuery}}"</h6>
     </div>
