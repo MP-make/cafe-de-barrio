@@ -31,8 +31,8 @@
           <i class="bi bi-search search-icon-btn"></i>
         </div>
 
-        <a *ngIf="!isLoggedIn" routerLink="/admin/login" class="btn btn-outline-light rounded-pill px-4 premium-login-btn">
-          <i class="bi bi-person me-1"></i> Iniciar Sesión
+        <a *ngIf="!isLoggedIn" routerLink="/login" class="btn rounded-pill px-4 d-flex align-items-center premium-login-btn">
+          <i class="bi bi-person me-2 fs-5"></i> Iniciar Sesión
         </a>
 
         <a *ngIf="isLoggedIn" routerLink="/checkout" class="btn btn-premium-cart rounded-pill px-4 position-relative d-flex align-items-center gap-2">

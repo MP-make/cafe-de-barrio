@@ -61,16 +61,23 @@
     }
   
     /* BOTÓN LOGIN HEADER */
-    .premium-login-btn {
-      border-color: rgba(255, 255, 255, 0.3);
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: 0.3s;
-      &:hover {
-        background: #ffffff;
-        color: #1a1410;
-      }
+  .premium-login-btn {
+    height: 40px; /* Igualamos la altura exacta con la lupa */
+    border: 1px solid rgba(212, 163, 115, 0.5); /* Mismo borde dorado/café */
+    color: #d4a373; /* Mismo color de texto */
+    background: transparent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    
+    &:hover {
+      background: #ffffff;
+      color: #1a1410;
+      border-color: #ffffff;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); /* Mismo Glow blanco de la lupa */
+      transform: translateY(-2px);
     }
+  }
   
     /* BOTÓN DEL CARRITO */
     .btn-premium-cart {
