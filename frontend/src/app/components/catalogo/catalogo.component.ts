@@ -66,7 +66,7 @@ export class CatalogoComponent implements OnInit {
       return nombreArchivo;
     }
     // Aseguramos la ruta completa al backend con la carpeta uploads
-    return `https://cafe-de-barrio-backend.onrender.com\${nombreArchivo}`; 
+    return `https://cafe-de-barrio.onrender.com\${nombreArchivo}`; 
   }
 
   manejarErrorImagen(event: any) {
