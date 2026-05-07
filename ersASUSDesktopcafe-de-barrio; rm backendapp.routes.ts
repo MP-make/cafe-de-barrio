@@ -1,0 +1,41 @@
+[33mcommit 7406c5ffe7f988c8534af656161b117398f821a6[m
+Author: MP-make <yones314315@gmail.com>
+Date:   Mon May 4 21:10:57 2026 -0500
+
+    Avance en el proyecto Café de Barrio: configuración del backend con Spring Boot, entidades JPA, controladores REST, servicios, DTOs, y actualizaciones en el frontend Angular
+
+backend/app.routes.ts
+backend/pom.xml
+backend/src/main/java/com/cafedebarrio/backend/config/WebConfig.java
+backend/src/main/java/com/cafedebarrio/backend/controller/ProductoController.java
+backend/src/main/java/com/cafedebarrio/backend/dto/PedidoRequestDTO.java
+backend/src/main/java/com/cafedebarrio/backend/dto/ProductoRequestDTO.java
+backend/src/main/java/com/cafedebarrio/backend/dto/ProductoResponseDTO.java
+backend/src/main/java/com/cafedebarrio/backend/entity/DetallePedido.java
+backend/src/main/java/com/cafedebarrio/backend/entity/Pedido.java
+backend/src/main/java/com/cafedebarrio/backend/repository/PedidoRepository.java
+backend/src/main/java/com/cafedebarrio/backend/service/PedidoService.java
+backend/src/main/java/com/cafedebarrio/backend/service/ProductoService.java
+backend/src/main/resources/application.properties
+backend/uploads/46a815ba-e873-4b5b-aed7-107a615775fd_cafeimagengranos.webp
+"backend/uploads/d8ae6736-124c-4e18-87d3-7f5e71ded6ab_caf\303\251 latte.jpg"
+frontend/.vscode/launch.json
+frontend/public/fondo.webp
+frontend/public/logo.webp
+frontend/src/app/app.component.html
+frontend/src/app/app.component.ts
+frontend/src/app/app.routes.ts
+frontend/src/app/components/admin-pedidos/admin-pedidos.component.html
+frontend/src/app/components/admin-pedidos/admin-pedidos.component.scss
+frontend/src/app/components/catalogo/catalogo.component.html
+frontend/src/app/components/catalogo/catalogo.component.ts
+frontend/src/app/components/catalogo/catalogo.scss
+frontend/src/app/components/checkout/checkout.component.html
+frontend/src/app/components/checkout/checkout.component.ts
+frontend/src/app/components/producto-form/producto-form.component.html
+frontend/src/app/components/producto-form/producto-form.component.ts
+frontend/src/app/models/producto.model.ts
+frontend/src/app/services/cart.service.ts
+frontend/src/app/services/producto.service.ts
+frontend/src/styles.scss
+temp_controller.java
