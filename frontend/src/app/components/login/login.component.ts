@@ -65,36 +65,39 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.isSubmitting = true;
       this.errorMessage = '';
+      console.log('Enviando credenciales al backend...'); // Para la consola
       
       this.authService.login(this.loginForm.value).subscribe({
         next: (response: any) => {
-          // 1. Guardamos el token
+          console.log('¡Respuesta recibida del backend!', response);
           this.authService.setToken(response.token);
-          this.isSubmitting = false;
+          this.isSubmitting = false; // Apagamos el circulito
           
-          // 2. Extraemos el rol del token (CLIENTE o ADMIN)
           const userRole = this.authService.getRole();
 
-          // 3. Verificamos si está intentando entrar por la puerta correcta
           if (this.activeMainTab === 'ADMIN') {
-            
             if (userRole === 'ADMIN') {
-              // Es Admin de verdad, lo dejamos pasar
               this.router.navigate(['/admin/productos']);
             } else {
-              // Es un Cliente intentando hacerse pasar por Admin
-              this.authService.logout(); // Le borramos el token
+              this.authService.logout(); 
               this.errorMessage = 'Acceso denegado. Esta cuenta no tiene permisos de Administrador.';
             }
-
           } else {
-            // Está en la pestaña de Cliente
             this.router.navigate(['/catalogo']);
           }
         },
         error: (err) => {
-          this.isSubmitting = false;
-          this.errorMessage = 'Credenciales inválidas. Verifica tu usuario y contraseña.';
+          console.error('💥 Error detectado en el Login:', err);
+          this.isSubmitting = false; // APAGAMOS EL CIRCULITO PASE LO QUE PASE
+          
+          // Mensajes de error inteligentes:
+          if (err.status === 0) {
+            this.errorMessage = 'El servidor está despertando o hay un error de conexión. Espera 40 seg y vuelve a intentar.';
+          } else if (err.status === 401 || err.status === 403) {
+            this.errorMessage = 'Usuario o contraseña incorrectos.';
+          } else {
+            this.errorMessage = 'Error del servidor (Código ' + err.status + '). Revisa la consola.';
+          }
         }
       });
     }
