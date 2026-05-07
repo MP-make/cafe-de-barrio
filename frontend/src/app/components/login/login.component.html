@@ -41,10 +41,17 @@
       </form>
 
       <form *ngIf="activeClientTab === 'REGISTER'" [formGroup]="registerForm" (ngSubmit)="onRegister()" class="fade-in">
+        
         <div class="mb-3">
           <label class="form-label small fw-bold text-secondary">Usuario</label>
           <input type="text" class="form-control form-control-lg bg-light" formControlName="username" placeholder="Elige un usuario">
-          <small *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" class="text-danger">Mínimo 4 caracteres</small>
+          <small *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" class="text-danger d-block mt-1">Mínimo 4 caracteres</small>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold text-secondary">Correo Electrónico</label>
+          <input type="email" class="form-control form-control-lg bg-light" formControlName="email" placeholder="tu@correo.com">
+          <small *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-danger d-block mt-1">Ingresa un correo válido</small>
         </div>
         <div class="mb-3">
           <label class="form-label small fw-bold text-secondary">Contraseña</label>

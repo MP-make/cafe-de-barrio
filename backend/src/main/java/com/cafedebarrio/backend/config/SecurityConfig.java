@@ -31,7 +31,8 @@ public class SecurityConfig {
             // Quitamos el .cors() de aquí porque ya lo maneja CorsConfig.java
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
-                .requestMatchers("/api/auth/login", "/uploads/**", "/error").permitAll()
+                // AÑADIDO: "/api/auth/register" para permitir la creación de cuentas
+                .requestMatchers("/api/auth/login", "/api/auth/register", "/uploads/**", "/error").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/productos/**", "/api/categorias/**").permitAll()
                 .anyRequest().authenticated()
             )

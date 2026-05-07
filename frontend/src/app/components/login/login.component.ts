@@ -34,9 +34,10 @@ export class LoginComponent {
       password: ['', Validators.required]
     });
 
-    // Formulario de Registro
+    // Formulario de Registro (AHORA CON EMAIL)
     this.registerForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(4)]],
+      email: ['', [Validators.required, Validators.email]], // <--- CAMPO NUEVO
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
@@ -97,21 +98,22 @@ export class LoginComponent {
       
       const newUser = {
         username: this.registerForm.value.username,
+        email: this.registerForm.value.email, // <--- ENVIAMOS EL CORREO AL BACKEND
         password: this.registerForm.value.password,
-        rol: 'CLIENTE' // Por defecto, los que se registran aquí son clientes
+        rol: 'CLIENTE' 
       };
 
-      // ATENCIÓN: Necesitas tener un método register() en tu AuthService y Backend.
+      // Llamada al backend
       if(typeof (this.authService as any).register === 'function') {
         (this.authService as any).register(newUser).subscribe({
           next: () => {
             this.isSubmitting = false;
             this.successMessage = '¡Cuenta creada con éxito! Ahora puedes iniciar sesión.';
-            this.setClientTab('LOGIN'); // Lo devolvemos al login automáticamente
+            this.setClientTab('LOGIN'); 
           },
           error: (err: any) => {
             this.isSubmitting = false;
-            this.errorMessage = 'Hubo un error. Es posible que el usuario ya exista.';
+            this.errorMessage = 'Hubo un error. Es posible que el usuario o correo ya existan.';
           }
         });
       } else {

@@ -15,6 +15,12 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/login`, credentials);
   }
 
+  // --- NUEVO: MÉTODO DE REGISTRO AÑADIDO ---
+  register(userData: any): Observable<any> {
+    // responseType: 'text' es vital aquí porque Java nos va a responder con un mensaje de texto ("Usuario registrado") y no con un JSON.
+    return this.http.post(`${this.apiUrl}/register`, userData, { responseType: 'text' });
+  }
+
   setToken(token: string): void {
     localStorage.setItem('token', token);
   }
