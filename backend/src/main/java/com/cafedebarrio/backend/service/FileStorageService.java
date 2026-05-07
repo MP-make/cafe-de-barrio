@@ -44,6 +44,7 @@ public class FileStorageService {
         // 4. Configuramos los permisos y el tipo de archivo
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(supabaseKey);
+        headers.set("apikey", supabaseKey); // <--- ¡ESTA ES LA LÍNEA CRÍTICA QUE FALTABA!
         
         String contentType = file.getContentType();
         if (contentType != null) {
@@ -100,6 +101,7 @@ public class FileStorageService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(supabaseKey);
+        headers.set("apikey", supabaseKey); // <--- ¡AQUÍ TAMBIÉN SE NECESITABA PARA BORRAR!
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
