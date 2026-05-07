@@ -39,12 +39,12 @@
           </select>
         </div>
         <div class="col-6 col-md-4">
-          <select class="form-select form-select-sm border-0 shadow-none bg-light" 
+          <select class="form-select form-select-sm border-0 shadow-none bg-light fw-medium" 
                   [(ngModel)]="selectedFilterStock" (change)="aplicarFiltros()">
-            <option value="">Todos los niveles</option>
-            <option value="normal">Normal (> 5)</option>
-            <option value="bajo">Stock Bajo (1 - 5)</option>
-            <option value="agotado">Agotados (0)</option>
+            <option value="">Todos</option>
+            <option value="normal">Stock</option>
+            <option value="bajo">Stock Bajo</option>
+            <option value="agotado">Sin Stock</option>
           </select>
         </div>
       </div>
@@ -52,7 +52,7 @@
 
     <div class="card main-table-card overflow-hidden shadow-sm">
       <div class="table-responsive">
-        <table class="table custom-table table-hover align-middle mb-0" style="min-width: 600px;">
+        <table class="table custom-table table-hover align-middle mb-0" style="min-width: 700px;">
           <thead class="bg-light">
             <tr>
               <th scope="col" class="ps-4">Producto</th>
@@ -75,17 +75,31 @@
               </td>
               <td><span class="badge bg-secondary border border-light">{{ getCategoriaNombre(p.categoriaId) }}</span></td>
               <td class="fw-bold text-success">${{p.precio}}</td>
-              <td>
-                <div class="d-flex align-items-center gap-2">
+              
+              <td style="min-width: 160px;">
+                <div *ngIf="!p.showStockForm" class="d-flex align-items-center gap-2">
                   <span class="badge" [ngClass]="p.stock > 5 ? 'bg-info text-dark' : (p.stock > 0 ? 'bg-warning text-dark' : 'bg-danger')">
                     {{p.stock}} unid.
                   </span>
-                  <button class="btn btn-sm btn-light border rounded-circle d-flex align-items-center justify-content-center p-1" 
-                          title="Añadir Stock Rápido" (click)="sumarStockRapido(p)" style="width: 28px; height: 28px;">
-                    <i class="bi bi-plus text-success fw-bold"></i>
+                  <button class="btn btn-sm btn-outline-success border rounded-pill fw-bold action-add-btn" 
+                          (click)="abrirSumaStock(p)">
+                    Agregar +
+                  </button>
+                </div>
+                
+                <div *ngIf="p.showStockForm" class="inline-stock-form d-flex align-items-center gap-1">
+                  <input type="number" class="form-control form-control-sm text-center" 
+                         [(ngModel)]="p.cantidadSumar" min="1" style="width: 60px;">
+                  <button class="btn btn-sm btn-success shadow-sm" (click)="confirmarSumaStock(p)" [disabled]="p.isAdding">
+                    <i *ngIf="!p.isAdding" class="bi bi-check2 fw-bold"></i>
+                    <span *ngIf="p.isAdding" class="spinner-border spinner-border-sm"></span>
+                  </button>
+                  <button class="btn btn-sm btn-light border text-danger shadow-sm" (click)="cancelarSumaStock(p)" [disabled]="p.isAdding">
+                    <i class="bi bi-x-lg"></i>
                   </button>
                 </div>
               </td>
+
               <td class="text-center pe-4">
                 <div class="btn-group shadow-sm">
                   <button class="btn btn-light btn-sm text-primary border" (click)="abrirModalEditar(p)">

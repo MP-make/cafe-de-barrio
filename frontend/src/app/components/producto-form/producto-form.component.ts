@@ -16,14 +16,14 @@ import autoTable from 'jspdf-autotable';
 })
 export class ProductoFormComponent implements OnInit {
   // Datos
-  productos: Producto[] = [];
-  filteredProductos: Producto[] = [];
+  productos: any[] = []; // Usamos any para poder inyectarle variables de UI (showStockForm, etc)
+  filteredProductos: any[] = [];
   categorias: Categoria[] = [];
   
   // Filtros
   searchTerm: string = '';
   selectedFilterCategoria: string = '';
-  selectedFilterStock: string = ''; // <-- NUEVO: Filtro de stock
+  selectedFilterStock: string = ''; 
 
   // Control de Formulario y Modal
   productoForm!: FormGroup;
@@ -64,8 +64,15 @@ export class ProductoFormComponent implements OnInit {
 
     this.productoService.getProductos().subscribe({
       next: (data: any) => {
-        this.productos = Array.isArray(data) ? data : (data.content || data.data || []);
-        this.aplicarFiltros(); // <-- Aplica los filtros apenas carga
+        const rawProductos = Array.isArray(data) ? data : (data.content || data.data || []);
+        // Mapeamos los productos para inyectar variables de control de UI para el Stock Inline
+        this.productos = rawProductos.map((p: any) => ({
+          ...p,
+          showStockForm: false,
+          cantidadSumar: 1,
+          isAdding: false
+        }));
+        this.aplicarFiltros(); 
         this.cdr.detectChanges();
       },
       error: (err: any) => console.error('Error cargando productos', err)
@@ -88,32 +95,47 @@ export class ProductoFormComponent implements OnInit {
     });
   }
 
-  // --- SUMA RÁPIDA DE STOCK ---
-  sumarStockRapido(producto: Producto) {
-    const cantidad = prompt(`¿Cuántas unidades deseas sumarle al stock de "${producto.nombre}"?`, '1');
-    
-    if (cantidad && !isNaN(Number(cantidad)) && Number(cantidad) > 0) {
-      const nuevoStock = producto.stock + Number(cantidad);
-      
-      const formData = new FormData();
-      formData.append('nombre', producto.nombre);
-      formData.append('descripcion', producto.descripcion || '');
-      formData.append('precio', producto.precio.toString());
-      formData.append('stock', nuevoStock.toString());
-      formData.append('categoriaId', producto.categoriaId!.toString());
-      // No agregamos imagenFile, para que el backend conserve la imagen actual
-
-      this.productoService.actualizarProducto(producto.id!, formData).subscribe({
-        next: () => {
-          producto.stock = nuevoStock; // Actualiza en la vista al instante
-          this.aplicarFiltros();
-        },
-        error: (err: any) => this.manejarError(err)
-      });
-    }
+  // --- SUMA RÁPIDA DE STOCK (INLINE) ---
+  abrirSumaStock(producto: any) {
+    producto.showStockForm = true;
+    producto.cantidadSumar = 1; // Resetea a 1 por defecto al abrir
   }
 
-  // --- CONTROL DEL MODAL ---
+  cancelarSumaStock(producto: any) {
+    producto.showStockForm = false;
+  }
+
+  confirmarSumaStock(producto: any) {
+    if (!producto.cantidadSumar || producto.cantidadSumar <= 0) {
+      alert('Ingresa una cantidad válida mayor a 0');
+      return;
+    }
+
+    producto.isAdding = true;
+    const nuevoStock = producto.stock + producto.cantidadSumar;
+    
+    const formData = new FormData();
+    formData.append('nombre', producto.nombre);
+    formData.append('descripcion', producto.descripcion || '');
+    formData.append('precio', producto.precio.toString());
+    formData.append('stock', nuevoStock.toString());
+    formData.append('categoriaId', producto.categoriaId!.toString());
+
+    this.productoService.actualizarProducto(producto.id!, formData).subscribe({
+      next: () => {
+        producto.stock = nuevoStock; 
+        producto.showStockForm = false; 
+        producto.isAdding = false;
+        this.aplicarFiltros(); // Refresca los colores de los badges
+      },
+      error: (err: any) => {
+        producto.isAdding = false;
+        this.manejarError(err);
+      }
+    });
+  }
+
+  // --- CONTROL DEL MODAL PRINCIPAL ---
   abrirModalNuevo() {
     this.editMode = false;
     this.currentProductId = null;
@@ -140,13 +162,12 @@ export class ProductoFormComponent implements OnInit {
     this.mostrarModal = false; 
   }
 
-  // --- CRUD (Crear y Editar) ---
+  // --- CRUD ---
   guardarProducto() {
     if (this.productoForm.invalid) {
       alert('Completa los campos obligatorios.');
       return;
     }
-
     if (!this.editMode && !this.selectedFile) {
       alert('La imagen es obligatoria para nuevos productos.');
       return;
@@ -218,7 +239,6 @@ export class ProductoFormComponent implements OnInit {
     return cat ? cat.nombre : 'Desconocida';
   }
 
-  // --- MÉTODOS DE CORRECCIÓN DE IMÁGENES (SUPABASE) ---
   getImagenUrl(nombreArchivo?: string): string {
     if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
       return '/logo.webp'; 
