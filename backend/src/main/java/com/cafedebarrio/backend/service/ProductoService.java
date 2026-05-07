@@ -32,12 +32,19 @@ public class ProductoService {
             ? productoRepository.findByCategoriaId(categoriaId) 
             : productoRepository.findAll();
             
-        return productos.stream().map(this::mapToDTO).collect(Collectors.toList());
+        return productos.stream()
+                .filter(Producto::getActivo) // 👻 EL FILTRO MÁGICO CORREGIDO
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     public List<ProductoResponseDTO> buscarProductos(String query) {
         List<Producto> productos = productoRepository.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(query, query);
-        return productos.stream().map(this::mapToDTO).collect(Collectors.toList());
+        
+        return productos.stream()
+                .filter(Producto::getActivo) // 👻 EL FILTRO MÁGICO CORREGIDO
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     public ProductoResponseDTO crearProducto(ProductoRequestDTO dto) {
