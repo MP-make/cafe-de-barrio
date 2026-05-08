@@ -1,0 +1,67 @@
+<!-- Fondo difuminado que cubre toda la pantalla al abrir -->
+<div class="cart-overlay" *ngIf="isOpen" (click)="cerrarPanel()"></div>
+
+<!-- Panel Lateral deslizable -->
+<div class="cart-sidebar" [class.open]="isOpen">
+  
+  <!-- CABECERA FIXED -->
+  <div class="p-3 d-flex justify-content-between align-items-center cart-header-premium border-bottom-gold">
+    <h5 class="mb-0 text-white fw-bold"><i class="bi bi-cart3 text-gold me-2"></i> Tu Pedido</h5>
+    <button class="btn btn-link text-white-50 fs-4 p-0 text-decoration-none" (click)="cerrarPanel()">&times;</button>
+  </div>
+
+  <!-- CUERPO SCROLLABLE -->
+  <div class="cart-body p-3 overflow-auto">
+    <div *ngIf="cartItems.length === 0" class="text-center py-5 mt-4">
+      <i class="bi bi-basket2 fs-1 text-muted opacity-50 mb-3 d-block"></i>
+      <p class="text-muted">Aún no hay productos en tu pedido.</p>
+    </div>
+
+    <!-- Lista de Items -->
+    <div *ngFor="let item of cartItems" class="d-flex align-items-center mb-3 pb-3 border-bottom-gold-light">
+      <img [src]="getImagenUrl(item.producto.imagenUrl)" class="rounded shadow-sm me-3 img-dark-bg" style="width: 65px; height: 65px; object-fit: cover;">
+      <div class="flex-grow-1">
+        <h6 class="mb-0 text-gold small fw-bold">{{item.producto.nombre}}</h6>
+        <div class="d-flex align-items-center mt-2">
+          <button class="btn btn-sm btn-outline-gold py-0 px-2" (click)="disminuirCantidad(item)">-</button>
+          <span class="mx-2 text-white small">{{item.cantidad}}</span>
+          <button class="btn btn-sm btn-outline-gold py-0 px-2" (click)="aumentarCantidad(item)">+</button>
+          <i class="bi bi-trash text-danger opacity-75 ms-auto cursor-pointer fs-6 hover-danger" (click)="eliminarItem(item.producto.id)" title="Eliminar"></i>
+        </div>
+      </div>
+      <div class="text-end ms-2">
+        <p class="mb-0 text-white fw-bold small">${{item.producto.precio * item.cantidad}}</p>
+      </div>
+    </div>
+
+    <!-- Recomendaciones -->
+    <div class="mt-4" *ngIf="recomendaciones.length > 0">
+      <h6 class="text-white-50 small mb-3">¿Deseas añadir algo más?</h6>
+      <div class="d-flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+        <div *ngFor="let rec of recomendaciones" class="card card-dark-premium flex-shrink-0" style="width: 125px;">
+          <img [src]="getImagenUrl(rec.imagenUrl)" class="card-img-top img-dark-bg" style="height: 80px; object-fit: cover;">
+          <div class="card-body p-2 text-center">
+            <h6 class="small text-white text-truncate mb-1" style="font-size: 0.75rem;">{{rec.nombre}}</h6>
+            <p class="text-gold fw-bold mb-2" style="font-size: 0.8rem;">${{rec.precio}}</p>
+            <button class="btn btn-gold btn-sm w-100 py-1 fw-bold" style="font-size: 0.7rem;" (click)="agregarRecomendacion(rec)">+ Añadir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER FIXED -->
+  <div class="cart-footer p-4 cart-header-premium border-top-gold">
+    <div class="d-flex justify-content-between text-white-50 mb-1 small">
+      <span>Subtotal:</span>
+      <span>${{getTotal()}}</span>
+    </div>
+    <div class="d-flex justify-content-between text-white mb-4 fw-bold fs-5">
+      <span>Total:</span>
+      <span class="text-gold">${{getTotal()}}</span>
+    </div>
+    <button class="btn btn-gold w-100 fw-bold shadow-sm py-2 fs-6 text-dark" (click)="irAPagar()" [disabled]="cartItems.length === 0">
+      IR A PAGAR
+    </button>
+  </div>
+</div>

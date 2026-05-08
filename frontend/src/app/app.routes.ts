@@ -7,6 +7,7 @@ import { LoginComponent } from './components/login/login.component';
 import { InicioComponent } from './components/inicio/inicio'; // Importación corregida
 import { AuthGuard } from './guards/auth.guard';
 import { AdminComponent } from './components/admin/admin.component';
+import { Cart } from './components/cart/cart';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -16,6 +17,7 @@ export const routes: Routes = [
   { path: 'inicio', component: InicioComponent, title: 'Inicio | Café de Barrio' },
   { path: 'catalogo', component: CatalogoComponent, title: 'Catálogo | Café de Barrio' },
   { path: 'checkout', component: CheckoutComponent, title: 'Finalizar Pedido | Café de Barrio' },
+  { path: 'carrito', component: Cart, title: 'Carrito | Café de Barrio' },
   
   // Vistas de Administración
 { path: 'admin', component: AdminComponent, canActivate: [AuthGuard], children: [

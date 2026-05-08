@@ -27,7 +27,10 @@
         <div class="row g-4 justify-content-center">
           <div class="col-lg-3 col-md-6 col-6" *ngFor="let categoria of categorias; let i = index">
             <div class="card-category-premium reveal-item" 
-                 [ngStyle]="{'transition-delay': (i * 0.1) + 's'}"
+                 [ngStyle]="{
+                    'background-image': 'url(/cat' + (i + 1) + '-webp.webp)',
+                    'transition-delay': (i * 0.1) + 's'
+                 }"
                  [routerLink]="['/catalogo']" 
                  [queryParams]="{categoria: categoria.id}">
               
@@ -59,13 +62,16 @@
           <div class="col-lg-3 col-md-6 col-6" *ngFor="let producto of productos; let i = index">
             <div class="product-card-dark reveal-item" [ngStyle]="{'transition-delay': (i * 0.15) + 's'}">
               <div class="product-img-box">
-                <img [src]="getImagenUrl(producto.imagenUrl)" (error)="$any($event.target).src = 'logo.webp'">
+                <img [src]="getImagenUrl(producto.imagenUrl)" (error)="$any($event.target).src = '/logo.webp'">
               </div>
               <div class="product-info-dark p-4 text-center">
                 <h4 class="fw-bold text-white mb-2">{{ producto.nombre | uppercase }}</h4>
                 <p class="text-white-50 small mb-4">{{ producto.descripcion | slice:0:50 }}...</p>
-                <button class="btn-premium-solid" (click)="agregarAlCarrito(producto)">
-                  PEDIR — ${{ producto.precio }}
+                <button class="btn-premium-solid" 
+                        (click)="agregarAlCarrito(producto)"
+                        [disabled]="producto.stock <= 0">
+                  <ng-container *ngIf="producto.stock > 0">PEDIR — ${{ producto.precio }}</ng-container>
+                  <ng-container *ngIf="producto.stock <= 0">AGOTADO</ng-container>
                 </button>
               </div>
             </div>
@@ -115,4 +121,4 @@
         </div>
       </div>
     </section>
-  </div>
+</div>

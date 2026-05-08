@@ -1,21 +1,24 @@
 $gold-aged: #C5A059;
-$matte-black: #1a1410;
+$matte-black: #0A0A0A; /* Corregido al negro mate oficial del proyecto */
+$card-bg: rgba(25, 20, 16, 0.6); /* Fondo cristalino oscuro para tarjetas */
 
 /* =========================================================
    1. BARRA DE HERRAMIENTAS Y PÍLDORAS (FILTROS)
    ========================================================= */
 .premium-search-box, .premium-sort-box {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.05); /* Translúcido oscuro en vez de blanco */
   border-radius: 50px;
   display: flex;
   align-items: center;
   padding: 0.3rem 1.2rem;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
   transition: all 0.3s ease;
 
   &:focus-within {
     border-color: $gold-aged;
     box-shadow: 0 0 0 0.25rem rgba(197, 160, 89, 0.15) !important;
+    background: rgba(0, 0, 0, 0.4);
   }
 
   .form-control, .form-select {
@@ -24,7 +27,11 @@ $matte-black: #1a1410;
     background: transparent;
     font-size: 0.9rem;
     font-weight: 500;
-    color: #444;
+    color: #fff; /* Texto blanco */
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
   }
 }
 
@@ -33,7 +40,6 @@ $matte-black: #1a1410;
   gap: 0.8rem;
   overflow-x: auto;
   padding-bottom: 0.5rem;
-  /* Ocultar barra de scroll en navegadores Webkit */
   &::-webkit-scrollbar { display: none; }
   -ms-overflow-style: none;  
   scrollbar-width: none;  
@@ -48,6 +54,7 @@ $matte-black: #1a1410;
   font-weight: 600;
   font-size: 0.85rem;
   white-space: nowrap;
+  backdrop-filter: blur(5px);
   transition: all 0.3s ease;
 
   &:hover {
@@ -64,17 +71,19 @@ $matte-black: #1a1410;
 }
 
 /* =========================================================
-   2. TARJETAS DE PRODUCTO (BASE DESKTOP)
+   2. TARJETAS DE PRODUCTO (DARK PREMIUM)
    ========================================================= */
 .cafe-card {
   border-radius: 1rem !important;
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  background-color: #ffffff;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  border: 1px solid rgba(197, 160, 89, 0.15) !important; /* Borde dorado sutil */
+  background-color: $card-bg;
+  backdrop-filter: blur(10px); /* Efecto Glassmorphism */
   
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
+    border-color: rgba(197, 160, 89, 0.5) !important; /* Brillo dorado al hacer hover */
     
     .card-img-top { transform: scale(1.05); }
   }
@@ -82,28 +91,30 @@ $matte-black: #1a1410;
 
 .img-container {
   height: 220px;
+  background-color: #000; /* Fondo negro tras la imagen por si no carga */
 }
 
 .card-img-top {
   height: 100%;
   width: 100%;
   transition: transform 0.6s ease;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(197, 160, 89, 0.1);
 }
 
 .price-badge {
-  background: linear-gradient(135deg, #2c211b 0%, #1a1410 100%) !important;
-  font-weight: 700;
+  background: $gold-aged !important;
+  color: $matte-black !important;
+  font-weight: 800;
   letter-spacing: 0.5px;
 }
 
 .stock-badge {
   font-size: 0.7rem;
-  color: #888;
-  background: #f8f9fa;
+  color: $gold-aged; /* Letra dorada */
+  background: rgba(197, 160, 89, 0.1); /* Fondo oscuro translúcido */
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
-  border: 1px solid #eee;
+  border: 1px solid rgba(197, 160, 89, 0.2);
 }
 
 .product-desc {
@@ -115,11 +126,22 @@ $matte-black: #1a1410;
   font-size: 0.85rem;
 }
 
+/* Estilo Ghost Premium para el botón */
 .btn-add-cart {
+  background: transparent !important;
+  border: 1px solid $gold-aged !important;
+  color: $gold-aged !important;
   transition: all 0.3s ease;
-  &:hover {
-    background: #1a1410 !important;
-    color: $gold-aged !important;
+  
+  &:hover:not([disabled]) {
+    background: $gold-aged !important;
+    color: $matte-black !important;
+    box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
+  }
+  
+  &[disabled] {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
   }
 }
 
@@ -132,33 +154,16 @@ $matte-black: #1a1410;
 @media (max-width: 767px) {
   
   .img-container {
-    height: 140px; /* Foto más baja para que no ocupe toda la pantalla */
+    height: 140px; 
   }
 
   .cafe-card {
-    .card-body {
-      padding: 0.8rem !important; /* Menos relleno para ahorrar espacio */
-    }
-
-    .card-title {
-      font-size: 0.85rem !important; /* Títulos más chicos */
-    }
-
-    .price-badge {
-      font-size: 0.75rem !important;
-      padding: 0.3rem 0.6rem !important;
-    }
-
-    .stock-badge {
-      font-size: 0.6rem;
-      margin-bottom: 0.3rem !important;
-    }
-
-    /* Ocultar descripción en celular para limpiar la vista */
-    .product-desc {
-      display: none; 
-    }
-
+    .card-body { padding: 0.8rem !important; }
+    .card-title { font-size: 0.85rem !important; }
+    .price-badge { font-size: 0.75rem !important; padding: 0.3rem 0.6rem !important; }
+    .stock-badge { font-size: 0.6rem; margin-bottom: 0.3rem !important; }
+    .product-desc { display: none; }
+    
     .btn-add-cart {
       padding: 0.4rem !important;
       font-size: 0.75rem;
@@ -167,14 +172,12 @@ $matte-black: #1a1410;
     }
   }
 
-  /* Ajustar inputs para que quepan bien uno sobre otro en móviles */
   .premium-search-box, .premium-sort-box {
     padding: 0.2rem 0.8rem;
     .form-control, .form-select { font-size: 0.8rem; }
   }
 }
 
-/* Teléfonos muy pequeños (Se oculta la palabra "Añadir" y queda solo el icono) */
 @media (max-width: 380px) {
   .btn-add-cart .btn-text { display: none !important; }
 }

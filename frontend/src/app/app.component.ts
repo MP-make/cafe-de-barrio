@@ -8,10 +8,15 @@ import { AuthService } from './services/auth.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 
+// 1. IMPORTANTE: Importar el componente del carrito aquí
+// Asegúrate de que la ruta sea correcta según tu carpeta
+import { Cart } from './components/cart/cart'; 
+
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterOutlet], 
+  // 2. IMPORTANTE: Agregar "Cart" aquí para que el HTML reconozca <app-cart>
+  imports: [CommonModule, RouterModule, RouterOutlet, Cart], 
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -20,7 +25,7 @@ export class AppComponent implements OnInit {
   cartItemCount: number = 0;
   isAdminView = false;
   currentYear = new Date().getFullYear();
-  isMenuOpen = false; // <--- ¡NUEVA VARIABLE!
+  isMenuOpen = false;
 
   showSearch = false;
   searchQuery = '';
@@ -43,7 +48,6 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // --- LÓGICA DE SESIÓN ---
   get isLoggedIn(): boolean {
     return !!localStorage.getItem('token'); 
   }
@@ -83,6 +87,13 @@ export class AppComponent implements OnInit {
   closeMenu() {
     this.isMenuOpen = false;
   }
+
+  irAlCarrito() {
+    this.closeMenu();
+    // Esto activa el panel lateral que creamos
+    this.cartService.toggleCart(true); 
+  }
+
   openSearch() { this.showSearch = true; }
   closeSearch() { this.showSearch = false; this.results = []; this.searchQuery = ''; }
   onSearch(event: any) { this.searchQuery = event.target.value; this.searchTerm$.next(this.searchQuery); }

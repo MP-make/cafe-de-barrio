@@ -46,14 +46,12 @@ export class InicioComponent implements OnInit, AfterViewInit {
 
     const scrollY = window.scrollY;
     
-    // PARALLAX HERO 1 (Desvanecimiento + Movimiento)
     const mainContent = document.querySelector('.hero-premium .hero-content') as HTMLElement;
     if (mainContent) {
       mainContent.style.transform = `translateY(${scrollY * 0.3}px)`;
       mainContent.style.opacity = `${Math.max(1 - (scrollY / 500), 0)}`;
     }
 
-    // PARALLAX MINI-HERO (Sección 4) - CORREGIDO
     const miniHero = document.querySelector('.mini-hero') as HTMLElement;
     const miniContent = document.querySelector('.mini-hero .container') as HTMLElement;
     
@@ -61,7 +59,6 @@ export class InicioComponent implements OnInit, AfterViewInit {
       const rect = miniHero.getBoundingClientRect();
       const viewHeight = window.innerHeight;
 
-      // Solo se mueve si la sección es visible en el viewport
       if (rect.top < viewHeight && rect.bottom > 0) {
         const relativeScroll = viewHeight - rect.top;
         miniContent.style.transform = `translateY(${relativeScroll * 0.1}px)`;
@@ -111,28 +108,34 @@ export class InicioComponent implements OnInit, AfterViewInit {
       alert('Debes iniciar sesión para agregar productos al carrito.');
       return;
     }
-    this.cartService.agregar(producto);
-    alert('Añadido a tu selección. ☕');
+    
+    // Guardamos la respuesta del servicio
+    const respuesta = this.cartService.agregar(producto);
+    
+    // Mostramos la alerta o Toast correspondiente
+    if(!respuesta.success) {
+      alert(respuesta.message); // Muestra el "Ups" si falló
+    } else {
+      // Aquí es donde deberías llamar a tu librería de Toasts si tienes una.
+      // Por ahora, lo dejamos limpio para que solo salga el Toast negro de tu foto.
+      console.log(respuesta.message); 
+    }
   }
 
   getImagenUrl(nombreArchivo?: string): string {
-    // 1. Si no hay imagen, ponemos una de respaldo
     if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
       return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
     }
     
-    // 2. Si ya es un link completo, lo dejamos pasar
     if (nombreArchivo.startsWith('http') || nombreArchivo.startsWith('data:')) {
       return nombreArchivo;
     }
 
-    // 3. PARCHE: Si el nombre viene con el "/uploads/" viejo de la base de datos, se lo quitamos
     let nombreLimpio = nombreArchivo;
     if (nombreArchivo.startsWith('/uploads/')) {
       nombreLimpio = nombreArchivo.replace('/uploads/', '');
     }
 
-    // 4. URL oficial apuntando a tu bóveda pública de Supabase
     const SUPABASE_STORAGE_URL = 'https://olxldsfzyixhwivznemo.supabase.co/storage/v1/object/public/productos/';
     
     return `${SUPABASE_STORAGE_URL}${nombreLimpio}`;
@@ -141,7 +144,4 @@ export class InicioComponent implements OnInit, AfterViewInit {
   handleImageError(event: any) {
     event.target.src = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
   }
-
-  
-
 }

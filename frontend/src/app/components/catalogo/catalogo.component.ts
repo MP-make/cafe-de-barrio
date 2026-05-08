@@ -19,7 +19,6 @@ export class CatalogoComponent implements OnInit {
   productos: Producto[] = [];
   categorias: Categoria[] = [];
   
-  // Variables de filtrado
   selectedCategoria: number | null = null;
   searchTerm: string = '';
   sortOrder: string = 'default';
@@ -63,27 +62,22 @@ export class CatalogoComponent implements OnInit {
     });
   }
 
-  // Cambiar categoría desde las píldoras
   setCategoria(id: number | null) {
     this.selectedCategoria = id;
   }
 
   get filteredProductos(): Producto[] {
-    // ⚠️ Importante: Hacemos una COPIA del array para que el sort() no destruya el orden original
     let result = [...this.productos];
 
-    // 1. Filtrar por Categoría
     if (this.selectedCategoria !== null) {
       result = result.filter(p => p.categoriaId == this.selectedCategoria);
     }
 
-    // 2. Filtrar por Nombre (Buscador)
     if (this.searchTerm.trim() !== '') {
       const term = this.searchTerm.toLowerCase();
       result = result.filter(p => (p.nombre || '').toLowerCase().includes(term));
     }
 
-    // 3. Ordenamiento Seguro (Protegido contra undefined con || 0)
     if (this.sortOrder === 'precioAsc') {
       result = result.sort((a, b) => (a.precio || 0) - (b.precio || 0));
     } else if (this.sortOrder === 'precioDesc') {
@@ -91,14 +85,12 @@ export class CatalogoComponent implements OnInit {
     } else if (this.sortOrder === 'nombreAsc') {
       result = result.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
     } else if (this.sortOrder === 'default') {
-      // Orden por defecto (por ID)
       result = result.sort((a, b) => (a.id || 0) - (b.id || 0));
     }
 
     return result;
   }
 
-  // --- MÉTODOS DE IMÁGENES ---
   getImagenUrl(nombreArchivo?: string): string {
     if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
       return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
@@ -122,12 +114,22 @@ export class CatalogoComponent implements OnInit {
     event.target.src = '/logo.webp';
   }
 
-  agregarAlCarrito(producto: Producto) {
+  agregarAlCarrito(producto: Producto) { 
     if (!this.authService.isLoggedIn()) {
       alert('Debes iniciar sesión para agregar productos al carrito.');
       return;
     }
-    this.cartService.agregar(producto);
-    alert('¡Excelente elección! Añadido al pedido. ☕');
+    
+    // Guardamos la respuesta del servicio
+    const respuesta = this.cartService.agregar(producto);
+    
+    // Mostramos la alerta o Toast correspondiente
+    if(!respuesta.success) {
+      alert(respuesta.message); // Muestra el "Ups" si falló
+    } else {
+      // Aquí es donde deberías llamar a tu librería de Toasts si tienes una.
+      // Por ahora, lo dejamos limpio para que solo salga el Toast negro de tu foto.
+      console.log(respuesta.message); 
+    }
   }
 }

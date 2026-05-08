@@ -1,0 +1,91 @@
+/* Variables de color personalizadas para respetar el branding */
+$color-gold: #d4a373;
+$color-gold-hover: #b8955e;
+$color-dark-bg: rgba(20, 15, 10, 0.98);
+$color-dark-card: rgba(30, 25, 20, 1);
+
+/* Overlay oscuro con blur */
+.cart-overlay {
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.7); 
+  z-index: 1040; 
+  backdrop-filter: blur(5px);
+}
+
+/* Estructura del Panel Lateral Premium */
+.cart-sidebar {
+  position: fixed; 
+  top: 0; right: -100%; 
+  width: 100%; max-width: 400px; 
+  height: 100vh;
+  z-index: 1050; 
+  transition: right 0.3s ease-in-out;
+  display: flex; flex-direction: column;
+  background-color: $color-dark-bg;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+  border-left: 1px solid rgba(212, 163, 115, 0.15);
+}
+
+.cart-sidebar.open {
+  right: 0; 
+}
+
+.cart-header-premium {
+  background-color: $color-dark-card;
+}
+
+.cart-body { flex-grow: 1; }
+.cart-footer { flex-shrink: 0; }
+.cursor-pointer { cursor: pointer; }
+
+/* Utilidades Doradas / Premium */
+.text-gold { color: $color-gold !important; }
+.border-bottom-gold { border-bottom: 1px solid rgba(212, 163, 115, 0.2); }
+.border-bottom-gold-light { border-bottom: 1px solid rgba(212, 163, 115, 0.1); }
+.border-top-gold { border-top: 1px solid rgba(212, 163, 115, 0.2); }
+
+.card-dark-premium {
+  background-color: $color-dark-card;
+  border: 1px solid rgba(212, 163, 115, 0.1);
+  border-radius: 8px;
+}
+
+.img-dark-bg {
+  background-color: rgba(255,255,255,0.05);
+}
+
+/* Botón principal dorado */
+.btn-gold {
+  background-color: $color-gold;
+  border-color: $color-gold;
+  color: #140f0a;
+}
+.btn-gold:hover:not(:disabled) {
+  background-color: $color-gold-hover;
+  border-color: $color-gold-hover;
+  color: #140f0a;
+}
+
+/* Botones secundarios (aumentar/disminuir) */
+.btn-outline-gold {
+  color: $color-gold;
+  border-color: rgba(212, 163, 115, 0.5);
+  background: transparent;
+}
+.btn-outline-gold:hover {
+  background-color: rgba(212, 163, 115, 0.1);
+  color: $color-gold;
+}
+
+.hover-danger:hover {
+  color: #ff4d4d !important;
+  opacity: 1 !important;
+}
+
+/* Scrollbar personalizado fino y elegante */
+.custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(212, 163, 115, 0.5); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: $color-gold; }

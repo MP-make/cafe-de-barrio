@@ -6,9 +6,23 @@
       <span style="letter-spacing: 2px; color: #d4a373;">Café de Barrio</span>
     </a>
 
-    <button class="navbar-toggler border-0 shadow-none" type="button" (click)="toggleMenu()">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <div class="d-flex align-items-center gap-3 d-lg-none">
+      
+      <a style="cursor: pointer; text-decoration: none;" (click)="openSearch()">
+        <i class="bi bi-search fs-4" style="color: #d4a373;"></i>
+      </a>
+
+      <a *ngIf="isLoggedIn" style="cursor: pointer; text-decoration: none;" (click)="irAlCarrito()" class="position-relative">
+        <i class="bi bi-cart3 fs-4" style="color: #d4a373;"></i>
+        <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle shadow-sm" *ngIf="cartItemCount > 0" style="font-size: 0.6rem; padding: 0.25em 0.4em;">
+          {{cartItemCount}}
+        </span>
+      </a>
+      
+      <button class="navbar-toggler border-0 shadow-none p-0" type="button" (click)="toggleMenu()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
 
     <div class="collapse navbar-collapse" [class.show]="isMenuOpen" id="navbarContent">
       <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-3">
@@ -24,9 +38,9 @@
         </li>
       </ul>
 
-      <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0 circular-actions-mobile">
+      <div class="d-flex align-items-center justify-content-center gap-3 mt-3 mt-lg-0 circular-actions-mobile">
         
-        <div class="search-expandable" (click)="openSearch()">
+        <div class="search-expandable d-none d-lg-flex" (click)="openSearch()">
           <span class="search-text">Buscar café...</span>
           <i class="bi bi-search search-icon-btn"></i>
         </div>
@@ -36,7 +50,7 @@
           <span class="login-text">Iniciar Sesión</span>
         </a>
 
-        <a *ngIf="isLoggedIn" routerLink="/checkout" class="cart-expandable" (click)="closeMenu()">
+        <a *ngIf="isLoggedIn" class="cart-expandable d-none d-lg-flex" style="cursor: pointer;" (click)="irAlCarrito()">
           <div class="cart-icon-wrapper">
             <i class="bi bi-cart3 cart-icon-btn"></i>
             <span class="badge rounded-pill bg-danger border border-light position-absolute top-0 start-100 translate-middle shadow-sm" *ngIf="cartItemCount > 0" style="font-size: 0.65rem;">
@@ -76,7 +90,7 @@
           <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
           <a href="#" class="social-icon"><i class="bi bi-whatsapp"></i></a>
         </div>
-        <p class="text-warning small opacity-75 fw-medium m-0">Abierto todos los días de 8:00 AM a 10:00 PM</p>
+        <p class="text-warning small opacity-75 fw-medium m-0" style="color: #d4a373 !important;">Abierto todos los días de 8:00 AM a 10:00 PM</p>
       </div>
 
       <div class="col-md-4 text-center text-md-end">
@@ -90,11 +104,12 @@
 <div class="search-modal" *ngIf="showSearch" (click)="closeSearch()">
   <div class="search-content" (click)="$event.stopPropagation()">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h5 class="mb-0 fw-bold" style="color: #4a3b32;"><i class="bi bi-search me-2 text-warning"></i>¿Qué estás buscando?</h5>
+      <h5 class="mb-0 fw-bold" style="color: #4a3b32;"><i class="bi bi-search me-2" style="color: #d4a373;"></i>¿Qué estás buscando?</h5>
       <button class="btn btn-close shadow-none" (click)="closeSearch()"></button>
     </div>
     
-    <input type="text" class="form-control form-control-lg mb-4 shadow-sm rounded-pill px-4 border-warning search-input-focus" 
+    <input type="text" class="form-control form-control-lg mb-4 shadow-sm rounded-pill px-4 search-input-focus" 
+           style="border-color: #d4a373;"
            placeholder="Ej: Latte, Capuchino, Postres..." 
            (input)="onSearch($event)" [value]="searchQuery" autofocus>
     
@@ -130,3 +145,5 @@
     </div>
   </div>
 </div>
+
+<app-cart></app-cart>

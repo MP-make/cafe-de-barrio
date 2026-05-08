@@ -105,6 +105,18 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* CLASE NUEVA: Hace que el resumen te siga al hacer scroll */
+.sticky-summary {
+  position: sticky;
+  top: 100px; /* Deja espacio para que no choque con el navbar del header */
+  z-index: 10;
+}
+
+/* Scrollbar sutil para el resumen */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(212, 163, 115, 0.5); border-radius: 4px; }
+
 /* =========================================================
    AJUSTES RESPONSIVOS PARA MÓVILES
    ========================================================= */
@@ -140,5 +152,9 @@
     padding: 0.8rem;
     font-size: 0.8rem;
     i { font-size: 1.5rem !important; margin-bottom: 0.2rem !important; }
+  }
+  
+  .sticky-summary {
+    position: static; /* En móviles es mejor quitar el sticky para que no estorbe */
   }
 }

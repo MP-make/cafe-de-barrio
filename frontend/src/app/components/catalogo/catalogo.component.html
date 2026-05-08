@@ -10,18 +10,18 @@
     <div class="col-md-6 col-lg-4">
       <div class="premium-search-box shadow-sm">
         <i class="bi bi-search icon text-warning"></i>
-        <input type="text" class="form-control" placeholder="Buscar por nombre..." [(ngModel)]="searchTerm">
+        <input type="text" class="form-control text-white" placeholder="Buscar por nombre..." [(ngModel)]="searchTerm">
       </div>
     </div>
     
     <div class="col-md-5 col-lg-3 text-md-end">
       <div class="premium-sort-box shadow-sm d-flex align-items-center">
         <i class="bi bi-filter-left icon text-warning me-2"></i>
-        <select class="form-select border-0 bg-transparent shadow-none" [(ngModel)]="sortOrder">
-          <option value="default">Relevancia</option>
-          <option value="nombreAsc">Nombre (A - Z)</option>
-          <option value="precioAsc">Precio: Menor a Mayor</option>
-          <option value="precioDesc">Precio: Mayor a Menor</option>
+        <select class="form-select border-0 bg-transparent shadow-none text-white" [(ngModel)]="sortOrder">
+          <option value="default" class="text-dark">Relevancia</option>
+          <option value="nombreAsc" class="text-dark">Nombre (A - Z)</option>
+          <option value="precioAsc" class="text-dark">Precio: Menor a Mayor</option>
+          <option value="precioDesc" class="text-dark">Precio: Mayor a Menor</option>
         </select>
       </div>
     </div>
@@ -51,7 +51,7 @@
     <div class="col-6 col-md-4 col-lg-3" *ngFor="let p of filteredProductos">
       <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden cafe-card">
         
-        <div class="position-relative bg-light overflow-hidden img-container">
+        <div class="position-relative overflow-hidden img-container">
           <img [src]="getImagenUrl(p.imagenUrl)" 
                (error)="manejarErrorImagen($event)"
                class="card-img-top object-fit-cover cafe-img" 
@@ -59,7 +59,7 @@
                loading="lazy">
                
           <div class="position-absolute top-0 end-0 m-2 m-md-3">
-            <span class="badge bg-dark text-white rounded-pill px-2 py-1 px-md-3 py-md-2 shadow-sm price-badge">
+            <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 shadow-sm price-badge">
               ${{ p.precio }}
             </span>
           </div>
@@ -67,17 +67,21 @@
 
         <div class="card-body d-flex flex-column p-3 p-md-4">
           <div class="d-flex justify-content-between align-items-start mb-2">
-            <h5 class="card-title fw-bold text-dark mb-0 text-truncate">{{p.nombre}}</h5>
+            <h5 class="card-title fw-bold text-white mb-0 text-truncate">{{p.nombre}}</h5>
           </div>
           
           <span class="stock-badge mb-2 d-inline-block">Stock: {{p.stock}} unid.</span>
           
-          <p class="card-text text-muted flex-grow-1 small lh-base mb-3 product-desc">
+          <p class="card-text text-white-50 flex-grow-1 small lh-base mb-3 product-desc">
             {{p.descripcion}}
           </p>
           
-          <button class="btn btn-warning w-100 rounded-pill fw-bold text-dark shadow-sm py-2 btn-add-cart" (click)="agregarAlCarrito(p)">
-            <i class="bi bi-cart-plus me-1"></i> <span class="btn-text">Añadir</span>
+          <button class="btn w-100 rounded-pill fw-bold shadow-sm py-2 btn-add-cart" 
+                  (click)="agregarAlCarrito(p)"
+                  [disabled]="p.stock <= 0">
+            <i class="bi bi-cart-plus me-1"></i> 
+            <span class="btn-text" *ngIf="p.stock > 0">Añadir</span>
+            <span class="btn-text" *ngIf="p.stock <= 0">Agotado</span>
           </button>
         </div>
       </div>

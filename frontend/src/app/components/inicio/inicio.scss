@@ -11,6 +11,7 @@ $white-dim: #F5F5F5;
   background-color: $matte-black;
   color: $white-pure;
   font-family: 'Inter', sans-serif;
+  overflow-x: hidden; /* Evitar scroll horizontal provocado por el Parallax */
 }
 
 /* --- Tipografía --- */
@@ -20,6 +21,7 @@ $white-dim: #F5F5F5;
   font-size: clamp(3rem, 8vw, 6rem);
   letter-spacing: -2px;
   text-transform: uppercase;
+  will-change: transform;
 }
 
 .display-title-small {
@@ -35,7 +37,7 @@ $white-dim: #F5F5F5;
 
 /* --- Layout y Espaciado --- */
 .section-padding {
-  padding: 10rem 0; /* Uso generoso del espacio */
+  padding: 10rem 0; 
 }
 
 .mb-huge {
@@ -56,14 +58,24 @@ $white-dim: #F5F5F5;
   overflow: hidden;
 }
 
-.mini-hero { height: 70vh; }
+.mini-hero { 
+  height: 80vh; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $matte-black; /* Backup si falla el video */
+  
+  .container {
+    position: relative;
+    z-index: 20;
+    will-change: transform;
+  }
+}
 
 .video-background {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   object-fit: cover;
 }
 
@@ -88,7 +100,7 @@ $white-dim: #F5F5F5;
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 2px;
-  border-radius: 4px; /* Bordes ligeramente suavizados */
+  border-radius: 4px;
   transition: all 0.4s ease;
   
   &:hover {
@@ -107,25 +119,106 @@ $white-dim: #F5F5F5;
   text-transform: uppercase;
   width: 100%;
   transition: 0.3s;
-  &:hover { background: $white-pure; }
+  &:hover:not(:disabled) { background: $white-pure; }
+  &:disabled { background: #555; color: #888; cursor: not-allowed; }
 }
 
-/* --- Componentes --- */
+.z-depth-1 {
+  position: relative;
+  z-index: 10;
+}
+
+/* --- SUAVIZADO DE SCROLL --- */
+::ng-deep html {
+  scroll-behavior: smooth;
+}
+
+/* --- TARJETAS DE CATEGORÍA (Corregido: Sin Zoom) --- */
 .card-category-premium {
-  border: 1px solid rgba(255,255,255,0.1);
-  padding: 3rem 1rem;
-  text-align: center;
-  transition: 0.4s;
+  position: relative;
+  height: 220px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  border: 1px solid rgba(197, 160, 89, 0.15);
+  border-radius: 8px;
   cursor: pointer;
-  background: rgba(255,255,255,0.02);
   
+  // Propiedades de la imagen inyectada (Corregido para que sea estática y cubra bien)
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; // Evita que se repita como en la imagen que enviaste
+  overflow: hidden; 
+  z-index: 1;
+
+  // CAPA DE PROFUNDIDAD (Overlay) - Se mantiene para legibilidad
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    // Gradiente oscuro
+    background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(10,10,10,0.95) 100%);
+    z-index: -1; 
+    transition: background 0.5s ease;
+  }
+
+  // Animaciones simplificadas (Sin zoom de fondo)
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.5s,
+              box-shadow 0.5s;
+
+  .category-number {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+    transition: 0.4s;
+  }
+
+  .category-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .category-title {
+    margin: 0;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: $gold-aged !important; // Volvemos al dorado predeterminado para consistencia
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    transition: 0.4s;
+  }
+
+  .category-arrow {
+    font-size: 1.5rem;
+    color: $gold-aged;
+    opacity: 0;
+    transform: translateX(-15px);
+    transition: all 0.4s ease;
+  }
+
+  // EFECTO HOVER PREMIUM SIMPLIFICADO
   &:hover {
     border-color: $gold-aged;
-    background: rgba(197, 160, 89, 0.1);
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    // background-size: 110%; // <--- ELIMINADO EL ZOOM
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(197, 160, 89, 0.2);
+
+    // Mantenemos el cambio sutil de overlay en hover
+    &::before {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(197, 160, 89, 0.4) 100%);
+    }
+
+    .category-number { color: $white-pure; opacity: 0.8; }
+    .category-arrow { opacity: 1; transform: translateX(0); }
   }
 }
 
+/* --- TARJETAS DE PRODUCTOS --- */
 .product-card-dark {
   background: $carbon;
   border-radius: 4px;
@@ -142,115 +235,21 @@ $white-dim: #F5F5F5;
   &:hover .product-img-box img { transform: scale(1.1); }
 }
 
-.z-depth-1 {
-  position: relative;
-  z-index: 10;
-}
-/* --- 4. SUAVIZADO DE SCROLL (Smooth Scrolling) --- */
-::ng-deep html {
-  scroll-behavior: smooth;
-}
-
-/* Evitar scroll horizontal provocado por el Parallax */
-.dark-theme-wrapper {
-  overflow-x: hidden;
-}
-
-/* Optimización para el Parallax */
-.display-title, .display-title-small {
-  will-change: transform;
-}
-/* --- 3. MEJORA DE CARDS (Estilo Editorial / Bento) --- */
-.card-category-premium {
-  position: relative;
-  height: 220px; /* Le damos altura de tarjeta real */
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  text-align: left; /* Alineación más moderna */
-  background: linear-gradient(145deg, rgba(20,20,20,0.8) 0%, rgba(10,10,10,0.9) 100%);
-  border: 1px solid rgba(197, 160, 89, 0.15);
-  border-radius: 8px; /* Bordes ligeramente redondeados */
-  cursor: pointer;
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  overflow: hidden;
-  z-index: 1;
-
-  /* Número decorativo en la esquina superior */
-  .category-number {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.2);
-    transition: 0.4s;
-  }
-
-  /* Contenedor del título y la flecha */
-  .category-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
-
-  .category-title {
-    margin: 0;
-    font-size: 1.1rem;
-    letter-spacing: 1px;
-    font-weight: 700;
-  }
-
-  /* Flecha oculta por defecto */
-  .category-arrow {
-    font-size: 1.5rem;
-    color: $gold-aged;
-    opacity: 0;
-    transform: translateX(-15px);
-    transition: all 0.4s ease;
-  }
-
-  /* EFECTOS HOVER MEJORADOS */
-  &:hover {
-    border-color: $gold-aged;
-    background: rgba(197, 160, 89, 0.1);
-    transform: translateY(-8px);
-    
-    /* Glassmorphism sutil */
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(197, 160, 89, 0.2);
-    z-index: 2;
-
-    /* Animamos los elementos internos */
-    .category-number {
-      color: $gold-aged;
-    }
-
-    .category-arrow {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-}
-
-/* --- 5. SECCIÓN DE MÉTODOS ARTESANALES --- */
+/* --- MÉTODOS ARTESANALES --- */
 .methods-section {
-  // Sobrescribimos el alto fijo para darle espacio a las tarjetas
   height: auto !important; 
   min-height: 85vh;
   padding: 6rem 0;
 }
 
 .method-card {
-  background: rgba(20, 20, 20, 0.6); // Fondo oscuro semitransparente
-  border: 1px solid rgba(197, 160, 89, 0.2); // Borde con el color $gold-aged
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(197, 160, 89, 0.2);
   border-radius: 8px;
   padding: 2.5rem 2rem;
   height: 100%;
   text-align: center;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  
-  // Efecto de cristal
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
@@ -291,12 +290,12 @@ $white-dim: #F5F5F5;
     margin: 0;
   }
 }
-/* --- 1. CLASES PARA SCROLL REVEALS (Fade In + Slide Up) --- */
+
+/* --- SCROLL REVEALS --- */
 .reveal-item {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateY(40px);
+  transition: opacity 1.2s ease-out, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
   will-change: opacity, transform;
 
   &.reveal-visible {
@@ -305,110 +304,55 @@ $white-dim: #F5F5F5;
   }
 }
 
+/* --- RUIDO VISUAL --- */
+.noise-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
 /* =========================================================
    AJUSTES RESPONSIVOS PARA 2 COLUMNAS EN MÓVILES
    ========================================================= */
-   @media (max-width: 767px) {
+@media (max-width: 767px) {
   
-    /* 1. Ajustes para Categorías (Especialidades) */
-    .card-category-premium {
-      padding: 1.2rem 1rem;
-      height: 150px; /* Reducimos la altura */
-      
-      .category-number { font-size: 1rem; }
-      .category-title { font-size: 0.8rem; letter-spacing: 0px; }
-      .category-arrow { font-size: 1.2rem; }
+  .card-category-premium {
+    padding: 1.2rem 1rem;
+    height: 150px; 
+    
+    .category-number { font-size: 1rem; }
+    .category-title { font-size: 0.8rem; letter-spacing: 0px; }
+    .category-arrow { font-size: 1.2rem; }
+  }
+  
+  .product-card-dark {
+    .product-img-box {
+      height: 160px; 
     }
-  
-    /* 2. Ajustes para Productos (Favoritos) */
-    .product-card-dark {
-      .product-img-box {
-        height: 160px; /* Hacemos la foto más pequeña para que entren dos */
+    .product-info-dark {
+      padding: 1rem 0.5rem !important; 
+      h4 { font-size: 0.85rem; margin-bottom: 0.5rem !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      p { display: none; } 
+      .btn-premium-solid {
+        padding: 0.5rem 0.2rem;
+        font-size: 0.7rem;
+        letter-spacing: 0px;
       }
-      
-      .product-info-dark {
-        padding: 1rem 0.5rem !important; /* Menos relleno lateral */
-        
-        h4 { font-size: 0.85rem; margin-bottom: 0.5rem !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        p { font-size: 0.7rem; margin-bottom: 0.8rem !important; display: none; } /* Ocultamos la descripción en móviles para ahorrar espacio */
-        
-        .btn-premium-solid {
-          padding: 0.5rem 0.2rem;
-          font-size: 0.7rem;
-          letter-spacing: 0px;
-        }
-      }
-    }
-  
-    /* 3. Ajustes para Métodos Artesanales */
-    .method-card {
-      padding: 1.5rem 0.8rem;
-      
-      .method-icon {
-        font-size: 1.8rem;
-        margin-bottom: 0.8rem;
-      }
-      
-      .method-title {
-        font-size: 0.8rem;
-        margin-bottom: 0.5rem;
-      }
-      
-      .method-desc {
-        font-size: 0.65rem;
-        line-height: 1.4;
-      }
-    }
-  
-    /* Títulos de sección más pequeños en móviles */
-    .title-modern {
-      font-size: 1.5rem;
     }
   }
-/* --- Mantén tus estilos anteriores y solo actualiza/añade estos --- */
-
-.mini-hero {
-  height: 80vh; /* Un poco más alta para que luzca mejor */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: $matte-black; /* Backup si falla el video */
   
-  .container {
-    /* Esto evita que el parallax lo mande muy lejos */
-    position: relative;
-    z-index: 20;
-    will-change: transform;
+  .method-card {
+    padding: 1.5rem 0.8rem;
+    .method-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
+    .method-title { font-size: 0.8rem; margin-bottom: 0.5rem; }
+    .method-desc { font-size: 0.65rem; line-height: 1.4; }
   }
-}
-
-/* REVEAL ITEM MEJORADO */
-.reveal-item {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 1.2s ease-out, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
   
-  &.reveal-visible {
-    opacity: 1;
-    transform: translateY(0);
+  .title-modern {
+    font-size: 1.5rem;
   }
-}
-
-/* Asegura que el ruido no tape los botones */
-.noise-overlay {
-  z-index: 9999;
-  pointer-events: none;
-}
-/* --- GRAINY TEXTURE OVERLAY (Ruido Visual) --- */
-.noise-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none; /* Permite hacer clic a través del grano */
-  z-index: 9999;
-  opacity: 0.05; /* Muy sutil */
-  /* SVG de ruido fractal generado mediante código */
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }

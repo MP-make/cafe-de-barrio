@@ -8,55 +8,89 @@ import { Producto } from '../models/producto.model';
 })
 export class CartService {
   private items: CartItem[] = [];
-  // Usamos BehaviorSubject para que cualquier componente (como la navbar) se entere al instante si el carrito cambia
   private cartSubject = new BehaviorSubject<CartItem[]>([]);
+  
+  // Variables para controlar si el panel lateral está abierto o cerrado
+  private cartOpenSubject = new BehaviorSubject<boolean>(false);
+  cartOpen$ = this.cartOpenSubject.asObservable();
 
   constructor() {
     this.cargarCarrito();
   }
 
-  // Obtener los datos reactivos
   getCart() {
     return this.cartSubject.asObservable();
   }
 
-  // Agregar al carrito
-  agregar(producto: Producto) {
-    const itemExistente = this.items.find(item => item.producto.id === producto.id);
-    
-    if (itemExistente) {
-      itemExistente.cantidad++; // Si ya existe, sumamos 1
-    } else {
-      this.items.push({ producto, cantidad: 1 }); // Si no, lo agregamos nuevo
-    }
-    
-    this.sincronizar();
+  // Método para abrir/cerrar el carrito lateral
+  toggleCart(isOpen: boolean) {
+    this.cartOpenSubject.next(isOpen);
   }
 
-  // Eliminar del carrito
+  agregar(producto: Producto): { success: boolean, message: string } {
+    const itemExistente = this.items.find(item => item.producto.id === producto.id);
+    const stockDisponible = producto.stock ? Number(producto.stock) : 0;
+
+    if (itemExistente) {
+      if (itemExistente.cantidad >= stockDisponible) {
+        return { success: false, message: `Solo hay ${stockDisponible} unidades disponibles de "${producto.nombre}".` };
+      }
+      itemExistente.cantidad++;
+      this.sincronizar();
+      return { success: true, message: 'Se aumentó la cantidad en tu carrito. ☕' };
+    } else {
+      if (stockDisponible > 0) {
+        this.items.push({ producto: producto, cantidad: 1 });
+        this.sincronizar();
+        return { success: true, message: '¡Excelente elección! Añadido al pedido. ☕' };
+      } else {
+        return { success: false, message: `El producto "${producto.nombre}" está agotado.` };
+      }
+    }
+  }
+
   eliminar(productoId: number) {
     this.items = this.items.filter(item => item.producto.id !== productoId);
     this.sincronizar();
   }
 
-  // Vaciar todo el carrito
   limpiarCarrito() {
     this.items = [];
     this.sincronizar();
   }
 
-  // Calcular el total a pagar
+  aumentarCantidad(productoId: number): { success: boolean, message?: string } {
+    const item = this.items.find(i => i.producto.id === productoId);
+    if (item) {
+      const stock = item.producto.stock || 0;
+      if (item.cantidad < stock) {
+        item.cantidad++;
+        this.sincronizar();
+        return { success: true };
+      } else {
+        return { success: false, message: `Límite de stock alcanzado (${stock} unid.).` };
+      }
+    }
+    return { success: false, message: "Item no encontrado" };
+  }
+
+  disminuirCantidad(productoId: number) {
+    const item = this.items.find(i => i.producto.id === productoId);
+    if (item && item.cantidad > 1) {
+      item.cantidad--;
+      this.sincronizar();
+    }
+  }
+
   getTotal(): number {
     return this.items.reduce((total, item) => total + (item.producto.precio * item.cantidad), 0);
   }
 
-  // Guardar en el navegador y notificar a la app
   private sincronizar() {
     localStorage.setItem('carrito', JSON.stringify(this.items));
     this.cartSubject.next(this.items);
   }
 
-  // Recuperar del navegador al entrar a la p�gina
   private cargarCarrito() {
     const carritoGuardado = localStorage.getItem('carrito');
     if (carritoGuardado) {
@@ -67,9 +101,5 @@ export class CartService {
 
   getItems(): CartItem[] {
     return this.items;
-  }
-
-  clearCart(): void {
-    this.limpiarCarrito();
   }
 }

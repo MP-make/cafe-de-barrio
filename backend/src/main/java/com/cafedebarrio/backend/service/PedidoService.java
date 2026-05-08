@@ -33,17 +33,22 @@ public class PedidoService {
         if (pedido.getDetalles() != null) {
             for (DetallePedido detalle : pedido.getDetalles()) {
                 
-                // 👇 AQUÍ ESTÁ LA SOLUCIÓN: Vinculamos el hijo (detalle) con el padre (pedido)
+                // Vinculamos el hijo (detalle) con el padre (pedido)
                 detalle.setPedido(pedido);
                 
                 Producto producto = productoRepository.findById(detalle.getProducto().getId())
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + detalle.getProducto().getId()));
                 
+                // 👇 NUEVA VALIDACIÓN DE STOCK (RF-BE-08)
+                if (producto.getStock() < detalle.getCantidad()) {
+                    throw new RuntimeException("Stock insuficiente para el producto: " + producto.getNombre() + ". Disponible: " + producto.getStock() + ", solicitado: " + detalle.getCantidad());
+                }
+                
                 detalle.setProducto(producto);
                 detalle.setPrecioUnitario(producto.getPrecio());
                 detalle.setSubtotal(producto.getPrecio().multiply(BigDecimal.valueOf(detalle.getCantidad())));
                 
-                // Actualizar stock
+                // Actualizar stock (RF-BE-09)
                 producto.setStock(producto.getStock() - detalle.getCantidad()); 
                 
                 total = total.add(detalle.getSubtotal());

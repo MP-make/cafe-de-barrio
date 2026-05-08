@@ -19,7 +19,6 @@ export class CheckoutComponent implements OnInit {
   cartItems: CartItem[] = [];
   total: number = 0;
   
-  // Variables para la simulación de pago
   isSubmitting: boolean = false;
   processingMessage: string = '';
 
@@ -31,7 +30,6 @@ export class CheckoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // 1. Decodificar el Token para obtener el nombre
     let nombreUsuario = '';
     const token = localStorage.getItem('token');
     if (token) {
@@ -43,18 +41,14 @@ export class CheckoutComponent implements OnInit {
       }
     }
 
-    // 2. Cargar el carrito
     this.cartService.getCart().subscribe(items => {
       this.cartItems = items;
       this.calcularTotal();
     });
 
-    // 3. Inicializar el formulario con validaciones estrictas
     this.checkoutForm = this.fb.group({
       clienteNombre: [nombreUsuario, [Validators.required, Validators.minLength(3)]],
-      // Celular: Empieza con 9 y tiene 9 dígitos exactos
       celular: ['', [Validators.required, Validators.pattern('^9[0-9]{8}$')]], 
-      // Dirección: Mínimo 5 letras, pero OBLIGATORIO que contenga al menos una letra (no solo números)
       direccion: ['', [Validators.required, Validators.minLength(5), Validators.pattern('.*[a-zA-ZáéíóúÁÉÍÓÚñÑ].*')]],
       metodoPago: ['tarjeta', Validators.required] 
     });
@@ -66,7 +60,6 @@ export class CheckoutComponent implements OnInit {
 
   confirmarPedido(): void {
     if (this.checkoutForm.invalid || this.cartItems.length === 0) {
-      // Marcamos todos los campos como "tocados" para que se pinten de rojo si intentan pagar vacíos
       this.checkoutForm.markAllAsTouched();
       return;
     }
@@ -74,7 +67,6 @@ export class CheckoutComponent implements OnInit {
     this.isSubmitting = true;
     this.processingMessage = 'Conectando con pasarela segura...';
 
-    // SIMULADOR DE PASARELA DE PAGO 
     setTimeout(() => {
       this.processingMessage = 'Procesando transacción...';
       
@@ -96,7 +88,10 @@ export class CheckoutComponent implements OnInit {
         this.pedidoService.createPedido(pedidoPayload).subscribe({
           next: (res: any) => {
             alert('¡Pago procesado y Pedido confirmado exitosamente!');
-            this.cartService.clearCart(); 
+            
+            // 👇 AQUÍ ESTÁ LA CORRECCIÓN: Usamos limpiarCarrito() en lugar de clearCart()
+            this.cartService.limpiarCarrito(); 
+            
             this.router.navigate(['/catalogo']); 
           },
           error: (err: any) => {
@@ -109,7 +104,6 @@ export class CheckoutComponent implements OnInit {
     }, 1000); 
   }
 
-  // --- FUNCIONES PARA LAS IMÁGENES ---
   getImagenUrl(nombreArchivo?: string): string {
     if (!nombreArchivo || nombreArchivo === '' || nombreArchivo === 'null') {
       return 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
