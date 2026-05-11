@@ -8,16 +8,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    // 1. Configuración CORS (¡Vital para que Angular se pueda conectar!)
+    // configuración CORS
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*") // Si tienes problemas en producción, cambia "*" por "https://tu-dominio-angular.vercel.app"
+                .allowedOrigins("*") 
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                 .allowedHeaders("*");
     }
 
-    // 2. Exposición de la carpeta de imágenes locales
+    // exposición de la carpeta de imágenes locales
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")

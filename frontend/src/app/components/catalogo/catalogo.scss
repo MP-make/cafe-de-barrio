@@ -1,12 +1,10 @@
 $gold-aged: #C5A059;
-$matte-black: #0A0A0A; /* Corregido al negro mate oficial del proyecto */
-$card-bg: rgba(25, 20, 16, 0.6); /* Fondo cristalino oscuro para tarjetas */
+$matte-black: #0A0A0A; /* color oficial del proyecto */
+$card-bg: rgba(25, 20, 16, 0.6); /* fondo cristalino oscuro para tarjetas */
 
-/* =========================================================
-   1. BARRA DE HERRAMIENTAS Y PÍLDORAS (FILTROS)
-   ========================================================= */
+/* 1. BARRA DE HERRAMIENTAS Y PÍLDORAS (FILTROS) */
 .premium-search-box, .premium-sort-box {
-  background: rgba(255, 255, 255, 0.05); /* Translúcido oscuro en vez de blanco */
+  background: rgba(255, 255, 255, 0.05); 
   border-radius: 50px;
   display: flex;
   align-items: center;
@@ -27,7 +25,7 @@ $card-bg: rgba(25, 20, 16, 0.6); /* Fondo cristalino oscuro para tarjetas */
     background: transparent;
     font-size: 0.9rem;
     font-weight: 500;
-    color: #fff; /* Texto blanco */
+    color: #fff; 
     
     &::placeholder {
       color: rgba(255, 255, 255, 0.5);
@@ -70,9 +68,7 @@ $card-bg: rgba(25, 20, 16, 0.6); /* Fondo cristalino oscuro para tarjetas */
   }
 }
 
-/* =========================================================
-   2. TARJETAS DE PRODUCTO (DARK PREMIUM)
-   ========================================================= */
+/* 2. TARJETAS DE PRODUCTO (DARK PREMIUM) */
 .cafe-card {
   border-radius: 1rem !important;
   transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease, border-color 0.3s ease;
@@ -148,9 +144,7 @@ $card-bg: rgba(25, 20, 16, 0.6); /* Fondo cristalino oscuro para tarjetas */
 .fade-in { animation: fadeIn 0.5s ease-in; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* =========================================================
-   3. RESPONSIVIDAD ESTRICTA (CUADRÍCULA DE 2 EN MÓVIL)
-   ========================================================= */
+/* 3. RESPONSIVIDAD ESTRICTA (CUADRÍCULA DE 2 EN MÓVIL) */
 @media (max-width: 767px) {
   
   .img-container {
