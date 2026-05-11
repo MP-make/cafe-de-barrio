@@ -35,14 +35,32 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+    
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp;
+      if (Date.now() / 1000 > exp) {
+        this.logout(); // Token expirado, hacer logout
+        return false;
+      }
+      return true;
+    } catch (e) {
+      this.logout(); // Token inválido, hacer logout
+      return false;
+    }
   }
 
   getRole(): string | null {
     const token = this.getToken();
     if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.rol;
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.rol;
+      } catch (e) {
+        return null;
+      }
     }
     return null;
   }

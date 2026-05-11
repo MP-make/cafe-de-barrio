@@ -6,6 +6,7 @@ import { CategoriaService, Categoria } from '../../services/categoria';
 import { ProductoService } from '../../services/producto.service';
 import { Producto } from '../../models/producto.model';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-inicio',
@@ -23,7 +24,8 @@ export class InicioComponent implements OnInit, AfterViewInit {
     private productoService: ProductoService,
     private cartService: CartService,
     private cd: ChangeDetectorRef,
-    private authService: AuthService
+    private authService: AuthService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -105,20 +107,18 @@ export class InicioComponent implements OnInit, AfterViewInit {
 
   agregarAlCarrito(producto: Producto) { 
     if (!this.authService.isLoggedIn()) {
-      alert('Debes iniciar sesión para agregar productos al carrito.');
+      this.notificationService.showError('Debes iniciar sesión para agregar productos al carrito.');
       return;
     }
     
     // Guardamos la respuesta del servicio
     const respuesta = this.cartService.agregar(producto);
     
-    // Mostramos la alerta o Toast correspondiente
-    if(!respuesta.success) {
-      alert(respuesta.message); // Muestra el "Ups" si falló
+    // Mostramos la notificación correspondiente
+    if (!respuesta.success) {
+      this.notificationService.showError(respuesta.message);
     } else {
-      // Aquí es donde deberías llamar a tu librería de Toasts si tienes una.
-      // Por ahora, lo dejamos limpio para que solo salga el Toast negro de tu foto.
-      console.log(respuesta.message); 
+      this.notificationService.showSuccess(respuesta.message);
     }
   }
 

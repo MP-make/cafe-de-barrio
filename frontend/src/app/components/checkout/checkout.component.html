@@ -50,6 +50,10 @@
                       rows="2" 
                       placeholder="Ej. Av. Principal 123, Referencia..."></textarea>
             <div class="invalid-feedback">La dirección debe ser real y contener letras (no solo números).</div>
+            <button type="button" class="btn btn-outline-secondary mt-2" (click)="getCurrentLocation()" [disabled]="isGettingLocation">
+              <span *ngIf="!isGettingLocation"><i class="bi bi-geo-alt me-1"></i>Usar ubicación actual</span>
+              <span *ngIf="isGettingLocation"><span class="spinner-border spinner-border-sm me-1" role="status"></span>Obteniendo...</span>
+            </button>
           </div>
 
           <h4 class="fw-bold mb-4 border-bottom pb-3 text-dark fs-5 fs-md-4 mt-5">

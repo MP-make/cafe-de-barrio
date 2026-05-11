@@ -5,6 +5,7 @@ import { CartService } from './services/cart.service';
 import { ProductoService } from './services/producto.service';
 import { CategoriaService, Categoria } from './services/categoria';
 import { AuthService } from './services/auth.service';
+import { NotificationService } from './services/notification.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 
@@ -22,6 +23,7 @@ import { Cart } from './components/cart/cart';
 })
 export class AppComponent implements OnInit {
   title = 'Café de Barrio';
+  toasts: any[] = [];
   cartItemCount: number = 0;
   isAdminView = false;
   currentYear = new Date().getFullYear();
@@ -38,7 +40,8 @@ export class AppComponent implements OnInit {
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
     public authService: AuthService,
-    public router: Router
+    public router: Router,
+    private notificationService: NotificationService
   ) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -72,6 +75,11 @@ export class AppComponent implements OnInit {
       } else {
         this.results = [];
       }
+    });
+
+    // Suscribirse a las notificaciones
+    this.notificationService.toasts$.subscribe(toasts => {
+      this.toasts = toasts;
     });
   }
 
@@ -116,5 +124,10 @@ export class AppComponent implements OnInit {
 
   handleImageError(event: any) {
     event.target.src = '/logo.webp';
+  }
+
+  // Método para cerrar toast manualmente
+  closeToast(id: number) {
+    this.notificationService.removeToast(id);
   }
 }
