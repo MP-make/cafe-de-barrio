@@ -1,17 +1,19 @@
 /* Importación de tipografía moderna */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@300;400;700&display=swap');
 
+/* --- Variables --- */
 $matte-black: #0A0A0A;
 $carbon: #121212;
 $gold-aged: #C5A059;
 $white-pure: #FFFFFF;
 $white-dim: #F5F5F5;
+$card-bg: rgba(25, 20, 16, 0.6); /* Fondo cristalino oscuro para tarjetas heredado del catálogo */
 
 .dark-theme-wrapper {
   background-color: $matte-black;
   color: $white-pure;
   font-family: 'Inter', sans-serif;
-  overflow-x: hidden; /* Evitar scroll horizontal provocado por el Parallax */
+  overflow-x: hidden; 
 }
 
 /* --- Tipografía --- */
@@ -63,7 +65,7 @@ $white-dim: #F5F5F5;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $matte-black; /* Backup si falla el video */
+  background-color: $matte-black; 
   
   .container {
     position: relative;
@@ -133,7 +135,7 @@ $white-dim: #F5F5F5;
   scroll-behavior: smooth;
 }
 
-/* --- TARJETAS DE CATEGORÍA (Corregido: Sin Zoom) --- */
+/* --- TARJETAS DE CATEGORÍA --- */
 .card-category-premium {
   position: relative;
   height: 220px;
@@ -145,26 +147,21 @@ $white-dim: #F5F5F5;
   border: 1px solid rgba(197, 160, 89, 0.15);
   border-radius: 8px;
   cursor: pointer;
-  
-  // Propiedades de la imagen inyectada (Corregido para que sea estática y cubra bien)
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat; // Evita que se repita como en la imagen que enviaste
+  background-repeat: no-repeat;
   overflow: hidden; 
   z-index: 1;
 
-  // CAPA DE PROFUNDIDAD (Overlay) - Se mantiene para legibilidad
   &::before {
     content: '';
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    // Gradiente oscuro
     background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(10,10,10,0.95) 100%);
     z-index: -1; 
     transition: background 0.5s ease;
   }
 
-  // Animaciones simplificadas (Sin zoom de fondo)
   transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               border-color 0.5s,
               box-shadow 0.5s;
@@ -188,7 +185,7 @@ $white-dim: #F5F5F5;
     font-size: 1.1rem;
     letter-spacing: 1px;
     font-weight: 700;
-    color: $gold-aged !important; // Volvemos al dorado predeterminado para consistencia
+    color: $gold-aged !important;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
     transition: 0.4s;
   }
@@ -201,14 +198,11 @@ $white-dim: #F5F5F5;
     transition: all 0.4s ease;
   }
 
-  // EFECTO HOVER PREMIUM SIMPLIFICADO
   &:hover {
     border-color: $gold-aged;
     transform: translateY(-8px);
-    // background-size: 110%; // <--- ELIMINADO EL ZOOM
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(197, 160, 89, 0.2);
 
-    // Mantenemos el cambio sutil de overlay en hover
     &::before {
       background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(197, 160, 89, 0.4) 100%);
     }
@@ -218,22 +212,81 @@ $white-dim: #F5F5F5;
   }
 }
 
-/* --- TARJETAS DE PRODUCTOS --- */
-.product-card-dark {
-  background: $carbon;
-  border-radius: 4px;
-  overflow: hidden;
-  height: 100%;
-  border: 1px solid rgba(255,255,255,0.05);
+/* =========================================================
+   NUEVAS TARJETAS DE PRODUCTO (ESTILO CATÁLOGO PREMIUM)
+   ========================================================= */
+.cafe-card {
+  border-radius: 1rem !important;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  border: 1px solid rgba(197, 160, 89, 0.15) !important;
+  background-color: $card-bg;
+  backdrop-filter: blur(10px); 
   
-  .product-img-box {
-    height: 300px;
-    overflow: hidden;
-    img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s; }
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
+    border-color: rgba(197, 160, 89, 0.5) !important; 
+    
+    .card-img-top { transform: scale(1.05); }
+  }
+}
+
+.img-container {
+  height: 220px;
+  background-color: #000; 
+}
+
+.card-img-top {
+  height: 100%;
+  width: 100%;
+  transition: transform 0.6s ease;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.1);
+  object-fit: cover;
+}
+
+.price-badge {
+  background: $gold-aged !important;
+  color: $matte-black !important;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.stock-badge {
+  font-size: 0.7rem;
+  color: $gold-aged; 
+  background: rgba(197, 160, 89, 0.1); 
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(197, 160, 89, 0.2);
+}
+
+.product-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.85rem;
+}
+
+.btn-add-cart {
+  background: transparent !important;
+  border: 1px solid $gold-aged !important;
+  color: $gold-aged !important;
+  transition: all 0.3s ease;
+  
+  &:hover:not([disabled]) {
+    background: $gold-aged !important;
+    color: $matte-black !important;
+    box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
   }
   
-  &:hover .product-img-box img { transform: scale(1.1); }
+  &[disabled] {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
 }
+
 
 /* --- MÉTODOS ARTESANALES --- */
 .methods-section {
@@ -316,7 +369,7 @@ $white-dim: #F5F5F5;
 }
 
 /* =========================================================
-   AJUSTES RESPONSIVOS PARA 2 COLUMNAS EN MÓVILES
+   AJUSTES RESPONSIVOS (MÓVILES)
    ========================================================= */
 @media (max-width: 767px) {
   
@@ -329,19 +382,23 @@ $white-dim: #F5F5F5;
     .category-arrow { font-size: 1.2rem; }
   }
   
-  .product-card-dark {
-    .product-img-box {
-      height: 160px; 
-    }
-    .product-info-dark {
-      padding: 1rem 0.5rem !important; 
-      h4 { font-size: 0.85rem; margin-bottom: 0.5rem !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      p { display: none; } 
-      .btn-premium-solid {
-        padding: 0.5rem 0.2rem;
-        font-size: 0.7rem;
-        letter-spacing: 0px;
-      }
+  /* Ajustes de las tarjetas de producto en móvil heredadas del catálogo */
+  .img-container {
+    height: 140px; 
+  }
+
+  .cafe-card {
+    .card-body { padding: 0.8rem !important; }
+    .card-title { font-size: 0.85rem !important; }
+    .price-badge { font-size: 0.75rem !important; padding: 0.3rem 0.6rem !important; }
+    .stock-badge { font-size: 0.6rem; margin-bottom: 0.3rem !important; }
+    .product-desc { display: none; }
+    
+    .btn-add-cart {
+      padding: 0.4rem !important;
+      font-size: 0.75rem;
+      .bi { margin-right: 0 !important; }
+      .btn-text { display: inline-block; } 
     }
   }
   
@@ -355,4 +412,8 @@ $white-dim: #F5F5F5;
   .title-modern {
     font-size: 1.5rem;
   }
+}
+
+@media (max-width: 380px) {
+  .btn-add-cart .btn-text { display: none !important; }
 }

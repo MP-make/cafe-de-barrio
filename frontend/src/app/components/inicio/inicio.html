@@ -58,24 +58,48 @@
           <div class="accent-line mx-auto mt-3"></div>
         </div>
   
-        <div class="row g-4 justify-content-center">
-          <div class="col-lg-3 col-md-6 col-6" *ngFor="let producto of productos; let i = index">
-            <div class="product-card-dark reveal-item" [ngStyle]="{'transition-delay': (i * 0.15) + 's'}">
-              <div class="product-img-box">
-                <img [src]="getImagenUrl(producto.imagenUrl)" (error)="$any($event.target).src = '/logo.webp'" (click)="openModal(producto)" style="cursor: pointer;">
+        <div class="row g-3 g-md-4 justify-content-center">
+          <div class="col-6 col-md-4 col-lg-3" *ngFor="let producto of productos; let i = index">
+            
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden cafe-card reveal-item" [ngStyle]="{'transition-delay': (i * 0.15) + 's'}">
+              
+              <div class="position-relative overflow-hidden img-container">
+                <img [src]="getImagenUrl(producto.imagenUrl)" 
+                     (error)="$any($event.target).src = '/logo.webp'"
+                     class="card-img-top object-fit-cover cafe-img" 
+                     alt="{{ producto.nombre }}" 
+                     loading="lazy"
+                     (click)="openModal(producto)"
+                     style="cursor: pointer;">
+                     
+                <div class="position-absolute top-0 end-0 m-2 m-md-3">
+                  <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 shadow-sm price-badge">
+                    ${{ producto.precio }}
+                  </span>
+                </div>
               </div>
-              <div class="product-info-dark p-4 text-center">
-                <h4 class="fw-bold text-white mb-2">{{ producto.nombre | uppercase }}</h4>
-                <p class="text-white-50 small mb-4">{{ producto.descripcion | slice:0:50 }}...</p>
-                <button class="btn-premium-solid" 
+  
+              <div class="card-body d-flex flex-column p-3 p-md-4">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="card-title fw-bold text-white mb-0 text-truncate">{{producto.nombre}}</h5>
+                </div>
+                
+                <span class="stock-badge mb-2 d-inline-block">Stock: {{producto.stock}} unid.</span>
+                
+                <p class="card-text text-white-50 flex-grow-1 small lh-base mb-3 product-desc">
+                  {{producto.descripcion}}
+                </p>
+                
+                <button class="btn w-100 rounded-pill fw-bold shadow-sm py-2 btn-add-cart" 
                         (click)="agregarAlCarrito(producto)"
                         [disabled]="producto.stock <= 0">
-                  <ng-container *ngIf="producto.stock > 0">PEDIR — ${{ producto.precio }}</ng-container>
-                  <ng-container *ngIf="producto.stock <= 0">AGOTADO</ng-container>
+                  <i class="bi bi-cart-plus me-1"></i> 
+                  <span class="btn-text" *ngIf="producto.stock > 0">Añadir</span>
+                  <span class="btn-text" *ngIf="producto.stock <= 0">Agotado</span>
                 </button>
               </div>
             </div>
-          </div>
+            </div>
         </div>
       </div>
     </section>
