@@ -1,134 +1,237 @@
-.modal-backdrop {
+﻿@use "sass:color";
+/* Variables de la marca */
+$matte-black: #0A0A0A;
+$gold-aged: #C5A059;
+$text-light: #e0e0e0;
+$text-muted: #888888;
+
+.premium-backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.85); /* Más oscuro para resaltar el modal */
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1050;
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.3s ease-out;
 }
 
-.modal-content {
-  background-color: #1a1a1a;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  max-width: 600px;
+.glass-panel {
+  background-color: rgba(10, 10, 10, 0.95);
+  border: 1px solid rgba(197, 160, 89, 0.15); /* Borde dorado sutil */
+  border-radius: 16px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(197, 160, 89, 0.05);
+  max-width: 750px;
   width: 90%;
-  max-height: 80vh;
+  max-height: 85vh;
   overflow-y: auto;
-  animation: slideIn 0.3s ease-in-out;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  /* Scrollbar estético */
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-thumb { background: rgba(197, 160, 89, 0.3); border-radius: 10px; }
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #333;
+  padding: 24px 30px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .modal-title {
   margin: 0;
-  color: #C5A059;
-  font-size: 1.5rem;
-  font-weight: bold;
+  color: $text-light;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .close-btn {
-  background: none;
+  background: transparent;
   border: none;
-  font-size: 2rem;
-  color: #C5A059;
+  font-size: 1.8rem;
+  color: $text-muted;
   cursor: pointer;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.3s;
-}
-
-.close-btn:hover {
-  background-color: rgba(197, 160, 89, 0.1);
+  transition: all 0.3s ease;
+  line-height: 1;
+  
+  &:hover {
+    color: $gold-aged;
+    transform: rotate(90deg);
+  }
 }
 
 .modal-body {
-  padding: 20px;
+  padding: 20px 30px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* --- Imagen del Producto --- */
+.product-image-wrapper {
+  flex: 1;
+  position: relative;
+  text-align: center;
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  /* Resplandor sutil detrás de la imagen */
+  .image-glow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%; height: 80%;
+    background: radial-gradient(circle, rgba(197,160,89,0.15) 0%, rgba(0,0,0,0) 70%);
+    z-index: 1;
+    filter: blur(20px);
+  }
+}
+
+/* --- Detalles --- */
+.product-details {
+  flex: 1.2;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.product-image {
-  text-align: center;
+.price-stock-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.product-image img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+.price-tag {
+  color: $gold-aged;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
-.product-details {
+.stock-badge {
+  background: rgba(255, 255, 255, 0.05);
+  color: $text-light;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.description-box {
+  .main-desc {
+    color: $text-light;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+  .features-text {
+    color: $text-muted;
+    font-style: italic;
+  }
+}
+
+/* --- Acciones (Cantidad + Carrito) --- */
+.action-section {
   display: flex;
   flex-direction: column;
   gap: 15px;
-}
+  margin-top: 10px;
 
-.detail-item {
-  color: #fff;
-}
-
-.detail-item strong {
-  color: #C5A059;
-  display: block;
-  margin-bottom: 5px;
-}
-
-.detail-item p {
-  margin: 0;
-  line-height: 1.5;
-  color: #ccc;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideIn {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@media (min-width: 768px) {
-  .modal-body {
+  @media (min-width: 576px) {
     flex-direction: row;
   }
+}
 
-  .product-image {
-    flex: 1;
+/* Selector de cantidad estilo píldora unificada */
+.quantity-pill {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  height: 48px;
+
+  .qty-btn {
+    background: transparent;
+    border: none;
+    color: $gold-aged;
+    font-size: 1.2rem;
+    width: 40px;
+    height: 100%;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover:not(:disabled) { background: rgba(197, 160, 89, 0.1); }
+    &:disabled { color: #555; cursor: not-allowed; }
   }
 
-  .product-details {
-    flex: 1;
-    margin-left: 20px;
+  .qty-input {
+    background: transparent;
+    border: none;
+    color: $text-light;
+    width: 50px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+    outline: none;
+    
+    /* Ocultar flechas del input number */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    &[type=number] { -moz-appearance: textfield; }
   }
+}
+
+/* Botón de Carrito Premium */
+.btn-premium-cart {
+  flex: 1;
+  background-color: $gold-aged;
+  color: $matte-black;
+  border: none;
+  height: 48px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(197, 160, 89, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &:hover {
+    background-color: color.adjust($gold-aged, $lightness: 5%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(197, 160, 89, 0.4);
+  }
+  &:active { transform: translateY(0); }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
 }

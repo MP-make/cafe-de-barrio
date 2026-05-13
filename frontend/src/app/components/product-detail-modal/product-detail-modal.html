@@ -1,29 +1,42 @@
-<div class="modal-backdrop" *ngIf="isOpen" (click)="onBackdropClick($event)">
-  <div class="modal-content">
+<div class="modal-backdrop premium-backdrop" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-content glass-panel" (click)="$event.stopPropagation()">
+    
     <div class="modal-header">
       <h2 class="modal-title">{{ producto?.nombre }}</h2>
       <button class="close-btn" (click)="close()">&times;</button>
     </div>
+
     <div class="modal-body">
-      <div class="product-image">
+      <div class="product-image-wrapper">
         <img [src]="getImagenUrl()" 
              [alt]="producto?.nombre" 
              (error)="$any($event.target).src = '/logo.webp'">
+        <div class="image-glow"></div>
       </div>
+
       <div class="product-details">
-        <div class="detail-item">
-          <strong>Precio:</strong> ${{ producto?.precio }}
+        <div class="price-stock-row">
+          <span class="price-tag">${{ producto?.precio }}</span>
+          <span class="stock-badge">
+            <i class="bi bi-box-seam"></i> {{ producto?.stock }} disponibles
+          </span>
         </div>
-        <div class="detail-item">
-          <strong>Stock:</strong> {{ producto?.stock }} unidades
+
+        <div class="description-box">
+          <p class="main-desc">{{ producto?.descripcion }}</p>
+          <p class="features-text"><small>Producto de alta calidad, preparado con granos seleccionados.</small></p>
         </div>
-        <div class="detail-item">
-          <strong>Descripción:</strong>
-          <p>{{ producto?.descripcion }}</p>
-        </div>
-        <div class="detail-item">
-          <strong>Características:</strong>
-          <p>Producto de alta calidad, preparado con granos seleccionados.</p>
+
+        <div class="action-section">
+          <div class="quantity-pill">
+            <button class="qty-btn" (click)="disminuirCantidad()" [disabled]="cantidad <= 1">-</button>
+            <input type="number" class="qty-input" [(ngModel)]="cantidad" (input)="onCantidadChange()" min="1" [max]="producto ? producto.stock : 1">
+            <button class="qty-btn" (click)="aumentarCantidad()" [disabled]="producto ? cantidad >= producto.stock : true">+</button>
+          </div>
+          
+          <button class="btn-premium-cart" (click)="agregarAlCarrito()">
+            Agregar al Carrito
+          </button>
         </div>
       </div>
     </div>
