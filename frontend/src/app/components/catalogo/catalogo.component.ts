@@ -7,11 +7,12 @@ import { CartService } from '../../services/cart.service';
 import { CategoriaService, Categoria } from '../../services/categoria';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
+import { ProductDetailModal } from '../product-detail-modal/product-detail-modal';
 
 @Component({
   selector: 'app-catalogo',
   standalone: true,
-  imports: [CommonModule, FormsModule],  
+  imports: [CommonModule, FormsModule, ProductDetailModal],  
   templateUrl: './catalogo.component.html',
   styleUrl: './catalogo.scss'
 })
@@ -25,12 +26,14 @@ export class CatalogoComponent implements OnInit {
   sortOrder: string = 'default';
   
   isLoading: boolean = true;
+  selectedProducto: Producto | null = null;
+  isModalOpen: boolean = false;
 
   constructor(
     private productoService: ProductoService,
     private cartService: CartService,
     private categoriaService: CategoriaService,
-    private cd: ChangeDetectorRef,
+    public cd: ChangeDetectorRef,
     private authService: AuthService,
     private notificationService: NotificationService
   ) {}
@@ -60,7 +63,7 @@ export class CatalogoComponent implements OnInit {
         this.categorias = categorias;
         this.cd.detectChanges();
       },
-      error: (err: any) => console.error('Error cargando categorÃ­as:', err)
+      error: (err: any) => console.error('Error cargando categorías:', err)
     });
   }
 
@@ -118,18 +121,28 @@ export class CatalogoComponent implements OnInit {
 
   agregarAlCarrito(producto: Producto) { 
     if (!this.authService.isLoggedIn()) {
-      this.notificationService.showError('Debes iniciar sesiÃ³n para agregar productos al carrito.');
+      this.notificationService.showError('Debes iniciar sesión para agregar productos al carrito.');
       return;
     }
     
     // Guardamos la respuesta del servicio
     const respuesta = this.cartService.agregar(producto);
     
-    // Mostramos la notificaciÃ³n correspondiente
+    // Mostramos la notificación correspondiente
     if (!respuesta.success) {
       this.notificationService.showError(respuesta.message);
     } else {
       this.notificationService.showSuccess(respuesta.message);
     }
+  }
+
+  openModal(producto: Producto) {
+    this.selectedProducto = producto;
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+    this.selectedProducto = null;
   }
 }

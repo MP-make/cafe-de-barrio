@@ -62,7 +62,7 @@
           <div class="col-lg-3 col-md-6 col-6" *ngFor="let producto of productos; let i = index">
             <div class="product-card-dark reveal-item" [ngStyle]="{'transition-delay': (i * 0.15) + 's'}">
               <div class="product-img-box">
-                <img [src]="getImagenUrl(producto.imagenUrl)" (error)="$any($event.target).src = '/logo.webp'">
+                <img [src]="getImagenUrl(producto.imagenUrl)" (error)="$any($event.target).src = '/logo.webp'" (click)="openModal(producto)" style="cursor: pointer;">
               </div>
               <div class="product-info-dark p-4 text-center">
                 <h4 class="fw-bold text-white mb-2">{{ producto.nombre | uppercase }}</h4>
@@ -122,3 +122,9 @@
       </div>
     </section>
 </div>
+
+<app-product-detail-modal 
+  [producto]="selectedProducto" 
+  [isOpen]="isModalOpen" 
+  (closeModal)="closeModal()">
+</app-product-detail-modal>

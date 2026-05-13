@@ -7,17 +7,20 @@ import { ProductoService } from '../../services/producto.service';
 import { Producto } from '../../models/producto.model';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
+import { ProductDetailModal } from '../product-detail-modal/product-detail-modal';
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ProductDetailModal],
   templateUrl: './inicio.html',
   styleUrl: './inicio.scss',
 })
 export class InicioComponent implements OnInit, AfterViewInit {
   categorias: Categoria[] = [];
   productos: Producto[] = [];
+  selectedProducto: Producto | null = null;
+  isModalOpen: boolean = false;
 
   constructor(
     private categoriaService: CategoriaService,
@@ -143,5 +146,15 @@ export class InicioComponent implements OnInit, AfterViewInit {
 
   handleImageError(event: any) {
     event.target.src = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80';
+  }
+
+  openModal(producto: Producto) {
+    this.selectedProducto = producto;
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+    this.selectedProducto = null;
   }
 }

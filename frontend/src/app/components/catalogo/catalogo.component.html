@@ -10,14 +10,14 @@
     <div class="col-md-6 col-lg-4">
       <div class="premium-search-box shadow-sm">
         <i class="bi bi-search icon text-warning"></i>
-        <input type="text" class="form-control text-white" placeholder="Buscar por nombre..." [(ngModel)]="searchTerm">
+        <input type="text" class="form-control text-white" placeholder="Buscar por nombre..." [(ngModel)]="searchTerm" (input)="cd.detectChanges()">
       </div>
     </div>
     
     <div class="col-md-5 col-lg-3 text-md-end">
       <div class="premium-sort-box shadow-sm d-flex align-items-center">
         <i class="bi bi-filter-left icon text-warning me-2"></i>
-        <select class="form-select border-0 bg-transparent shadow-none text-white" [(ngModel)]="sortOrder">
+        <select class="form-select border-0 bg-transparent shadow-none text-white" [(ngModel)]="sortOrder" (change)="cd.detectChanges()">
           <option value="default" class="text-dark">Relevancia</option>
           <option value="nombreAsc" class="text-dark">Nombre (A - Z)</option>
           <option value="precioAsc" class="text-dark">Precio: Menor a Mayor</option>
@@ -56,7 +56,9 @@
                (error)="manejarErrorImagen($event)"
                class="card-img-top object-fit-cover cafe-img" 
                alt="{{ p.nombre }}" 
-               loading="lazy">
+               loading="lazy"
+               (click)="openModal(p)"
+               style="cursor: pointer;">
                
           <div class="position-absolute top-0 end-0 m-2 m-md-3">
             <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 shadow-sm price-badge">
@@ -94,3 +96,9 @@
     <button class="btn btn-outline-light mt-3 rounded-pill px-4" (click)="searchTerm=''; setCategoria(null)">Limpiar filtros</button>
   </div>
 </div>
+
+<app-product-detail-modal 
+  [producto]="selectedProducto" 
+  [isOpen]="isModalOpen" 
+  (closeModal)="closeModal()">
+</app-product-detail-modal>

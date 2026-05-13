@@ -1,0 +1,31 @@
+<div class="modal-backdrop" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ producto?.nombre }}</h2>
+      <button class="close-btn" (click)="close()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="product-image">
+        <img [src]="getImagenUrl()" 
+             [alt]="producto?.nombre" 
+             (error)="$any($event.target).src = '/logo.webp'">
+      </div>
+      <div class="product-details">
+        <div class="detail-item">
+          <strong>Precio:</strong> ${{ producto?.precio }}
+        </div>
+        <div class="detail-item">
+          <strong>Stock:</strong> {{ producto?.stock }} unidades
+        </div>
+        <div class="detail-item">
+          <strong>Descripción:</strong>
+          <p>{{ producto?.descripcion }}</p>
+        </div>
+        <div class="detail-item">
+          <strong>Características:</strong>
+          <p>Producto de alta calidad, preparado con granos seleccionados.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
